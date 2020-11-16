@@ -6,13 +6,20 @@ module Port = Ram_port
 
 let create_circuit
       ?(create = Dual_port_ram.create)
+      ?(byte_write_width = Byte_write_width.Full)
       ()
       ~read_latency
       ~address_bits
       ~data_bits
   =
   let port_sizes =
-    { Port.address = address_bits; data = data_bits; read_enable = 1; write_enable = 1 }
+    let write_enable =
+      match byte_write_width with
+      | Full -> 1
+      | B8 -> data_bits / 8
+      | B9 -> data_bits / 9
+    in
+    { Port.address = address_bits; data = data_bits; read_enable = 1; write_enable }
   in
   let qa, qb =
     create
@@ -22,14 +29,17 @@ let create_circuit
       ~clock:(Signal.input "clock" 1)
       ~clear:(Signal.input "clear" 1)
       ~size:(1 lsl address_bits)
+      ~byte_write_width
       ~port_a:Port.(map2 (map port_names ~f:(( ^ ) "a_")) port_sizes ~f:Signal.input)
       ~port_b:Port.(map2 (map port_names ~f:(( ^ ) "b_")) port_sizes ~f:Signal.input)
   in
   Circuit.create_exn ~name:"ram" [ Signal.output "qa" qa; Signal.output "qb" qb ]
 ;;
 
-let create_sim ~read_latency ~address_bits ~data_bits =
-  let circuit = create_circuit () ~read_latency ~address_bits ~data_bits in
+let create_sim ?byte_write_width ~read_latency ~address_bits ~data_bits () =
+  let circuit =
+    create_circuit ?byte_write_width () ~read_latency ~address_bits ~data_bits
+  in
   let sim = Cyclesim.create circuit in
   let wave, sim = Waveform.create sim in
   let clear =
@@ -49,7 +59,7 @@ let create_sim ~read_latency ~address_bits ~data_bits =
 
 let%expect_test "basic write then read, single cycle latency" =
   let (waves, sim), clear, ((a : _ Port.t), _qa), ((b : _ Port.t), _qb) =
-    create_sim ~read_latency:1 ~address_bits:8 ~data_bits:32
+    create_sim ~read_latency:1 ~address_bits:8 ~data_bits:32 ()
   in
   clear := Bits.vdd;
   Cyclesim.cycle sim;
@@ -107,7 +117,7 @@ let%expect_test "basic write then read, single cycle latency" =
 
 let%expect_test "basic write then read, 2 cycle latency" =
   let (waves, sim), clear, ((a : _ Port.t), _qa), ((b : _ Port.t), _qb) =
-    create_sim ~read_latency:2 ~address_bits:8 ~data_bits:32
+    create_sim ~read_latency:2 ~address_bits:8 ~data_bits:32 ()
   in
   clear := Bits.vdd;
   Cyclesim.cycle sim;
@@ -165,7 +175,7 @@ let%expect_test "basic write then read, 2 cycle latency" =
 
 let%expect_test "write and read same cycle, 2 cycle latency" =
   let (waves, sim), clear, ((a : _ Port.t), _qa), ((b : _ Port.t), _qb) =
-    create_sim ~read_latency:2 ~address_bits:8 ~data_bits:32
+    create_sim ~read_latency:2 ~address_bits:8 ~data_bits:32 ()
   in
   clear := Bits.vdd;
   Cyclesim.cycle sim;
@@ -220,5 +230,69 @@ let%expect_test "write and read same cycle, 2 cycle latency" =
     │                  ││────────────────────────────────┬───────────────                  │
     │qb                ││ 00000000                       │00000064                         │
     │                  ││────────────────────────────────┴───────────────                  │
+    └──────────────────┘└──────────────────────────────────────────────────────────────────┘ |}]
+;;
+
+let%expect_test "byte write width" =
+  let (waves, sim), clear, ((a : _ Port.t), _qa), ((b : _ Port.t), _qb) =
+    create_sim
+      ~byte_write_width:Byte_write_width.B8
+      ~read_latency:1
+      ~address_bits:8
+      ~data_bits:32
+      ()
+  in
+  clear := Bits.vdd;
+  Cyclesim.cycle sim;
+  clear := Bits.gnd;
+  a.write_enable := Bits.of_string "1001";
+  a.address := Bits.of_int ~width:8 10;
+  a.data := Bits.of_int ~width:32 0xAABB_CCDD;
+  Cyclesim.cycle sim;
+  a.write_enable := Bits.of_string "0110";
+  a.address := Bits.of_int ~width:8 10;
+  a.data := Bits.of_int ~width:32 0xFF11_22EE;
+  b.read_enable := Bits.vdd;
+  b.address := Bits.of_int ~width:8 10;
+  Cyclesim.cycle sim;
+  a.write_enable := Bits.of_string "0000";
+  Cyclesim.cycle sim;
+  b.read_enable := Bits.gnd;
+  Cyclesim.cycle sim;
+  Cyclesim.cycle sim;
+  Waveform.print ~wave_width:4 ~display_height:32 ~display_width:88 waves;
+  [%expect
+    {|
+    ┌Signals───────────┐┌Waves─────────────────────────────────────────────────────────────┐
+    │clock             ││┌────┐    ┌────┐    ┌────┐    ┌────┐    ┌────┐    ┌────┐    ┌────┐│
+    │                  ││     └────┘    └────┘    └────┘    └────┘    └────┘    └────┘    └│
+    │                  ││──────────┬─────────────────────────────────────────────────      │
+    │a_address         ││ 00       │0A                                                     │
+    │                  ││──────────┴─────────────────────────────────────────────────      │
+    │                  ││──────────┬─────────┬───────────────────────────────────────      │
+    │a_data            ││ 00000000 │AABBCCDD │FF1122EE                                     │
+    │                  ││──────────┴─────────┴───────────────────────────────────────      │
+    │a_read_enable     ││                                                                  │
+    │                  ││────────────────────────────────────────────────────────────      │
+    │                  ││──────────┬─────────┬─────────┬─────────────────────────────      │
+    │a_write_enable    ││ 0        │9        │6        │0                                  │
+    │                  ││──────────┴─────────┴─────────┴─────────────────────────────      │
+    │                  ││────────────────────┬───────────────────────────────────────      │
+    │b_address         ││ 00                 │0A                                           │
+    │                  ││────────────────────┴───────────────────────────────────────      │
+    │                  ││────────────────────────────────────────────────────────────      │
+    │b_data            ││ 00000000                                                         │
+    │                  ││────────────────────────────────────────────────────────────      │
+    │b_read_enable     ││                    ┌───────────────────┐                         │
+    │                  ││────────────────────┘                   └───────────────────      │
+    │                  ││────────────────────────────────────────────────────────────      │
+    │b_write_enable    ││ 0                                                                │
+    │                  ││────────────────────────────────────────────────────────────      │
+    │                  ││────────────────────────────────────────────────────────────      │
+    │qa                ││ 00000000                                                         │
+    │                  ││────────────────────────────────────────────────────────────      │
+    │                  ││──────────────────────────────┬─────────┬───────────────────      │
+    │qb                ││ 00000000                     │AA0000DD │AA1122DD                 │
+    │                  ││──────────────────────────────┴─────────┴───────────────────      │
     └──────────────────┘└──────────────────────────────────────────────────────────────────┘ |}]
 ;;

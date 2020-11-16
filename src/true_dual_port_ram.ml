@@ -103,7 +103,7 @@ let rec output_pipe ~clock ~clear ~latency ~enable d =
       (reg spec ~enable:vdd d)
 ;;
 
-let create_rtl
+let create_rtl'
       ~read_latency
       ~arch:_
       ~clock_a
@@ -156,6 +156,47 @@ let create_rtl
       q.(1) )
 ;;
 
+let create_rtl
+      ~read_latency
+      ~arch
+      ~clock_a
+      ~clock_b
+      ~clear_a
+      ~clear_b
+      ~size
+      ~(byte_write_width : Byte_write_width.t)
+      ~(port_a : _ Ram_port.t)
+      ~(port_b : _ Ram_port.t)
+  =
+  let split_port (port : _ Ram_port.t) =
+    let split_port byte_width =
+      let data = split_lsb ~part_width:byte_width port.data in
+      let write_enable = bits_lsb port.write_enable in
+      List.map2_exn data write_enable ~f:(fun data write_enable ->
+        { port with data; write_enable })
+    in
+    match byte_write_width with
+    | Full -> [ port ]
+    | B8 -> split_port 8
+    | B9 -> split_port 9
+  in
+  let qs =
+    List.map2_exn (split_port port_a) (split_port port_b) ~f:(fun port_a port_b ->
+      create_rtl'
+        ~read_latency
+        ~arch
+        ~clock_a
+        ~clock_b
+        ~clear_a
+        ~clear_b
+        ~size
+        ~port_a
+        ~port_b)
+  in
+  let qa, qb = List.unzip qs in
+  concat_lsb qa, concat_lsb qb
+;;
+
 let create
       ?(read_latency = 1)
       ?(arch = Ram_arch.Rtl)
@@ -163,9 +204,6 @@ let create
       ()
   =
   match arch with
-  | Rtl ->
-    (match byte_write_width with
-     | Full -> create_rtl ~read_latency ~arch
-     | _ -> assert false)
+  | Rtl -> create_rtl ~read_latency ~arch ~byte_write_width
   | _ -> create_xpm ~read_latency ~arch ~byte_write_width
 ;;

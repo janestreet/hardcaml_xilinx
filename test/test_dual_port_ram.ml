@@ -401,3 +401,155 @@ let%expect_test "Simple_dual_port_ram" =
   require_does_not_raise [%here] (fun () -> create Blockram);
   require_does_not_raise [%here] (fun () -> create Ultraram)
 ;;
+
+let%expect_test "byte enables" =
+  let create arch =
+    let port port ~address_width ~data_width =
+      let input name width = input (name ^ "_" ^ port) width in
+      { Ram_port.address = input "address" address_width
+      ; write_enable = input "write" (data_width / 8)
+      ; read_enable = input "read" 1
+      ; data = input "data" data_width
+      }
+    in
+    let qa, qb =
+      True_dual_port_ram.create
+        ~arch
+        ()
+        ~clock_a:(input "clock_a" 1)
+        ~clock_b:(input "clock_b" 1)
+        ~clear_a:(input "clear_a" 1)
+        ~clear_b:(input "clear_b" 1)
+        ~size:16
+        ~byte_write_width:B8
+        ~port_a:(port "a" ~address_width:4 ~data_width:16)
+        ~port_b:(port "b" ~address_width:4 ~data_width:16)
+    in
+    Circuit.create_exn ~name:"true_dual_port_ram" [ output "qa" qa; output "qb" qb ]
+    |> Rtl.print Verilog
+  in
+  create Rtl;
+  [%expect
+    {|
+    module true_dual_port_ram (
+        read_b,
+        read_a,
+        write_b,
+        data_b,
+        clock_b,
+        write_a,
+        data_a,
+        clock_a,
+        address_b,
+        address_a,
+        qa,
+        qb
+    );
+
+        input read_b;
+        input read_a;
+        input [1:0] write_b;
+        input [15:0] data_b;
+        input clock_b;
+        input [1:0] write_a;
+        input [15:0] data_a;
+        input clock_a;
+        input [3:0] address_b;
+        input [3:0] address_a;
+        output [15:0] qa;
+        output [15:0] qb;
+
+        /* signal declarations */
+        wire _31;
+        wire [7:0] _30 = 8'b00000000;
+        wire [7:0] _29 = 8'b00000000;
+        wire [7:0] _28;
+        reg [7:0] _32;
+        wire _21;
+        wire [7:0] _20 = 8'b00000000;
+        wire [7:0] _19 = 8'b00000000;
+        wire [7:0] _18;
+        reg [7:0] _22;
+        wire [15:0] _33;
+        wire _42;
+        wire [7:0] _41 = 8'b00000000;
+        wire [7:0] _40 = 8'b00000000;
+        wire _26;
+        wire [7:0] _25;
+        wire _24;
+        wire [7:0] _23;
+        reg [7:0] _27[0:15];
+        wire [7:0] _39;
+        reg [7:0] _43;
+        wire _37;
+        wire [7:0] _36 = 8'b00000000;
+        wire [7:0] _35 = 8'b00000000;
+        wire _16;
+        wire [7:0] _15;
+        wire _14;
+        wire [7:0] _13;
+        reg [7:0] _17[0:15];
+        wire [7:0] _34;
+        reg [7:0] _38;
+        wire [15:0] _44;
+
+        /* logic */
+        assign _31 = read_b | _26;
+        assign _28 = _27[address_b];
+        always @(posedge clock_b) begin
+            if (_31)
+                _32 <= _28;
+        end
+        assign _21 = read_b | _16;
+        assign _18 = _17[address_b];
+        always @(posedge clock_b) begin
+            if (_21)
+                _22 <= _18;
+        end
+        assign _33 = { _22, _32 };
+        assign _42 = read_a | _24;
+        assign _26 = write_b[0:0];
+        assign _25 = data_b[7:0];
+        assign _24 = write_a[0:0];
+        assign _23 = data_a[7:0];
+        always @(posedge clock_a) begin
+            if (_24)
+                _27[address_a] <= _23;
+        end
+        always @(posedge clock_b) begin
+            if (_26)
+                _27[address_b] <= _25;
+        end
+        assign _39 = _27[address_a];
+        always @(posedge clock_a) begin
+            if (_42)
+                _43 <= _39;
+        end
+        assign _37 = read_a | _14;
+        assign _16 = write_b[1:1];
+        assign _15 = data_b[15:8];
+        assign _14 = write_a[1:1];
+        assign _13 = data_a[15:8];
+        always @(posedge clock_a) begin
+            if (_14)
+                _17[address_a] <= _13;
+        end
+        always @(posedge clock_b) begin
+            if (_16)
+                _17[address_b] <= _15;
+        end
+        assign _34 = _17[address_a];
+        always @(posedge clock_a) begin
+            if (_37)
+                _38 <= _34;
+        end
+        assign _44 = { _38, _43 };
+
+        /* aliases */
+
+        /* output assignments */
+        assign qa = _44;
+        assign qb = _33;
+
+    endmodule |}]
+;;

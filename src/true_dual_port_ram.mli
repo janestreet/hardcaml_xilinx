@@ -8,6 +8,9 @@ open! Import
     The RAM models [no_change] mode for read on write behaviour. That is when writing,
     reads are disabled and the output ports will not change. This is consistent with
     UltraRAM behaviour.
+
+    [byte_write_width] is supported in [Rtl] mode, but builds the structure from an array
+    of narrow RAMs, so is not as efficient as it could be (but can be simulated).
 *)
 val create
   :  ?read_latency:int (** Default is 1 *)
