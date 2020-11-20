@@ -1,0 +1,4 @@
+(rule (targets xram.v) (deps (:first_dep ../bin/xsim_modelling.exe))
+ (action (bash "%{first_dep} > xram.v")))
+
+(alias (name DEFAULT) (deps xram.v))

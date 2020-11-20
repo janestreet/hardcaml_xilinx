@@ -1,6 +1,7 @@
 (** Basic Xilinx FPGA primitives *)
 
-open! Import
+open Base
+open Hardcaml
 
 module type Combinational_primitives = sig
   include Comb.S
@@ -64,6 +65,9 @@ module type Xilinx_primitives = sig
 end
 
 module type Synthesis = sig
+  module type Combinational_primitives = Combinational_primitives
+  module type Sequential_primitives = Sequential_primitives
+
   (** Allow expressions to generate LUT init values *)
   module Lut_equation : sig
     type t

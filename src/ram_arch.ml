@@ -1,16 +1,13 @@
-open! Import
+open! Base
+open! Hardcaml
 
 type t =
-  | Rtl
-  | Auto
   | Distributed
-  | Blockram
+  | Blockram of Collision_mode.t
   | Ultraram
 
-let to_string = function
-  | Rtl -> "hardcaml_rtl_ram"
-  | Auto -> "auto"
+let to_xpm_parameter = function
   | Distributed -> "distributed"
-  | Blockram -> "block"
+  | Blockram _ -> "block"
   | Ultraram -> "ultra"
 ;;

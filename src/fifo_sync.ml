@@ -1,4 +1,5 @@
-open! Import
+open! Base
+open Hardcaml
 
 let create
       ?(overflow_check = true)

@@ -1,21 +1,41 @@
 (** True Dual Port Memory with independent clocks for ports [a] and [b]. *)
-open! Import
 
-(** Create a Xilinx compatible memory. When [Arch=Rtl] a Hardcaml RTL model is generated.
-    Otherwise the XPM memory generator is used by generating a [xpm_memory_tdpram]
-    instantiation with appropriate parameters.
+open Base
+open Hardcaml
 
-    The RAM models [no_change] mode for read on write behaviour. That is when writing,
-    reads are disabled and the output ports will not change. This is consistent with
-    UltraRAM behaviour.
+(** Create a Xilinx compatible memory. For [Synthesis] the XPM memory generator is used by
+    generating a [xpm_memory_tdpram] instantiation with appropriate parameters. For
+    [Simulation] hardcaml multiport memories are used to model the Xilinx memory
+    behaviour.
 
-    [byte_write_width] is supported in [Rtl] mode, but builds the structure from an array
-    of narrow RAMs, so is not as efficient as it could be (but can be simulated).
+    The interface to the RAM differs subtly from the core primitives - we use seperate
+    read and write enables, rather than a single enable and write signal. The mapping is
+    as follows:
+
+    - write_enable = enable & write
+    - read_enable  = enable
+
+    The main difference occurs when write_enable and read_enable are both high. In the
+    [No_change] collision mode, the read will not occur.
+
+    The documentation explains what happens across ports on address collisions, and in
+    some cases this leads to [X]s on the output of one port of the other. Hardcaml cannot
+    model this behaviour, so it is up to the designer to be 'very careful' in these cases.
+    Please see the table at the top of the implementation file for more information.
+
+    Ultraram has it's own subtle behaviour on address collision and this is modelled in
+    hardcaml by putting the ports in opposite read/write first modes.
+
+    Distributed RAM is set up to work the same as BlockRAM.
+
+    There is a verilog testbench in [test_hdl] which works with the [xsim_modelling]
+    application to test the subtle address collision cases.
 *)
 val create
   :  ?read_latency:int (** Default is 1 *)
-  -> ?arch:Ram_arch.t (** Default is [Rtl] *)
+  -> ?arch:Ram_arch.t (** Default is [Block_ram No_change] *)
   -> ?byte_write_width:Byte_write_width.t (** Default is [Full] *)
+  -> build_mode:Build_mode.t
   -> unit
   -> clock_a:Signal.t
   -> clock_b:Signal.t

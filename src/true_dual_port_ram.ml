@@ -1,9 +1,56 @@
-open! Import
+open Base
+open Hardcaml
 open Signal
 module Tdpram = Xpm.Xpm_memory_tdpram
 
+(* Block RAM - address collision behaviour.  UG573, table 1-3, common clocks.
+
+   For a given mode on port a and b, and read/write enables on each port, what is the
+   resulting value on the data out ports, and stored in memory?
+
+   {v
+   port a     port b   wea       web        doa   dob   mem
+  RF/WF/NC | RF/WF/NC | 0       | 0       | OLD | OLD | NC
+  RF       | RF/WF/NC | 1 (DIA) | 0       | OLD | OLD | DIA
+  WF       | RF/WF/NC | 1 (DIA) | 0       | DIA | X   | DIA
+  NC       | RF/WF/NC | 1 (DIA) | 0       | NC  | X   | DIA
+  RF/WF/NC | RF       | 0       | 1 (DIB) | OLD | OLD | DIB
+  RF/WF/NC | WF       | 0       | 1 (DIB) | X   | DIB | DIB
+  RF/WF/NC | NC       | 0       | 1 (DIB) | X   | NC  | DIB
+  RF/WF/NC | RF/WF/NC | 1       | 1       | X   | X   | X
+v}
+
+   RF     = Read first
+   WF     = Write first
+   NC     = No change
+   OLD    = Old values stored in memory
+   DIA/B  = Data in A or B
+   X      = Invalid
+   we[ab] = write when [1], read when [0]
+   In all cases the addresses ports a and b are the same value.
+*)
+
+(* Ultra RAM
+
+   These work differently. They have 2 port [a] and [b]. The RAM is "double pumped" - that
+   is it works at twice the nominal clock rate and performs the [a] operation followed by
+   the [b] operation.
+
+   On a [write] operation, the output data on the same port is unchanged. Somewhat similar
+   to [no_change] mode.
+
+   Across ports, the behavior depends on the ordering of ports ie Write [a], will be
+   reflected on read [b]. But not the other way round.
+*)
 
 let any t = tree ~arity:2 ~f:(reduce ~f:( |: )) (Signal.bits_msb t)
+
+let collision_mode (arch : Ram_arch.t) : Collision_mode.t =
+  match arch with
+  | Distributed -> Read_before_write
+  | Blockram mode -> mode
+  | Ultraram -> No_change
+;;
 
 let create_xpm
       ~read_latency
@@ -37,10 +84,12 @@ let create_xpm
     let addr_width_a = addr_bits
     let addr_width_b = addr_bits
     let memory_size = width * size
-    let memory_primitive = Ram_arch.to_string arch
+    let memory_primitive = Ram_arch.to_xpm_parameter arch
     let read_latency_a = read_latency
     let read_latency_b = read_latency
     let use_mem_init = 0
+    let write_mode_a = Collision_mode.to_xpm_parameter (collision_mode arch)
+    let write_mode_b = write_mode_a
   end
   in
   let write_enable_width =
@@ -103,9 +152,62 @@ let rec output_pipe ~clock ~clear ~latency ~enable d =
       (reg spec ~enable:vdd d)
 ;;
 
+(* This is very similar to rams built with [Ram.create]. The main difference is when
+   modelling ultrarams. To get the correct behaviour for a write on one port and read on
+   the other port, we must put port [a] into [Read_before_write] mode, and port [b] into
+   [Write_before_read] mode. *)
+let create_base_rtl_ram
+      ~(arch : Ram_arch.t)
+      ~clock_a
+      ~clock_b
+      ~size
+      ~(port_a : _ Ram_port.t)
+      ~(port_b : _ Ram_port.t)
+  =
+  let reg clock enable = reg (Reg_spec.create ~clock ()) ~enable in
+  let read_enable (port : _ Ram_port.t) =
+    match collision_mode arch with
+    | No_change -> port.read_enable &: ~:(port.write_enable)
+    | Read_before_write | Write_before_read -> port.read_enable |: port.write_enable
+  in
+  let reg_a = reg clock_a (read_enable port_a) in
+  let reg_b = reg clock_b (read_enable port_b) in
+  let f_read_address, f_q =
+    match arch with
+    | Ultraram -> [| Fn.id; reg_b |], [| reg_a; Fn.id |]
+    | Distributed | Blockram (Read_before_write | No_change) ->
+      [| Fn.id; Fn.id |], [| reg_a; reg_b |]
+    | Blockram Write_before_read -> [| reg_a; reg_b |], [| Fn.id; Fn.id |]
+  in
+  let q =
+    Signal.multiport_memory
+      size
+      ~write_ports:
+        [| { write_clock = clock_a
+           ; write_enable = port_a.write_enable
+           ; write_address = port_a.address
+           ; write_data = port_a.data
+           }
+         ; { write_clock = clock_b
+           ; write_enable =
+               (match arch with
+                | Distributed -> gnd
+                (* Distributed RAM will not write on port B. *)
+                | Blockram _ | Ultraram -> port_b.write_enable)
+           ; write_address = port_b.address
+           ; write_data = port_b.data
+           }
+        |]
+      ~read_addresses:
+        (Array.map2_exn f_read_address [| port_a.address; port_b.address |] ~f:(fun f a ->
+           f a))
+  in
+  Array.map2_exn f_q q ~f:(fun f q -> f q)
+;;
+
 let create_rtl'
       ~read_latency
-      ~arch:_
+      ~arch
       ~clock_a
       ~clock_b
       ~clear_a
@@ -115,33 +217,7 @@ let create_rtl'
       ~(port_b : _ Ram_port.t)
   =
   assert (read_latency > 0);
-  let q =
-    Ram.create
-      ~collision_mode:Read_before_write
-      ~size
-      ~write_ports:
-        [| { write_clock = clock_a
-           ; write_enable = port_a.write_enable
-           ; write_address = port_a.address
-           ; write_data = port_a.data
-           }
-         ; { write_clock = clock_b
-           ; write_enable = port_b.write_enable
-           ; write_address = port_b.address
-           ; write_data = port_b.data
-           }
-        |]
-      ~read_ports:
-        [| { read_clock = clock_a
-           ; read_enable = port_a.read_enable |: port_a.write_enable
-           ; read_address = port_a.address
-           }
-         ; { read_clock = clock_b
-           ; read_enable = port_b.read_enable |: port_b.write_enable
-           ; read_address = port_b.address
-           }
-        |]
-  in
+  let q = create_base_rtl_ram ~arch ~clock_a ~clock_b ~size ~port_a ~port_b in
   ( output_pipe
       ~clock:clock_a
       ~clear:clear_a
@@ -156,6 +232,7 @@ let create_rtl'
       q.(1) )
 ;;
 
+(* Instantiate the core rtl ram multiple times so that it can support byte enables.*)
 let create_rtl
       ~read_latency
       ~arch
@@ -199,11 +276,12 @@ let create_rtl
 
 let create
       ?(read_latency = 1)
-      ?(arch = Ram_arch.Rtl)
+      ?(arch = Ram_arch.Blockram No_change)
       ?(byte_write_width = Byte_write_width.Full)
+      ~(build_mode : Build_mode.t)
       ()
   =
-  match arch with
-  | Rtl -> create_rtl ~read_latency ~arch ~byte_write_width
-  | _ -> create_xpm ~read_latency ~arch ~byte_write_width
+  match build_mode with
+  | Simulation -> create_rtl ~read_latency ~arch ~byte_write_width
+  | Synthesis -> create_xpm ~read_latency ~arch ~byte_write_width
 ;;

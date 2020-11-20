@@ -1,5 +1,7 @@
 (** Simple Dual Port Memory. 1 port is for writing, the other for reading. *)
-open! Import
+
+open Base
+open Hardcaml
 
 (** Create a Xilinx compatible memory. Uses True_dual_port_ram with appropriate parameters
     for implementation. *)
@@ -7,6 +9,7 @@ val create
   :  ?read_latency:int (** Default is 1 *)
   -> ?arch:Ram_arch.t (** Default is [Rtl] *)
   -> ?byte_write_width:Byte_write_width.t (** Default is [Full] *)
+  -> build_mode:Build_mode.t
   -> unit
   -> clock:Signal.t
   -> clear:Signal.t

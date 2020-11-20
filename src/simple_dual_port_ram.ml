@@ -1,10 +1,12 @@
-open! Import
+open Base
+open Hardcaml
 open Signal
 
 let create
       ?read_latency
       ?arch
       ?(byte_write_width = Byte_write_width.Full)
+      ~build_mode
       ()
       ~clock
       ~clear
@@ -20,6 +22,7 @@ let create
       ?read_latency
       ?arch
       ~byte_write_width
+      ~build_mode
       ()
       ~clock
       ~clear

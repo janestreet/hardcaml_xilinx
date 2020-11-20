@@ -1,6 +1,8 @@
 (** Internal module. Wraps the Xilinx Async FIFO primitive. This is primarily used for
     cross clock domain translations *)
-open! Import
+
+open Base
+open Hardcaml
 
 val create
   :  ?overflow_check:bool (** default is [true] *)

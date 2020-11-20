@@ -1,5 +1,7 @@
 (** Internal module. Wraps the Xilinx Sync FIFO primitive. *)
-open! Import
+
+open Base
+open Hardcaml
 
 
 (** Wrap the Xilinx FIFO primitive so that the interface matches [Hardcaml.Fifo].

@@ -1,7 +1,8 @@
 (* Synchronous (single clock) FIFO which may be instantiated using a synthesizable
    Hardcaml model or a (slightely) more efficient Xilinx primitive FIFO. *)
 
-open! Import
+open Base
+open Hardcaml
 
 (** Create a synchronous FIFO with the given capacity. If [build_mode] is [Simulation] a
     hardcaml model is generated (note, though, the model is synthesizable). Otherwise a

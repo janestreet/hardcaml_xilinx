@@ -1,4 +1,5 @@
-open! Import
+open! Base
+open! Hardcaml
 
 type 'a t =
   { address : 'a

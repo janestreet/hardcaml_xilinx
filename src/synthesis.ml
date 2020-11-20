@@ -1,7 +1,11 @@
 (* API representing basic Xilinx primitives *)
 
-open! Import
+open Base
+open Hardcaml
 open! Synthesis_intf
+
+module type Combinational_primitives = Combinational_primitives
+module type Sequential_primitives = Sequential_primitives
 
 (* algebra for building LUT equations *)
 module Lut_equation = struct

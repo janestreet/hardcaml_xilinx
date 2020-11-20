@@ -1,4 +1,5 @@
 module Byte_write_width = Byte_write_width
+module Collision_mode = Collision_mode
 module Ram_arch = Ram_arch
 module Dual_port_ram = Dual_port_ram
 module Fifo_async = Fifo_async

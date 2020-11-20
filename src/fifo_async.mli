@@ -1,7 +1,8 @@
 (* Asynchronous (dual clock) FIFO which may be instantiated using a simulation only
    Hardcaml model or a Xilinx primitive FIFO. *)
 
-open! Import
+open Base
+open Hardcaml
 
 (** Create a synchronous FIFO with the given capacity. If [build_mode] is [Simulation] a
     hardcaml model is generated. Otherwise a XPM primitive FIFO is instantiated.

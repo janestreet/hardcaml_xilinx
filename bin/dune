@@ -1,0 +1,2 @@
+(executables (names xsim_modelling)
+ (libraries core hardcaml hardcaml_xilinx_test) (preprocess (pps ppx_jane)))

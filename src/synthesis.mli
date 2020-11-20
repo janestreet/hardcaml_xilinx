@@ -1,1 +1,1 @@
-include Synthesis_intf.Synthesis
+include Synthesis_intf.Synthesis (** @inline *)
