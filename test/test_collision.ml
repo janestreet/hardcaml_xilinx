@@ -147,7 +147,7 @@ let%expect_test "address collision for basic RTL models" =
   a.write_enable := Bits.gnd;
   Cyclesim.cycle sim;
   Cyclesim.cycle sim;
-  Waveform.print
+  Waveform.expect
     ~display_height:30
     ~display_width:50
     ~display_rules:Display_rules.[ clock; port_a ]
@@ -183,7 +183,8 @@ let%expect_test "address collision for basic RTL models" =
     │unc_a     ││ 0                      │9          │
     │          ││────────────────────────┴───────    │
     │          ││                                    │
-    └──────────┘└────────────────────────────────────┘ |}]
+    └──────────┘└────────────────────────────────────┘
+    b2dac09d149615c0ea1d3f174a030033 |}]
 ;;
 
 let%expect_test "address collision across ports for basic RTL models" =
@@ -199,7 +200,7 @@ let%expect_test "address collision across ports for basic RTL models" =
   a.write_enable := Bits.gnd;
   Cyclesim.cycle sim;
   Cyclesim.cycle sim;
-  Waveform.print
+  Waveform.expect
     ~display_height:54
     ~display_width:50
     ~display_rules:Display_rules.[ clock; port_a; port_b ]
@@ -259,7 +260,8 @@ let%expect_test "address collision across ports for basic RTL models" =
     │          ││────────┬───────┬───────────────    │
     │unc_b     ││ 0      │8      │9                  │
     │          ││────────┴───────┴───────────────    │
-    └──────────┘└────────────────────────────────────┘ |}]
+    └──────────┘└────────────────────────────────────┘
+    0f120e59c02e27e9eee08430f23abaea |}]
 ;;
 
 (* This expect test models the hardcaml only part of the collision test performed with
@@ -313,7 +315,7 @@ let%expect_test "Vivado XSIM testbench model" =
   Cyclesim.cycle sim;
   Cyclesim.cycle sim;
   Cyclesim.cycle sim;
-  Waveform.print
+  Waveform.expect
     ~display_height:54
     ~display_width:90
     ~display_rules:Display_rules.[ clock; port_a; port_b ]
@@ -374,5 +376,6 @@ let%expect_test "Vivado XSIM testbench model" =
     │                  ││────────┬───────────────────────────────────────────────┬───────────│
     │unc_b             ││ 0      │8                                              │19         │
     │                  ││────────┴───────────────────────────────────────────────┴───────────│
-    └──────────────────┘└────────────────────────────────────────────────────────────────────┘ |}]
+    └──────────────────┘└────────────────────────────────────────────────────────────────────┘
+    3ed641cee0af606cea5667fcd3507598 |}]
 ;;

@@ -80,7 +80,7 @@ let%expect_test "basic write then read, single cycle latency" =
   Cyclesim.cycle sim;
   Cyclesim.cycle sim;
   Cyclesim.cycle sim;
-  Waveform.print ~display_height:32 ~display_width:88 waves;
+  Waveform.expect ~display_height:32 ~display_width:88 waves;
   [%expect
     {|
     ┌Signals───────────┐┌Waves─────────────────────────────────────────────────────────────┐
@@ -114,7 +114,8 @@ let%expect_test "basic write then read, single cycle latency" =
     │                  ││────────────────────────────────────────┴───────────────────────  │
     │                  ││                                                                  │
     │                  ││                                                                  │
-    └──────────────────┘└──────────────────────────────────────────────────────────────────┘ |}]
+    └──────────────────┘└──────────────────────────────────────────────────────────────────┘
+    77d862a70af8690f65b233f5989e8942 |}]
 ;;
 
 let%expect_test "basic write then read, 2 cycle latency" =
@@ -138,7 +139,7 @@ let%expect_test "basic write then read, 2 cycle latency" =
   Cyclesim.cycle sim;
   Cyclesim.cycle sim;
   Cyclesim.cycle sim;
-  Waveform.print ~display_height:32 ~display_width:88 waves;
+  Waveform.expect ~display_height:32 ~display_width:88 waves;
   [%expect
     {|
     ┌Signals───────────┐┌Waves─────────────────────────────────────────────────────────────┐
@@ -172,7 +173,8 @@ let%expect_test "basic write then read, 2 cycle latency" =
     │                  ││────────────────────────────────────────────────┬───────────────  │
     │qb                ││ 00000000                                       │00000064         │
     │                  ││────────────────────────────────────────────────┴───────────────  │
-    └──────────────────┘└──────────────────────────────────────────────────────────────────┘ |}]
+    └──────────────────┘└──────────────────────────────────────────────────────────────────┘
+    3bb5d8790813caa2b503ac550ebb97e2 |}]
 ;;
 
 let%expect_test "write and read same cycle, 2 cycle latency" =
@@ -198,7 +200,7 @@ let%expect_test "write and read same cycle, 2 cycle latency" =
   Cyclesim.cycle sim;
   Cyclesim.cycle sim;
   Cyclesim.cycle sim;
-  Waveform.print ~display_height:32 ~display_width:88 waves;
+  Waveform.expect ~display_height:32 ~display_width:88 waves;
   [%expect
     {|
     ┌Signals───────────┐┌Waves─────────────────────────────────────────────────────────────┐
@@ -232,7 +234,8 @@ let%expect_test "write and read same cycle, 2 cycle latency" =
     │                  ││────────────────────────┬───────────────────────                  │
     │qb                ││ 00000000               │00000064                                 │
     │                  ││────────────────────────┴───────────────────────                  │
-    └──────────────────┘└──────────────────────────────────────────────────────────────────┘ |}]
+    └──────────────────┘└──────────────────────────────────────────────────────────────────┘
+    d52c5114d280caacb2bfd5637fc514ba |}]
 ;;
 
 let%expect_test "byte write width" =
@@ -262,7 +265,7 @@ let%expect_test "byte write width" =
   b.read_enable := Bits.gnd;
   Cyclesim.cycle sim;
   Cyclesim.cycle sim;
-  Waveform.print ~wave_width:4 ~display_height:32 ~display_width:88 waves;
+  Waveform.expect ~wave_width:4 ~display_height:32 ~display_width:88 waves;
   [%expect
     {|
     ┌Signals───────────┐┌Waves─────────────────────────────────────────────────────────────┐
@@ -296,5 +299,6 @@ let%expect_test "byte write width" =
     │                  ││──────────────────────────────┬─────────────────────────────      │
     │qb                ││ 00000000                     │AA1122DD                           │
     │                  ││──────────────────────────────┴─────────────────────────────      │
-    └──────────────────┘└──────────────────────────────────────────────────────────────────┘ |}]
+    └──────────────────┘└──────────────────────────────────────────────────────────────────┘
+    11a5518d67715e5bc3e1f177834e8d87 |}]
 ;;
