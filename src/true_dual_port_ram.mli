@@ -30,6 +30,7 @@ open Hardcaml
 
     There is a verilog testbench in [test_hdl] which works with the [xsim_modelling]
     application to test the subtle address collision cases.
+
 *)
 val create
   :  ?read_latency:int (** Default is 1 *)

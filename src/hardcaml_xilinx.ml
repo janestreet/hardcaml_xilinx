@@ -7,4 +7,5 @@ module Fifo_sync = Fifo_sync
 module Simple_dual_port_ram = Simple_dual_port_ram
 module True_dual_port_ram = True_dual_port_ram
 module Ram_port = Ram_port
+module Ram_port_with_clear = Ram_port_with_clear
 module Synthesis = Synthesis
