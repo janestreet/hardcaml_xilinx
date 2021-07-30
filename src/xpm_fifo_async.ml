@@ -6,6 +6,7 @@ let create
       ?(overflow_check = true)
       ?(showahead = false)
       ?(underflow_check = true)
+      ?fifo_memory_type:arg_fifo_memory_type
       ()
       ~capacity
       ~latency
@@ -21,6 +22,11 @@ let create
   let module X =
     Xpm.Xpm_fifo_async.Make (struct
       include Xpm.Xpm_fifo_async.P
+
+      let fifo_memory_type =
+        Option.map ~f:Fifo_memory_type.to_xpm_args arg_fifo_memory_type
+        |> Option.value ~default:fifo_memory_type
+      ;;
 
       let read_mode = if showahead then "fwft" else "std"
 

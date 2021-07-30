@@ -12,6 +12,8 @@ module Xpm_memory_tdpram = struct
     val message_control : int
     val use_embedded_constraint : int
     val memory_optimization : string
+    val cascade_height : int
+    val sim_assert_chk : int
     val write_data_width_a : int
     val read_data_width_a : int
     val byte_write_width_a : int
@@ -19,6 +21,7 @@ module Xpm_memory_tdpram = struct
     val read_reset_value_a : string
     val read_latency_a : int
     val write_mode_a : string
+    val rst_mode_a : string
     val write_data_width_b : int
     val read_data_width_b : int
     val byte_write_width_b : int
@@ -26,6 +29,7 @@ module Xpm_memory_tdpram = struct
     val read_reset_value_b : string
     val read_latency_b : int
     val write_mode_b : string
+    val rst_mode_b : string
   end
   module P : P = struct
     let memory_size = 2048
@@ -39,7 +43,9 @@ module Xpm_memory_tdpram = struct
     let auto_sleep_time = 0
     let message_control = 0
     let use_embedded_constraint = 0
-    let memory_optimization = "false"
+    let memory_optimization = "true"
+    let cascade_height = 0
+    let sim_assert_chk = 0
     let write_data_width_a = 32
     let read_data_width_a = 32
     let byte_write_width_a = 32
@@ -47,6 +53,7 @@ module Xpm_memory_tdpram = struct
     let read_reset_value_a = "0"
     let read_latency_a = 2
     let write_mode_a = "no_change"
+    let rst_mode_a = "SYNC"
     let write_data_width_b = 32
     let read_data_width_b = 32
     let byte_write_width_b = 32
@@ -54,6 +61,7 @@ module Xpm_memory_tdpram = struct
     let read_reset_value_b = "0"
     let read_latency_b = 2
     let write_mode_b = "no_change"
+    let rst_mode_b = "SYNC"
   end
   module Make (P : P) = struct
     let params = [
@@ -69,6 +77,8 @@ module Xpm_memory_tdpram = struct
       Hardcaml.Parameter.create ~name:"MESSAGE_CONTROL" ~value:(Int P.message_control);
       Hardcaml.Parameter.create ~name:"USE_EMBEDDED_CONSTRAINT" ~value:(Int P.use_embedded_constraint);
       Hardcaml.Parameter.create ~name:"MEMORY_OPTIMIZATION" ~value:(String P.memory_optimization);
+      Hardcaml.Parameter.create ~name:"CASCADE_HEIGHT" ~value:(Int P.cascade_height);
+      Hardcaml.Parameter.create ~name:"SIM_ASSERT_CHK" ~value:(Int P.sim_assert_chk);
       Hardcaml.Parameter.create ~name:"WRITE_DATA_WIDTH_A" ~value:(Int P.write_data_width_a);
       Hardcaml.Parameter.create ~name:"READ_DATA_WIDTH_A" ~value:(Int P.read_data_width_a);
       Hardcaml.Parameter.create ~name:"BYTE_WRITE_WIDTH_A" ~value:(Int P.byte_write_width_a);
@@ -76,6 +86,7 @@ module Xpm_memory_tdpram = struct
       Hardcaml.Parameter.create ~name:"READ_RESET_VALUE_A" ~value:(String P.read_reset_value_a);
       Hardcaml.Parameter.create ~name:"READ_LATENCY_A" ~value:(Int P.read_latency_a);
       Hardcaml.Parameter.create ~name:"WRITE_MODE_A" ~value:(String P.write_mode_a);
+      Hardcaml.Parameter.create ~name:"RST_MODE_A" ~value:(String P.rst_mode_a);
       Hardcaml.Parameter.create ~name:"WRITE_DATA_WIDTH_B" ~value:(Int P.write_data_width_b);
       Hardcaml.Parameter.create ~name:"READ_DATA_WIDTH_B" ~value:(Int P.read_data_width_b);
       Hardcaml.Parameter.create ~name:"BYTE_WRITE_WIDTH_B" ~value:(Int P.byte_write_width_b);
@@ -83,6 +94,7 @@ module Xpm_memory_tdpram = struct
       Hardcaml.Parameter.create ~name:"READ_RESET_VALUE_B" ~value:(String P.read_reset_value_b);
       Hardcaml.Parameter.create ~name:"READ_LATENCY_B" ~value:(Int P.read_latency_b);
       Hardcaml.Parameter.create ~name:"WRITE_MODE_B" ~value:(String P.write_mode_b);
+      Hardcaml.Parameter.create ~name:"RST_MODE_B" ~value:(String P.rst_mode_b);
     ]
 
     module I = struct
@@ -145,10 +157,11 @@ module Xpm_fifo_async = struct
     val prog_empty_thresh : int
     val dout_reset_value : string
     val ecc_mode : string
+    val sim_assert_chk : int
     val wakeup_time : int
   end
   module P : P = struct
-    let fifo_memory_type = "block"
+    let fifo_memory_type = "auto"
     let fifo_write_depth = 2048
     let related_clocks = 0
     let write_data_width = 32
@@ -158,12 +171,13 @@ module Xpm_fifo_async = struct
     let use_adv_features = "0707"
     let read_data_width = 32
     let cdc_sync_stages = 2
-    let wr_data_count_width = 12
+    let wr_data_count_width = 1
     let prog_full_thresh = 10
-    let rd_data_count_width = 12
+    let rd_data_count_width = 1
     let prog_empty_thresh = 10
     let dout_reset_value = "0"
     let ecc_mode = "no_ecc"
+    let sim_assert_chk = 0
     let wakeup_time = 0
   end
   module Make (P : P) = struct
@@ -184,6 +198,7 @@ module Xpm_fifo_async = struct
       Hardcaml.Parameter.create ~name:"PROG_EMPTY_THRESH" ~value:(Int P.prog_empty_thresh);
       Hardcaml.Parameter.create ~name:"DOUT_RESET_VALUE" ~value:(String P.dout_reset_value);
       Hardcaml.Parameter.create ~name:"ECC_MODE" ~value:(String P.ecc_mode);
+      Hardcaml.Parameter.create ~name:"SIM_ASSERT_CHK" ~value:(Int P.sim_assert_chk);
       Hardcaml.Parameter.create ~name:"WAKEUP_TIME" ~value:(Int P.wakeup_time);
     ]
 
@@ -246,10 +261,11 @@ module Xpm_fifo_sync = struct
     val prog_empty_thresh : int
     val dout_reset_value : string
     val ecc_mode : string
+    val sim_assert_chk : int
     val wakeup_time : int
   end
   module P : P = struct
-    let fifo_memory_type = "block"
+    let fifo_memory_type = "auto"
     let fifo_write_depth = 2048
     let write_data_width = 32
     let read_mode = "std"
@@ -257,12 +273,13 @@ module Xpm_fifo_sync = struct
     let full_reset_value = 0
     let use_adv_features = "0707"
     let read_data_width = 32
-    let wr_data_count_width = 12
+    let wr_data_count_width = 1
     let prog_full_thresh = 10
-    let rd_data_count_width = 12
+    let rd_data_count_width = 1
     let prog_empty_thresh = 10
     let dout_reset_value = "0"
     let ecc_mode = "no_ecc"
+    let sim_assert_chk = 0
     let wakeup_time = 0
   end
   module Make (P : P) = struct
@@ -281,6 +298,7 @@ module Xpm_fifo_sync = struct
       Hardcaml.Parameter.create ~name:"PROG_EMPTY_THRESH" ~value:(Int P.prog_empty_thresh);
       Hardcaml.Parameter.create ~name:"DOUT_RESET_VALUE" ~value:(String P.dout_reset_value);
       Hardcaml.Parameter.create ~name:"ECC_MODE" ~value:(String P.ecc_mode);
+      Hardcaml.Parameter.create ~name:"SIM_ASSERT_CHK" ~value:(Int P.sim_assert_chk);
       Hardcaml.Parameter.create ~name:"WAKEUP_TIME" ~value:(Int P.wakeup_time);
     ]
 

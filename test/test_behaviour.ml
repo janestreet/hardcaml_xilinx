@@ -24,6 +24,8 @@ let create_circuit
   in
   let qa, qb =
     create
+      ~memory_optimization:false
+      ~cascade_height:Inferred
       ~read_latency
       ~arch:Ultraram
       ~build_mode:Simulation

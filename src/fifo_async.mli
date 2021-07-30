@@ -17,6 +17,8 @@ open Hardcaml
 val create
   :  ?showahead:bool (** default is [false] **)
   -> ?build_mode:Build_mode.t (* default is [Synthesis] *)
+  -> ?fifo_memory_type:Fifo_memory_type.t
+  (** See [Xpm_fifo_async] parameters in [xpm.ml] for default. *)
   -> unit
   -> capacity:int
   -> read_clock:Signal.t

@@ -37,6 +37,8 @@ let create_circuit
   in
   let q_a, q_b =
     create
+      ~memory_optimization:false
+      ~cascade_height:Inferred
       ~read_latency
       ~arch:Ultraram
       ~build_mode:Simulation

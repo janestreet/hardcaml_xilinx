@@ -8,6 +8,8 @@ val create
   :  ?overflow_check:bool (** default is [true] *)
   -> ?showahead:bool (** default is [false] **)
   -> ?underflow_check:bool (** default is [true] *)
+  -> ?fifo_memory_type:Fifo_memory_type.t
+  (** See [Xpm_fifo_async] parameters in [xpm.ml] for default. *)
   -> unit
   -> capacity:int
   -> latency:int

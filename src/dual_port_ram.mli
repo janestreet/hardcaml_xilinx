@@ -9,6 +9,9 @@ val create
   :  ?read_latency:int (** Default is 1 *)
   -> ?arch:Ram_arch.t (** Default is [Block_ram No_change] *)
   -> ?byte_write_width:Byte_write_width.t (** Default is [Full] *)
+  -> ?memory_optimization:bool
+  -> ?cascade_height:Cascade_height.t
+  (** See [Xpm_memory_tdpram] parameters in [xpm.ml] for default. *)
   -> build_mode:Build_mode.t
   -> unit
   -> clock:Signal.t

@@ -7,6 +7,7 @@ let create
       ?(underflow_check = true)
       ?(build_mode = Build_mode.Synthesis)
       ?scope
+      ?fifo_memory_type
       ()
       ~capacity
       ~clock
@@ -21,6 +22,7 @@ let create
       ~overflow_check
       ~underflow_check
       ~showahead
+      ?fifo_memory_type
       ()
       ~capacity
       ~clk:clock

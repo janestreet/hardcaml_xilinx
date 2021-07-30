@@ -5,6 +5,7 @@ let%expect_test "Rtl" =
   let create_sync_fifo build_mode =
     let fifo =
       Fifo_sync.create
+        ~fifo_memory_type:Block
         ~build_mode
         ()
         ~capacity:16
@@ -249,7 +250,7 @@ let%expect_test "Rtl" =
         assign _18 = _14[43:43];
         assign _19 = _14[0:0];
         xpm_fifo_sync
-            #( .FIFO_MEMORY_TYPE("block"), .FIFO_WRITE_DEPTH(16), .WRITE_DATA_WIDTH(32), .READ_MODE("std"), .FIFO_READ_LATENCY(1), .FULL_RESET_VALUE(0), .USE_ADV_FEATURES("0707"), .READ_DATA_WIDTH(32), .WR_DATA_COUNT_WIDTH(5), .PROG_FULL_THRESH(0), .RD_DATA_COUNT_WIDTH(5), .PROG_EMPTY_THRESH(16), .DOUT_RESET_VALUE("0"), .ECC_MODE("no_ecc"), .WAKEUP_TIME(0) )
+            #( .FIFO_MEMORY_TYPE("block"), .FIFO_WRITE_DEPTH(16), .WRITE_DATA_WIDTH(32), .READ_MODE("std"), .FIFO_READ_LATENCY(1), .FULL_RESET_VALUE(0), .USE_ADV_FEATURES("0707"), .READ_DATA_WIDTH(32), .WR_DATA_COUNT_WIDTH(5), .PROG_FULL_THRESH(0), .RD_DATA_COUNT_WIDTH(5), .PROG_EMPTY_THRESH(16), .DOUT_RESET_VALUE("0"), .ECC_MODE("no_ecc"), .SIM_ASSERT_CHK(0), .WAKEUP_TIME(0) )
             the_xpm_fifo_sync
             ( .sleep(gnd), .rst(clear), .wr_clk(clock), .wr_en(wr), .din(d), .rd_en(rd), .injectsbiterr(gnd), .injectdbiterr(gnd), .dbiterr(_14[55:55]), .sbiterr(_14[54:54]), .data_valid(_14[53:53]), .almost_empty(_14[52:52]), .rd_rst_busy(_14[51:51]), .underflow(_14[50:50]), .rd_data_count(_14[49:45]), .prog_empty(_14[44:44]), .empty(_14[43:43]), .dout(_14[42:11]), .wr_ack(_14[10:10]), .almost_full(_14[9:9]), .wr_rst_busy(_14[8:8]), .overflow(_14[7:7]), .wr_data_count(_14[6:2]), .prog_full(_14[1:1]), .full(_14[0:0]) );
         assign _20 = _14[42:11];

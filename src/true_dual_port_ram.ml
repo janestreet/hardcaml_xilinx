@@ -63,6 +63,8 @@ let create_xpm
       ~byte_write_width
       ~(port_a : _ Ram_port.t)
       ~(port_b : _ Ram_port.t)
+      ~cascade_height:arg_cascade_height
+      ~memory_optimization:arg_memory_optimization
   =
   let byte_write_width =
     match byte_write_width with
@@ -72,6 +74,19 @@ let create_xpm
   in
   let module Params = struct
     include Tdpram.P
+
+    let memory_optimization =
+      match arg_memory_optimization with
+      | None -> memory_optimization
+      | Some false -> "false"
+      | Some true -> "true"
+    ;;
+
+    let cascade_height =
+      match arg_cascade_height with
+      | None -> cascade_height
+      | Some arg_cascade_height -> Cascade_height.to_xpm_args arg_cascade_height
+    ;;
 
     let width = width port_a.data
     let addr_bits = Bits.address_bits_for size
@@ -278,10 +293,13 @@ let create
       ?(read_latency = 1)
       ?(arch = Ram_arch.Blockram No_change)
       ?(byte_write_width = Byte_write_width.Full)
+      ?memory_optimization
+      ?cascade_height
       ~(build_mode : Build_mode.t)
       ()
   =
   match build_mode with
   | Simulation -> create_rtl ~read_latency ~arch ~byte_write_width
-  | Synthesis -> create_xpm ~read_latency ~arch ~byte_write_width
+  | Synthesis ->
+    create_xpm ~read_latency ~arch ~byte_write_width ~cascade_height ~memory_optimization
 ;;

@@ -39,6 +39,8 @@ let create_ram ~arch ~build_mode ~clock ~clear ~port_a ~port_b =
       ~read_latency:1
       ~arch
       ~build_mode
+      ~memory_optimization:false
+      ~cascade_height:Inferred
       ()
       ~clock_a:clock
       ~clock_b:clock

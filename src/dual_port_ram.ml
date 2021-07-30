@@ -5,6 +5,8 @@ let create
       ?read_latency
       ?arch
       ?byte_write_width
+      ?memory_optimization
+      ?cascade_height
       ~build_mode
       ()
       ~clock
@@ -18,6 +20,8 @@ let create
     ?arch
     ?byte_write_width
     ~build_mode
+    ?memory_optimization
+    ?cascade_height
     ()
     ~clock_a:clock
     ~clock_b:clock

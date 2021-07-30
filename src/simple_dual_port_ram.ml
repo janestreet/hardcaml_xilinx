@@ -6,6 +6,8 @@ let create
       ?read_latency
       ?arch
       ?(byte_write_width = Byte_write_width.Full)
+      ?memory_optimization
+      ?cascade_height
       ~build_mode
       ()
       ~clock
@@ -21,6 +23,8 @@ let create
     Dual_port_ram.create
       ?read_latency
       ?arch
+      ?memory_optimization
+      ?cascade_height
       ~byte_write_width
       ~build_mode
       ()
