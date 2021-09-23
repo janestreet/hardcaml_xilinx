@@ -179,45 +179,49 @@ let%expect_test "verilog" =
         output [1:0] o;
 
         /* signal declarations */
-        wire _15;
-        wire _12;
-        wire _11;
-        wire [1:0] _13;
-        wire _14;
-        wire _17;
-        wire _8;
-        wire _5;
-        wire _4;
-        wire [1:0] _6;
-        wire _7;
         wire _10;
-        wire [1:0] _18;
+        wire _7;
+        wire _6;
+        wire [1:0] _8;
+        wire _9;
+        wire _12;
+        wire _1;
+        wire _17;
+        wire _14;
+        wire _13;
+        wire [1:0] _15;
+        wire _16;
+        wire _19;
+        wire _4;
+        wire [1:0] _20;
 
         /* logic */
-        assign _15 = _13[1:1];
-        assign _12 = i1[0:0];
-        assign _11 = i2[0:0];
-        assign _13 = { _11, _12 };
-        assign _14 = _13[0:0];
+        assign _10 = _8[1:1];
+        assign _7 = i1[0:0];
+        assign _6 = i2[0:0];
+        assign _8 = { _6, _7 };
+        assign _9 = _8[0:0];
         LUT2
             #( .INIT("0110") )
             the_LUT2
-            ( .I0(_14), .I1(_15), .O(_17) );
-        assign _8 = _6[1:1];
-        assign _5 = i1[1:1];
-        assign _4 = i2[1:1];
-        assign _6 = { _4, _5 };
-        assign _7 = _6[0:0];
+            ( .I0(_9), .I1(_10), .O(_12) );
+        assign _1 = _12;
+        assign _17 = _15[1:1];
+        assign _14 = i1[1:1];
+        assign _13 = i2[1:1];
+        assign _15 = { _13, _14 };
+        assign _16 = _15[0:0];
         LUT2
             #( .INIT("0110") )
             the_LUT2_0
-            ( .I0(_7), .I1(_8), .O(_10) );
-        assign _18 = { _10, _17 };
+            ( .I0(_16), .I1(_17), .O(_19) );
+        assign _4 = _19;
+        assign _20 = { _4, _1 };
 
         /* aliases */
 
         /* output assignments */
-        assign o = _18;
+        assign o = _20;
 
     endmodule |}]
 ;;
