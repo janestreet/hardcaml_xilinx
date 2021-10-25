@@ -65,7 +65,7 @@ let create_sim ?byte_write_width ~read_latency ~address_bits ~data_bits () =
   let circuit =
     create_circuit ?byte_write_width () ~read_latency ~address_bits ~data_bits
   in
-  let sim = Cyclesim.(create ~config:Config.trace_all circuit) in
+  let sim = Cyclesim.create ~config:Cyclesim.Config.trace_all circuit in
   let wave, sim = Waveform.create sim in
   let port_a =
     Port.(map port_names ~f:(fun name -> Cyclesim.in_port sim ("a_" ^ name)))

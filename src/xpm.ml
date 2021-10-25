@@ -134,8 +134,8 @@ module Xpm_memory_tdpram = struct
     module T = Hardcaml.Interface.Empty
 
     open struct include Hardcaml.Instantiation.With_interface(I)(O) end
-    let create ?lib ?arch ?attributes ?instance inputs =
-      create ?lib ?arch ?instance ?attributes ~parameters:params ~name:"xpm_memory_tdpram" inputs
+    let create ?lib ?arch ?attributes ?instance ?(name="xpm_memory_tdpram") inputs =
+      create ?lib ?arch ?instance ?attributes ~parameters:params ~name inputs
   end
 end
 
@@ -240,8 +240,8 @@ module Xpm_fifo_async = struct
     module T = Hardcaml.Interface.Empty
 
     open struct include Hardcaml.Instantiation.With_interface(I)(O) end
-    let create ?lib ?arch ?attributes ?instance inputs =
-      create ?lib ?arch ?instance ?attributes ~parameters:params ~name:"xpm_fifo_async" inputs
+    let create ?lib ?arch ?attributes ?instance ?(name="xpm_fifo_async") inputs =
+      create ?lib ?arch ?instance ?attributes ~parameters:params ~name inputs
   end
 end
 
@@ -339,8 +339,8 @@ module Xpm_fifo_sync = struct
     module T = Hardcaml.Interface.Empty
 
     open struct include Hardcaml.Instantiation.With_interface(I)(O) end
-    let create ?lib ?arch ?attributes ?instance inputs =
-      create ?lib ?arch ?instance ?attributes ~parameters:params ~name:"xpm_fifo_sync" inputs
+    let create ?lib ?arch ?attributes ?instance ?(name="xpm_fifo_sync") inputs =
+      create ?lib ?arch ?instance ?attributes ~parameters:params ~name inputs
   end
 end
 
