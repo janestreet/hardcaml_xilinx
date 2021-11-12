@@ -95,8 +95,9 @@ module Test_xilinx_primitives (Lut_size : Lut_size) = struct
   ;;
 end
 
-module Test_lut4 = Test_xilinx_primitives (Lut4)
-module Test_lut6 = Test_xilinx_primitives (Lut6)
+module _ = Test_xilinx_primitives (Lut4)
+
+module _ = Test_xilinx_primitives (Lut6)
 
 let%expect_test "verilog" =
   let open Signal in
