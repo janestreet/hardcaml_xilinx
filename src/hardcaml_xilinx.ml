@@ -1,4 +1,5 @@
 module Byte_write_width = Byte_write_width
+module Cascade_height = Cascade_height
 module Collision_mode = Collision_mode
 module Ram_arch = Ram_arch
 module Dual_port_ram = Dual_port_ram
@@ -9,3 +10,4 @@ module True_dual_port_ram = True_dual_port_ram
 module Ram_port = Ram_port
 module Ram_port_with_clear = Ram_port_with_clear
 module Synthesis = Synthesis
+module Memory_builder = Memory_builder

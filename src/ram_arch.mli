@@ -13,5 +13,6 @@ type t =
   (** XPM macro - distributed LUT RAM.  Collision mode is Read_before_write. *)
   | Blockram of Collision_mode.t (** XPM macro - RAMB36E2 *)
   | Ultraram (** XPM macro - UltraRAM. Collision_mode is No_change. *)
+[@@deriving sexp_of]
 
 val to_xpm_parameter : t -> string
