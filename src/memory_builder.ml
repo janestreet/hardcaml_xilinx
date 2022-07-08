@@ -345,6 +345,11 @@ module Write_port_2d = struct
     }
   ;;
 
+  let and_enable ~with_ t =
+    let open Signal in
+    { t with enable = t.enable &: with_ }
+  ;;
+
   module type S = sig
     type 'a write_data
 
@@ -543,7 +548,7 @@ module Port_label = struct
   type t =
     | A
     | B
-  [@@deriving sexp_of, hash, compare]
+  [@@deriving sexp_of, hash, compare, enumerate]
 end
 
 let wire_if_nonzero n = if n = 0 then None else Some (Signal.wire n)

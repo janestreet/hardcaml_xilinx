@@ -39,6 +39,8 @@ val create
   -> ?memory_optimization:bool
   -> ?cascade_height:Cascade_height.t
   (** See [Xpm_memory_tdpram] parameters in [xpm.ml] for default. *)
+  -> ?simulation_name:string
+  (** In simulation, set the name of the underlying [multiport_memory] node. *)
   -> build_mode:Build_mode.t
   -> unit
   -> clock_a:Signal.t

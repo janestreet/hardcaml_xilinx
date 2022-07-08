@@ -3,7 +3,7 @@
 open! Base
 open! Hardcaml
 
-(** This wraps a Ram_port.t with a small state machine that on clear sets all memory
+(** This wraps a Ram_port.t with a small state machine that on [clear] sets all memory
     location values to the [clear_to] value. While the memory is being cleared, the output
     clear_busy will be high. Writes and reads while in this state will be ignored.
 

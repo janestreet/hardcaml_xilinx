@@ -7,6 +7,7 @@ let create
       ?byte_write_width
       ?memory_optimization
       ?cascade_height
+      ?simulation_name
       ~build_mode
       ()
       ~clock
@@ -22,6 +23,7 @@ let create
     ~build_mode
     ?memory_optimization
     ?cascade_height
+    ?simulation_name
     ()
     ~clock_a:clock
     ~clock_b:clock

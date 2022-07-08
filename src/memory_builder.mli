@@ -79,7 +79,7 @@ module Port_label : sig
   type t =
     | A
     | B
-  [@@deriving sexp_of, compare]
+  [@@deriving sexp_of, compare, enumerate]
 end
 
 module Create (M : Hardcaml.Interface.S) : sig
@@ -281,6 +281,8 @@ module Write_port_2d : sig
     -> f_write_data:('data_a -> 'data_b)
     -> f:('a -> 'b)
     -> ('b, 'data_b) t
+
+  val and_enable : with_:Signal.t -> (Signal.t, 'a) t -> (Signal.t, 'a) t
 
   module type S = sig
     type 'a write_data

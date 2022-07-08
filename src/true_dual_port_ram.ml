@@ -172,6 +172,7 @@ let rec output_pipe ~clock ~clear ~latency ~enable d =
    the other port, we must put port [a] into [Read_before_write] mode, and port [b] into
    [Write_before_read] mode. *)
 let create_base_rtl_ram
+      ~simulation_name
       ~(arch : Ram_arch.t)
       ~clock_a
       ~clock_b
@@ -197,6 +198,7 @@ let create_base_rtl_ram
   let q =
     Signal.multiport_memory
       size
+      ?name:simulation_name
       ~write_ports:
         [| { write_clock = clock_a
            ; write_enable = port_a.write_enable
@@ -221,6 +223,7 @@ let create_base_rtl_ram
 ;;
 
 let create_rtl'
+      ~simulation_name
       ~read_latency
       ~arch
       ~clock_a
@@ -232,7 +235,9 @@ let create_rtl'
       ~(port_b : _ Ram_port.t)
   =
   assert (read_latency > 0);
-  let q = create_base_rtl_ram ~arch ~clock_a ~clock_b ~size ~port_a ~port_b in
+  let q =
+    create_base_rtl_ram ~simulation_name ~arch ~clock_a ~clock_b ~size ~port_a ~port_b
+  in
   ( output_pipe
       ~clock:clock_a
       ~clear:clear_a
@@ -249,6 +254,7 @@ let create_rtl'
 
 (* Instantiate the core rtl ram multiple times so that it can support byte enables.*)
 let create_rtl
+      ~simulation_name
       ~read_latency
       ~arch
       ~clock_a
@@ -275,6 +281,7 @@ let create_rtl
   let qs =
     List.map2_exn (split_port port_a) (split_port port_b) ~f:(fun port_a port_b ->
       create_rtl'
+        ~simulation_name
         ~read_latency
         ~arch
         ~clock_a
@@ -295,11 +302,12 @@ let create
       ?(byte_write_width = Byte_write_width.Full)
       ?memory_optimization
       ?cascade_height
+      ?simulation_name
       ~(build_mode : Build_mode.t)
       ()
   =
   match build_mode with
-  | Simulation -> create_rtl ~read_latency ~arch ~byte_write_width
+  | Simulation -> create_rtl ~simulation_name ~read_latency ~arch ~byte_write_width
   | Synthesis ->
     create_xpm ~read_latency ~arch ~byte_write_width ~cascade_height ~memory_optimization
 ;;
