@@ -18,8 +18,8 @@ let create
   (* Where is REMOVE_WR_RD_PROT_LOGIC? Its in the docs, but not on the component. *)
   ignore (overflow_check, underflow_check);
   let module XFifo =
-    Xpm.Xpm_fifo_sync.Make (struct
-      include Xpm.Xpm_fifo_sync.P
+    Xpm_2019_1.Xpm_fifo_sync.Make (struct
+      include Xpm_2019_1.Xpm_fifo_sync.P
 
       let fifo_memory_type =
         Option.map ~f:Fifo_memory_type.to_xpm_args arg_fifo_memory_type

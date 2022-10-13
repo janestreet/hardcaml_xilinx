@@ -21,6 +21,7 @@ module Config = struct
     { data_width : int
     ; cascade_height : Cascade_height.t
     ; how_to_instantiate_ram : how_to_instantiate_ram
+    ; simulation_name : string option
     }
   [@@deriving sexp_of, fields]
 
@@ -38,11 +39,13 @@ module Config = struct
         ~num_bits_per_entry
         ~ram_read_latency
         ~how_to_instantiate_ram
+        ~simulation_name
     =
     { underlying_memories =
         [ { how_to_instantiate_ram
           ; cascade_height = Cascade_height.Specified 1
           ; data_width = num_bits_per_entry
+          ; simulation_name
           }
         ]
     ; underlying_ram_read_latency = ram_read_latency
@@ -113,9 +116,11 @@ let instantiate_underlying_memory
       Signal.mux2 write_enable_b write_address_b read_address_b -- "address_b"
     in
     List.map config.underlying_memories ~f:(fun entry ->
+      let simulation_name = Option.map ~f:(Scope.name scope) entry.simulation_name in
       match entry.how_to_instantiate_ram with
       | Xpm arch ->
         Dual_port_ram.create
+          ?simulation_name
           ~clock
           ~clear
           ~arch
@@ -144,6 +149,7 @@ let instantiate_underlying_memory
         in
         let rdata =
           create
+            ?name:simulation_name
             ?attributes:rtl_attributes
             ~write_port:
               { write_clock = clock
@@ -666,6 +672,7 @@ module Create (M : Hardcaml.Interface.S) = struct
 
   let create_simple_1d
         ?name
+        ?simulation_name
         ~instance
         ~build_mode
         ~depth
@@ -682,6 +689,7 @@ module Create (M : Hardcaml.Interface.S) = struct
         ~depth
         ~ram_read_latency
         ~how_to_instantiate_ram
+        ~simulation_name
     in
     create ?name ~instance ~build_mode ~config ~scope ~clock ~clear ()
   ;;

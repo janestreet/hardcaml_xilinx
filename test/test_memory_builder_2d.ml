@@ -16,18 +16,22 @@ let memory_config =
       [ { data_width = 7
         ; how_to_instantiate_ram = Xpm Ultraram
         ; cascade_height = Specified 1
+        ; simulation_name = None
         }
       ; { data_width = 7
         ; how_to_instantiate_ram = Xpm Ultraram
         ; cascade_height = Specified 1
+        ; simulation_name = None
         }
       ; { data_width = 3
         ; how_to_instantiate_ram = Xpm Ultraram
         ; cascade_height = Specified 1
+        ; simulation_name = None
         }
       ; { data_width = 15
         ; how_to_instantiate_ram = Xpm Ultraram
         ; cascade_height = Specified 1
+        ; simulation_name = None
         }
       ]
   ; underlying_ram_read_latency = 1

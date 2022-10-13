@@ -1,7 +1,7 @@
 open Base
 open Hardcaml
 open Signal
-module Tdpram = Xpm.Xpm_memory_tdpram
+module Tdpram = Xpm_2019_1.Xpm_memory_tdpram
 
 (* Block RAM - address collision behaviour.  UG573, table 1-3, common clocks.
 

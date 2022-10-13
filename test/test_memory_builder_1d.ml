@@ -91,6 +91,7 @@ let%test_module "a single ultraram" =
         ~depth:256
         ~num_bits_per_entry:Data.num_bits
         ~ram_read_latency:1
+        ~simulation_name:None
     ;;
 
     include Make ((val Memory_builder.Config.as_module memory_config))
@@ -138,14 +139,17 @@ let%test_module "3 single ultraram" =
           [ { data_width = 7
             ; how_to_instantiate_ram = Xpm Ultraram
             ; cascade_height = Specified 1
+            ; simulation_name = None
             }
           ; { data_width = 7
             ; how_to_instantiate_ram = Xpm Ultraram
             ; cascade_height = Specified 1
+            ; simulation_name = None
             }
           ; { data_width = 2
             ; how_to_instantiate_ram = Xpm Ultraram
             ; cascade_height = Specified 1
+            ; simulation_name = None
             }
           ]
       ; underlying_ram_read_latency = 1

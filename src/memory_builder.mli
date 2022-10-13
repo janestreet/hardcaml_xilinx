@@ -31,6 +31,7 @@ module Config : sig
     { data_width : int
     ; cascade_height : Cascade_height.t
     ; how_to_instantiate_ram : how_to_instantiate_ram
+    ; simulation_name : string option
     }
   [@@deriving fields]
 
@@ -64,6 +65,7 @@ module Config : sig
     -> num_bits_per_entry:int
     -> ram_read_latency:int
     -> how_to_instantiate_ram:how_to_instantiate_ram
+    -> simulation_name:string option
     -> t
 
   module type S = sig
@@ -85,6 +87,7 @@ end
 module Create (M : Hardcaml.Interface.S) : sig
   val create_simple_1d
     :  ?name:string
+    -> ?simulation_name:string
     -> instance:string
     -> build_mode:Build_mode.t
     -> depth:int
