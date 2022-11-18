@@ -20,6 +20,7 @@ val create
   -> ?scope:Scope.t
   -> ?fifo_memory_type:Fifo_memory_type.t
   (** See [Xpm_fifo_sync] parameters in [xpm.ml] for default. *)
+  -> ?instance:string (** Only used in synthesis *)
   -> unit
   -> capacity:int
   -> clock:Signal.t

@@ -14,6 +14,7 @@ val create
   -> ?underflow_check:bool (** default is [true] *)
   -> ?fifo_memory_type:Fifo_memory_type.t
   (** See [Xpm_fifo_sync] parameters in [xpm.ml] for default. *)
+  -> ?instance:string
   -> unit
   -> capacity:int
   -> clk:Signal.t

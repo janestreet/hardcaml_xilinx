@@ -7,6 +7,7 @@ let create
       ?(showahead = false)
       ?(underflow_check = true)
       ?fifo_memory_type:arg_fifo_memory_type
+      ?instance
       ()
       ~capacity
       ~clk
@@ -39,6 +40,7 @@ let create
   in
   let o : _ XFifo.O.t =
     XFifo.create
+      ?instance
       { XFifo.I.wr_clk = clk
       ; rst = clr
       ; wr_en = wr
