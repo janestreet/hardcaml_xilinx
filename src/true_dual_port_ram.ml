@@ -52,6 +52,33 @@ let collision_mode (arch : Ram_arch.t) : Collision_mode.t =
   | Ultraram -> No_change
 ;;
 
+module Size_calculations = struct
+  type t =
+    { size_a : int
+    ; size_b : int
+    ; width_a : int
+    ; width_b : int
+    }
+  [@@deriving sexp_of]
+
+  let create ~size ~(port_a : _ Ram_port.t) ~(port_b : _ Ram_port.t) =
+    let width_a = width port_a.data in
+    let width_b = width port_b.data in
+    let size_a = size in
+    if size_a * width_a % width_b <> 0
+    then
+      raise_s
+        [%message
+          "[size] is the number of port A words in the RAM. It must be chosen so that \
+           there is an integer number of port B words in the RAM as well."
+            (size_a : int)
+            (width_a : int)
+            (width_b : int)];
+    let size_b = size_a * width_a / width_b in
+    { width_a; width_b; size_a; size_b }
+  ;;
+end
+
 let create_xpm
       ~read_latency
       ~arch
@@ -66,12 +93,17 @@ let create_xpm
       ~cascade_height:arg_cascade_height
       ~memory_optimization:arg_memory_optimization
   =
-  let byte_write_width =
+  let byte_write_width (port : _ Ram_port.t) =
     match byte_write_width with
     | Byte_write_width.B8 -> 8
     | B9 -> 9
-    | Full -> width port_a.data
+    | Full -> width port.data
   in
+  let { Size_calculations.size_a; size_b; width_a; width_b } =
+    Size_calculations.create ~size ~port_a ~port_b
+  in
+  let addr_bits_a = Bits.address_bits_for size_a in
+  let addr_bits_b = Bits.address_bits_for size_b in
   let module Params = struct
     include Tdpram.P
 
@@ -88,17 +120,15 @@ let create_xpm
       | Some arg_cascade_height -> Cascade_height.to_xpm_args arg_cascade_height
     ;;
 
-    let width = width port_a.data
-    let addr_bits = Bits.address_bits_for size
-    let write_data_width_a = width
-    let write_data_width_b = width
-    let byte_write_width_a = byte_write_width
-    let byte_write_width_b = byte_write_width
-    let read_data_width_a = width
-    let read_data_width_b = width
-    let addr_width_a = addr_bits
-    let addr_width_b = addr_bits
-    let memory_size = width * size
+    let write_data_width_a = width_a
+    let write_data_width_b = width_b
+    let byte_write_width_a = byte_write_width port_a
+    let byte_write_width_b = byte_write_width port_b
+    let read_data_width_a = width_a
+    let read_data_width_b = width_b
+    let addr_width_a = addr_bits_a
+    let addr_width_b = addr_bits_b
+    let memory_size = width_a * size_a
     let memory_primitive = Ram_arch.to_xpm_parameter arch
     let read_latency_a = read_latency
     let read_latency_b = read_latency
@@ -107,16 +137,16 @@ let create_xpm
     let write_mode_b = write_mode_a
   end
   in
-  let write_enable_width =
-    assert (width port_a.data % byte_write_width = 0);
-    width port_a.data / byte_write_width
+  let write_enable_width (port : _ Ram_port.t) =
+    let byte_write_width = byte_write_width port in
+    assert (width port.data % byte_write_width = 0);
+    width port.data / byte_write_width
   in
   assert (read_latency > 0);
-  assert (width port_a.data = width port_b.data);
-  assert (Params.addr_bits = width port_a.address);
-  assert (Params.addr_bits = width port_b.address);
-  assert (write_enable_width = width port_a.write_enable);
-  assert (write_enable_width = width port_b.write_enable);
+  assert (Params.addr_width_a = width port_a.address);
+  assert (Params.addr_width_b = width port_b.address);
+  assert (write_enable_width port_a = width port_a.write_enable);
+  assert (write_enable_width port_b = width port_b.write_enable);
   let module RAM = Tdpram.Make (Params) in
   let ena = any port_a.write_enable |: port_a.read_enable in
   let enb = any port_b.write_enable |: port_b.read_enable in
@@ -266,20 +296,82 @@ let create_rtl
       ~(port_a : _ Ram_port.t)
       ~(port_b : _ Ram_port.t)
   =
-  let split_port (port : _ Ram_port.t) =
-    let split_port byte_width =
-      let data = split_lsb ~part_width:byte_width port.data in
-      let write_enable = bits_lsb port.write_enable in
-      List.map2_exn data write_enable ~f:(fun data write_enable ->
-        { port with data; write_enable })
-    in
-    match byte_write_width with
-    | Full -> [ port ]
-    | B8 -> split_port 8
-    | B9 -> split_port 9
+  let { Size_calculations.size_a; size_b; width_a; width_b } =
+    Size_calculations.create ~size ~port_a ~port_b
   in
+  let (port_a_split, read_select_a), (port_b_split, read_select_b) =
+    if width_a <> width_b
+    then (
+      let min_width = Int.min width_a width_b in
+      let max_width = Int.max width_a width_b in
+      if max_width % min_width <> 0
+      then
+        raise_s
+          [%message
+            "max port data width must be an exact integer multiple of min port data \
+             width. (update the simulation model if something else is required)"
+              (max_width : int)
+              (min_width : int)];
+      let scale = max_width / min_width in
+      if not (Int.is_pow2 scale)
+      then
+        raise_s
+          [%message
+            "ratio between port widths must be a power of 2. (update the simulation \
+             model if non-power-of-2 scale is required)"
+              (scale : int)];
+      (match byte_write_width with
+       | B8 | B9 ->
+         raise_s
+           [%message
+             "byte enables not supported when port resizing is used (update the \
+              simulation model if this is required)"]
+       | Full -> ());
+      let log_scale = Int.ceil_log2 scale in
+      let map_port (port : _ Ram_port.t) =
+        if width port.data = max_width
+        then (
+          let ports =
+            split_lsb ~part_width:min_width port.data
+            |> List.map ~f:(fun data -> { port with data })
+          in
+          ports, None)
+        else (
+          assert (width port.data = min_width);
+          let read_select = sel_bottom port.address log_scale in
+          let address = drop_bottom port.address log_scale in
+          let ports =
+            List.init (1 lsl log_scale) ~f:(fun word ->
+              let enable = sel_bottom port.address log_scale ==:. word in
+              { port with
+                address
+              ; write_enable = port.write_enable &: enable
+              ; read_enable = port.read_enable &: enable
+              })
+          in
+          ports, Some (read_select, port.read_enable))
+      in
+      map_port port_a, map_port port_b)
+    else (
+      let split_port (port : _ Ram_port.t) =
+        let split_port byte_width =
+          let data = split_lsb ~part_width:byte_width port.data in
+          let write_enable = bits_lsb port.write_enable in
+          List.map2_exn data write_enable ~f:(fun data write_enable ->
+            { port with data; write_enable })
+        in
+        match byte_write_width with
+        | Full -> [ port ]
+        | B8 -> split_port 8
+        | B9 -> split_port 9
+      in
+      (split_port port_a, None), (split_port port_b, None))
+  in
+  (* The width of the resulting RAM is the wider of the two port widths. So, the depth is
+     given by the corresponding depth, which will be the smaller of the two sizes. *)
+  let min_size = Int.min size_a size_b in
   let qs =
-    List.map2_exn (split_port port_a) (split_port port_b) ~f:(fun port_a port_b ->
+    List.map2_exn port_a_split port_b_split ~f:(fun port_a port_b ->
       create_rtl'
         ~simulation_name
         ~read_latency
@@ -288,12 +380,19 @@ let create_rtl
         ~clock_b
         ~clear_a
         ~clear_b
-        ~size
+        ~size:min_size
         ~port_a
         ~port_b)
   in
   let qa, qb = List.unzip qs in
-  concat_lsb qa, concat_lsb qb
+  let apply_read_select spec q rs =
+    Option.map rs ~f:(fun (rs, re) ->
+      mux (pipeline spec ~n:(read_latency - 1) (reg spec ~enable:re rs)) q)
+    |> Option.value ~default:(concat_lsb q)
+  in
+  let spec_a = Reg_spec.create ~clock:clock_a ~clear:clear_a () in
+  let spec_b = Reg_spec.create ~clock:clock_b ~clear:clear_b () in
+  apply_read_select spec_a qa read_select_a, apply_read_select spec_b qb read_select_b
 ;;
 
 let create

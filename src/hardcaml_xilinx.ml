@@ -9,5 +9,6 @@ module Simple_dual_port_ram = Simple_dual_port_ram
 module True_dual_port_ram = True_dual_port_ram
 module Ram_port = Ram_port
 module Ram_port_with_clear = Ram_port_with_clear
+module Ram_with_resizing = Ram_with_resizing
 module Synthesis = Synthesis
 module Memory_builder = Memory_builder

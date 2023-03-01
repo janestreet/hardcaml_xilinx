@@ -21,6 +21,9 @@ val create
   -> ?fifo_memory_type:Fifo_memory_type.t
   (** See [Xpm_fifo_sync] parameters in [xpm.ml] for default. *)
   -> ?instance:string (** Only used in synthesis *)
+  -> ?xpm_version:[ `Xpm_2019_1 | `Xpm_2022_1 ]
+  (** Used to decide which XPM version instantiation to use *)
+  -> ?cascade_height:int (** default is [0] -> Vivado chooses; only used for Xpm 2022.1 *)
   -> unit
   -> capacity:int
   -> clock:Signal.t

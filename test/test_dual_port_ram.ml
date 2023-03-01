@@ -2,7 +2,15 @@ open! Import
 open Signal
 
 let%expect_test "True_dual_port_ram" =
-  let create arch build_mode =
+  let create
+        ?(address_width_a = 4)
+        ?(data_width_a = 8)
+        ?(address_width_b = 4)
+        ?(data_width_b = 8)
+        ?size
+        arch
+        build_mode
+    =
     let port port ~address_width ~data_width =
       let input name width = input (name ^ "_" ^ port) width in
       { Ram_port.address = input "address" address_width
@@ -22,9 +30,9 @@ let%expect_test "True_dual_port_ram" =
         ~clock_b:(input "clock_b" 1)
         ~clear_a:(input "clear_a" 1)
         ~clear_b:(input "clear_b" 1)
-        ~size:16
-        ~port_a:(port "a" ~address_width:4 ~data_width:8)
-        ~port_b:(port "b" ~address_width:4 ~data_width:8)
+        ~size:(Option.value size ~default:(1 lsl address_width_a))
+        ~port_a:(port "a" ~address_width:address_width_a ~data_width:data_width_a)
+        ~port_b:(port "b" ~address_width:address_width_b ~data_width:data_width_b)
     in
     Circuit.create_exn ~name:"true_dual_port_ram" [ output "qa" qa; output "qb" qb ]
     |> Rtl.print Verilog
@@ -211,7 +219,127 @@ let%expect_test "True_dual_port_ram" =
         assign qa = _22;
         assign qb = _21;
 
-    endmodule |}]
+    endmodule |}];
+  (* address width b is wider than the implied address width from port a. *)
+  let test_bad_address_width build_mode =
+    create
+      ~address_width_a:4
+      ~data_width_a:4
+      ~address_width_b:4
+      ~data_width_b:8
+      (Blockram Read_before_write)
+      build_mode
+  in
+  require_does_raise [%here] (fun () -> test_bad_address_width Synthesis);
+  [%expect {| "Assert_failure true_dual_port_ram.ml:147:2" |}];
+  require_does_raise [%here] (fun () -> test_bad_address_width Simulation);
+  [%expect
+    {|
+    ("[Signal.multiport_memory] width of write address is inconsistent"
+     (port                1)
+     (write_address_width 4)
+     (expected            3)) |}];
+  (* data width b does not result in an even number of words in the ram *)
+  let test_uneven_sizes build_mode =
+    create
+      ~address_width_a:4
+      ~data_width_a:4
+      ~address_width_b:3
+      ~data_width_b:9
+      (Blockram Read_before_write)
+      build_mode
+  in
+  require_does_raise [%here] (fun () -> test_uneven_sizes Synthesis);
+  [%expect
+    {|
+    ("[size] is the number of port A words in the RAM. It must be chosen so that there is an integer number of port B words in the RAM as well."
+     (size_a  16)
+     (width_a 4)
+     (width_b 9)) |}];
+  require_does_raise [%here] (fun () -> test_uneven_sizes Simulation);
+  [%expect
+    {|
+    ("[size] is the number of port A words in the RAM. It must be chosen so that there is an integer number of port B words in the RAM as well."
+     (size_a  16)
+     (width_a 4)
+     (width_b 9)) |}];
+  (* non-power-of-2 scaling - works in synthesis but not simulation *)
+  let test_non_pow2_scale build_mode =
+    create
+      ~size:15
+      ~address_width_a:4
+      ~data_width_a:4
+      ~address_width_b:3
+      ~data_width_b:12
+      (Blockram Read_before_write)
+      build_mode
+  in
+  require_does_not_raise [%here] (fun () -> test_non_pow2_scale Synthesis);
+  [%expect
+    {|
+    module true_dual_port_ram (
+        data_b,
+        address_b,
+        read_b,
+        write_b,
+        clear_b,
+        clock_b,
+        data_a,
+        address_a,
+        read_a,
+        write_a,
+        clear_a,
+        clock_a,
+        qa,
+        qb
+    );
+
+        input [11:0] data_b;
+        input [2:0] address_b;
+        input read_b;
+        input write_b;
+        input clear_b;
+        input clock_b;
+        input [3:0] data_a;
+        input [3:0] address_a;
+        input read_a;
+        input write_a;
+        input clear_a;
+        input clock_a;
+        output [3:0] qa;
+        output [11:0] qb;
+
+        /* signal declarations */
+        wire [11:0] _21;
+        wire _18;
+        wire vdd = 1'b1;
+        wire _16;
+        wire gnd = 1'b0;
+        wire [19:0] _20;
+        wire [3:0] _22;
+
+        /* logic */
+        assign _21 = _20[17:6];
+        assign _18 = write_b | read_b;
+        assign _16 = write_a | read_a;
+        xpm_memory_tdpram
+            #( .MEMORY_SIZE(60), .MEMORY_PRIMITIVE("block"), .CLOCKING_MODE("common_clock"), .ECC_MODE("no_ecc"), .MEMORY_INIT_FILE("none"), .MEMORY_INIT_PARAM(""), .USE_MEM_INIT(0), .WAKEUP_TIME("disable_sleep"), .AUTO_SLEEP_TIME(0), .MESSAGE_CONTROL(0), .USE_EMBEDDED_CONSTRAINT(0), .MEMORY_OPTIMIZATION("false"), .CASCADE_HEIGHT(0), .SIM_ASSERT_CHK(0), .WRITE_DATA_WIDTH_A(4), .READ_DATA_WIDTH_A(4), .BYTE_WRITE_WIDTH_A(4), .ADDR_WIDTH_A(4), .READ_RESET_VALUE_A("0"), .READ_LATENCY_A(1), .WRITE_MODE_A("read_first"), .RST_MODE_A("SYNC"), .WRITE_DATA_WIDTH_B(12), .READ_DATA_WIDTH_B(12), .BYTE_WRITE_WIDTH_B(12), .ADDR_WIDTH_B(3), .READ_RESET_VALUE_B("0"), .READ_LATENCY_B(1), .WRITE_MODE_B("read_first"), .RST_MODE_B("SYNC") )
+            the_xpm_memory_tdpram
+            ( .sleep(gnd), .clka(clock_a), .rsta(clear_a), .ena(_16), .regcea(vdd), .wea(write_a), .addra(address_a), .dina(data_a), .injectsbiterra(gnd), .injectdbiterra(gnd), .clkb(clock_b), .rstb(clear_b), .enb(_18), .regceb(vdd), .web(write_b), .addrb(address_b), .dinb(data_b), .injectsbiterrb(gnd), .injectdbiterrb(gnd), .dbiterrb(_20[19:19]), .sbiterrb(_20[18:18]), .doutb(_20[17:6]), .dbiterra(_20[5:5]), .sbiterra(_20[4:4]), .douta(_20[3:0]) );
+        assign _22 = _20[3:0];
+
+        /* aliases */
+
+        /* output assignments */
+        assign qa = _22;
+        assign qb = _21;
+
+    endmodule |}];
+  require_does_raise [%here] (fun () -> test_non_pow2_scale Simulation);
+  [%expect
+    {|
+    ("ratio between port widths must be a power of 2. (update the simulation model if non-power-of-2 scale is required)"
+     (scale 3)) |}]
 ;;
 
 let%expect_test "Dual_port_ram" =

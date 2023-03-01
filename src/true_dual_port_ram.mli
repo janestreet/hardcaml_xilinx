@@ -47,7 +47,7 @@ val create
   -> clock_b:Signal.t
   -> clear_a:Signal.t
   -> clear_b:Signal.t
-  -> size:int
+  -> size:int (** The number of port A width words. *)
   -> port_a:Signal.t Ram_port.t
   -> port_b:Signal.t Ram_port.t
   -> Signal.t * Signal.t
