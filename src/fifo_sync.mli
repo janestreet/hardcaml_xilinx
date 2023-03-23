@@ -24,6 +24,8 @@ val create
   -> ?xpm_version:[ `Xpm_2019_1 | `Xpm_2022_1 ]
   (** Used to decide which XPM version instantiation to use *)
   -> ?cascade_height:int (** default is [0] -> Vivado chooses; only used for Xpm 2022.1 *)
+  -> ?nearly_full:int (** usage level at which [nearly_full] will be asserted *)
+  -> ?nearly_empty:int (** usage level at which [nearly_empty] will be asserted *)
   -> unit
   -> capacity:int
   -> clock:Signal.t

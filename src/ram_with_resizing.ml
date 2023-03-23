@@ -73,6 +73,7 @@ module Make (Config : Config) = struct
       True_dual_port_ram.create
         ~read_latency
         ~build_mode
+        ~arch:(Blockram (Option.value ~default:Read_before_write collision_mode))
         ()
         ~clock_a:i.clock
         ~clock_b:i.clock

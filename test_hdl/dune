@@ -1,4 +1,7 @@
 (rule (targets xram.v) (deps (:first_dep ../bin/xsim_modelling.exe))
- (action (bash "%{first_dep} > xram.v")))
+ (action (bash "%{first_dep} tdpram > xram.v")))
 
-(alias (name DEFAULT) (deps xram.v))
+(rule (targets resizing.v) (deps (:first_dep ../bin/xsim_modelling.exe))
+ (action (bash "%{first_dep} resizing > resizing.v")))
+
+(alias (name DEFAULT) (deps xram.v resizing.v))

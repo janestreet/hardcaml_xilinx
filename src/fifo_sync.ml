@@ -11,6 +11,8 @@ let create
       ?instance
       ?(xpm_version = `Xpm_2019_1)
       ?cascade_height
+      ?nearly_full
+      ?nearly_empty
       ()
       ~capacity
       ~clock
@@ -28,6 +30,8 @@ let create
          ~underflow_check
          ~showahead
          ?fifo_memory_type
+         ?nearly_full
+         ?nearly_empty
          ?instance
          ()
          ~capacity
@@ -42,6 +46,8 @@ let create
          ~underflow_check
          ~showahead
          ?fifo_memory_type
+         ?nearly_full
+         ?nearly_empty
          ?instance
          ?cascade_height
          ()
@@ -57,6 +63,8 @@ let create
       ~overflow_check
       ~underflow_check
       ~showahead
+      ?nearly_full
+      ?nearly_empty
       ()
       ~capacity
       ~clock

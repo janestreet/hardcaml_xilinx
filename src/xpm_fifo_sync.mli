@@ -3,7 +3,6 @@
 open Base
 open Hardcaml
 
-
 module Xpm_2019_1 : sig
   (** Wrap the Xilinx FIFO primitive so that the interface matches [Hardcaml.Fifo].
 
@@ -15,6 +14,10 @@ module Xpm_2019_1 : sig
     -> ?underflow_check:bool (** default is [true] *)
     -> ?fifo_memory_type:Fifo_memory_type.t
     (** See [Xpm_fifo_sync] parameters in [xpm.ml] for default. *)
+    -> ?nearly_full:int
+    (** usage level at which the [nearly_full] flag is asserted, defaults to [capacity - 16] *)
+    -> ?nearly_empty:int
+    (** usage level at which the [nearly_empty] flag is asserted, defaults to 16 *)
     -> ?instance:string
     -> unit
     -> capacity:int
@@ -35,6 +38,10 @@ module Xpm_2022_1 : sig
     -> ?underflow_check:bool (** default is [true] *)
     -> ?fifo_memory_type:Fifo_memory_type.t
     (** See [Xpm_fifo_sync] parameters in [xpm.ml] for default. *)
+    -> ?nearly_full:int
+    (** usage level at which the [nearly_full] flag is asserted, defaults to [capacity - 16] *)
+    -> ?nearly_empty:int
+    (** usage level at which the [nearly_empty] flag is asserted, defaults to 16 *)
     -> ?instance:string
     -> ?cascade_height:int (** default is [0] -> Vivado chooses. *)
     -> unit

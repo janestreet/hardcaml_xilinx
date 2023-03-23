@@ -217,7 +217,9 @@ module Read_port_1d = struct
     module Pre = struct
       include Pre
 
-      let t = { address = "address", X.address_width; enable = t.enable }
+      let port_names_and_widths =
+        { address = "address", X.address_width; enable = port_names_and_widths.enable }
+      ;;
     end
 
     include Pre
@@ -252,10 +254,10 @@ module Read_port_2d = struct
     module Pre = struct
       include Pre
 
-      let t =
+      let port_names_and_widths =
         { horizontal_index = "horizontal_index", Config.horizontal_index_width config
         ; vertical_index = "vertical_index", Config.vertical_index_width config
-        ; enable = t.enable
+        ; enable = port_names_and_widths.enable
         }
       ;;
     end
@@ -311,7 +313,7 @@ module Write_port_1d = struct
       let to_list t = Repr.to_list (to_repr t)
       let map2 a b ~f = of_repr (Repr.map2 (to_repr a) (to_repr b) ~f)
       let iter2 a b ~f = Repr.iter2 (to_repr a) (to_repr b) ~f
-      let t = of_repr Repr.t
+      let port_names_and_widths = of_repr Repr.port_names_and_widths
     end
 
     include Pre
@@ -389,7 +391,7 @@ module Write_port_2d = struct
       let to_list t = Repr.to_list (to_repr t)
       let map2 a b ~f = of_repr (Repr.map2 (to_repr a) (to_repr b) ~f)
       let iter2 a b ~f = Repr.iter2 (to_repr a) (to_repr b) ~f
-      let t = of_repr Repr.t
+      let port_names_and_widths = of_repr Repr.port_names_and_widths
     end
 
     include Pre

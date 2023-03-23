@@ -3,6 +3,143 @@ open! Hardcaml
 open Hardcaml_waveterm
 module Ram_with_resizing = Hardcaml_xilinx.Ram_with_resizing
 
+module For_rtl_sim = struct
+  module Config = struct
+    (* Fiddle with the following parameters and run a sim to see the behaviour. *)
+    let log_num_words = 6
+    let bits_per_word = 8
+    let log_scale_between_ports = -1
+    let read_latency = 1
+    let collision_mode = None
+  end
+
+  module Ram = Ram_with_resizing.Make (Config)
+
+  module I = struct
+    type 'a t =
+      { clock : 'a
+      ; clear : 'a
+      }
+    [@@deriving sexp_of, hardcaml]
+  end
+
+  module O = struct
+    type 'a t = { q : 'a } [@@deriving sexp_of, hardcaml]
+  end
+
+  open Signal
+
+  let create scope (i : _ Ram.I.t) =
+    let sim = Ram.hierarchical ~build_mode:Simulation scope i in
+    let xpm = Ram.hierarchical ~build_mode:Synthesis scope i in
+    { O.q = sim.q ==: xpm.q }
+  ;;
+
+  module Step = struct
+    type 'a t =
+      { write_enable : 'a
+      ; read_enable : 'a
+      ; write_address : 'a [@bits Ram.write_address_bits]
+      ; read_address : 'a [@bits Ram.read_address_bits]
+      ; write_data : 'a [@bits Ram.write_data_bits]
+      }
+    [@@deriving sexp_of, hardcaml]
+  end
+
+  let step ?write_enable ?read_enable ?write_address ?read_address ?write_data () =
+    { Step.write_enable; read_enable; write_address; read_address; write_data }
+  ;;
+
+  let steps ~clock ~clear (l : int option Step.t list) =
+    let rec f (prev : int Step.t) l =
+      match l with
+      | [] -> []
+      | { Step.write_enable; read_enable; write_address; read_address; write_data } :: t
+        ->
+        let d =
+          { Step.write_enable = Option.value ~default:0 write_enable
+          ; read_enable = Option.value ~default:0 read_enable
+          ; write_address = Option.value ~default:prev.write_address write_address
+          ; read_address = Option.value ~default:prev.read_address read_address
+          ; write_data = Option.value ~default:prev.write_data write_data
+          }
+        in
+        { Step.write_enable = Signal.of_int ~width:1 d.write_enable
+        ; read_enable = Signal.of_int ~width:1 d.read_enable
+        ; write_address =
+            Signal.of_int ~width:Step.port_widths.write_address d.write_address
+        ; read_address = Signal.of_int ~width:Step.port_widths.read_address d.read_address
+        ; write_data = Signal.of_int ~width:Step.port_widths.write_data d.write_data
+        }
+        :: f d t
+    in
+    f
+      { write_enable = 0
+      ; read_enable = 0
+      ; write_address = 0
+      ; read_address = 0
+      ; write_data = 0
+      }
+      l
+    |> Step.Of_signal.mux
+         (reg_fb
+            (Reg_spec.create ~clock ~clear ())
+            ~width:(Int.ceil_log2 (List.length l))
+            ~f:(fun d -> d +:. 1)
+          -- "ROM_ADDRESS")
+  ;;
+
+  let testbench scope (i : _ I.t) =
+    let write_enable, read_enable = 1, 1 in
+    let p =
+      steps
+        ~clock:i.clock
+        ~clear:i.clear
+        (List.concat
+           [ (* initialize first 1st word. *)
+             List.init
+               (if Config.log_scale_between_ports > 0
+                then 1 lsl Config.log_scale_between_ports
+                else 1)
+               ~f:(fun addr -> step ~write_enable ~write_address:addr ~write_data:0 ())
+           ; [ step ~read_enable ~read_address:0 () ]
+           ; List.init (1 lsl Config.log_num_words) ~f:(fun i ->
+             step ~write_enable ~write_address:i ~write_data:i ())
+           ; List.init
+               (1 lsl (Config.log_num_words - Config.log_scale_between_ports))
+               ~f:(fun i -> step ~read_enable ~read_address:i ())
+           ; List.init 1000 ~f:(fun _ ->
+             step
+               ~write_enable:(Random.int 2)
+               ~read_enable:(Random.int 2)
+               ~write_address:(Random.int (1 lsl Config.log_num_words))
+               ~read_address:
+                 (Random.int
+                    (1 lsl (Config.log_num_words - Config.log_scale_between_ports)))
+               ~write_data:(Random.int (1 lsl Config.bits_per_word))
+               ())
+           ])
+    in
+    create
+      scope
+      { Ram.I.clock = i.clock
+      ; clear = i.clear
+      ; write_enable = p.write_enable
+      ; write_address = p.write_address
+      ; write_data = p.write_data
+      ; read_enable = p.read_enable
+      ; read_address = p.read_address
+      }
+  ;;
+
+  let generate () =
+    let module Circuit = Circuit.With_interface (I) (O) in
+    let scope = Scope.create ~flatten_design:false () in
+    let circ = Circuit.create_exn ~name:"rams_with_resizing" (testbench scope) in
+    Rtl.print ~database:(Scope.circuit_database scope) Verilog circ
+  ;;
+end
+
 let ( <-. ) a b = a := Bits.of_int ~width:(Bits.width !a) b
 
 let test ?(read_latency = 1) log_scale_between_ports =
@@ -14,6 +151,7 @@ let test ?(read_latency = 1) log_scale_between_ports =
       let log_scale_between_ports = log_scale_between_ports
       let log_num_words = log_num_words
       let read_latency = read_latency
+      let collision_mode = None
     end)
   in
   print_s

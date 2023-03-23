@@ -8,6 +8,8 @@ module Xpm_2019_1 = struct
         ?(showahead = false)
         ?(underflow_check = true)
         ?fifo_memory_type:arg_fifo_memory_type
+        ?nearly_full
+        ?(nearly_empty = 16)
         ?instance
         ()
         ~capacity
@@ -35,8 +37,21 @@ module Xpm_2019_1 = struct
         let fifo_write_depth = capacity
         let wr_data_count_width = num_bits_to_represent capacity
         let rd_data_count_width = num_bits_to_represent capacity
-        let prog_full_thresh = capacity - 16
-        let prog_empty_thresh = 16
+        let prog_full_thresh = Option.value nearly_full ~default:(capacity - 16)
+        let prog_empty_thresh = nearly_empty
+
+        (* There are limitations on the range for [prog_*_thresh], see docs for details.
+           The checks are slightly simplified because write_data_width = read_data_width
+           for our configuration. *)
+        let () =
+          let read_mode_val = if String.equal read_mode "std" then 0 else 1 in
+          let check_prog_thresh thresh =
+            assert (thresh >= 3 + (read_mode_val * 2));
+            assert (thresh <= fifo_write_depth - 3 - (read_mode_val * 2))
+          in
+          check_prog_thresh prog_full_thresh;
+          check_prog_thresh prog_empty_thresh
+        ;;
       end)
     in
     let o : _ XFifo.O.t =
@@ -68,6 +83,8 @@ module Xpm_2022_1 = struct
         ?(showahead = false)
         ?(underflow_check = true)
         ?fifo_memory_type:arg_fifo_memory_type
+        ?nearly_full
+        ?(nearly_empty = 16)
         ?instance
         ?cascade_height:arg_cascade_height
         ()
@@ -95,9 +112,22 @@ module Xpm_2022_1 = struct
         let fifo_write_depth = capacity
         let wr_data_count_width = num_bits_to_represent capacity
         let rd_data_count_width = num_bits_to_represent capacity
-        let prog_full_thresh = capacity - 16
-        let prog_empty_thresh = 16
+        let prog_full_thresh = Option.value nearly_full ~default:(capacity - 16)
+        let prog_empty_thresh = nearly_empty
         let cascade_height = Option.value arg_cascade_height ~default:cascade_height
+
+        (* There are limitations on the range for [prog_*_thresh], see docs for details.
+           The checks are slightly simplified because write_data_width = read_data_width
+           for our configuration. *)
+        let () =
+          let read_mode_val = if String.equal read_mode "std" then 0 else 1 in
+          let check_prog_thresh thresh =
+            assert (thresh >= 3 + (read_mode_val * 2));
+            assert (thresh <= fifo_write_depth - 3 - (read_mode_val * 2))
+          in
+          check_prog_thresh prog_full_thresh;
+          check_prog_thresh prog_empty_thresh
+        ;;
       end)
     in
     let o : _ XFifo.O.t =

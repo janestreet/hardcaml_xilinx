@@ -6,6 +6,7 @@ module type Config = sig
   val bits_per_word : int
   val log_scale_between_ports : int
   val read_latency : int
+  val collision_mode : Collision_mode.t option
 end
 
 module type S = sig
@@ -38,13 +39,13 @@ module type S = sig
     type 'a t = { q : 'a } [@@deriving sexp_of, hardcaml]
   end
 
-  val create : Scope.t -> build_mode:Build_mode.t -> Signal.t Interface.Create_fn(I)(O).t
+  val create : Scope.t -> build_mode:Build_mode.t -> Interface.Create_fn(I)(O).t
 
   val hierarchical
     :  ?instance:string
     -> Scope.t
     -> build_mode:Build_mode.t
-    -> Signal.t Interface.Create_fn(I)(O).t
+    -> Interface.Create_fn(I)(O).t
 end
 
 (** RAM for which the the inputs and output data busses are different widths by some power

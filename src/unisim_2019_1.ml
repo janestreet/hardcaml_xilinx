@@ -134,6 +134,50 @@ module IBUFDS_GTE4 = struct
   end
 end
 
+module ICAPE3 = struct
+  module type P = sig
+    val device_id : Hardcaml.Parameter.Bit_vector.t
+    val icap_auto_switch : string
+    val sim_cfg_file_name : string
+  end
+  module P : P = struct
+    let device_id = Hardcaml.Parameter.Bit_vector.of_string "00000011011000101000000010010011"
+    let icap_auto_switch = "DISABLE"
+    let sim_cfg_file_name = "NONE"
+  end
+  module Make (P : P) = struct
+    let params = [
+      Hardcaml.Parameter.create ~name:"DEVICE_ID" ~value:(Bit_vector P.device_id);
+      Hardcaml.Parameter.create ~name:"ICAP_AUTO_SWITCH" ~value:(String P.icap_auto_switch);
+      Hardcaml.Parameter.create ~name:"SIM_CFG_FILE_NAME" ~value:(String P.sim_cfg_file_name);
+    ]
+
+    module I = struct
+      type 'a t = {
+        clk : 'a[@bits 1][@rtlname "CLK"];
+        csib : 'a[@bits 1][@rtlname "CSIB"];
+        i : 'a[@bits ((31) - (0) + 1)][@rtlname "I"];
+        rdwrb : 'a[@bits 1][@rtlname "RDWRB"];
+      }[@@deriving sexp_of, hardcaml]
+    end
+
+    module O = struct
+      type 'a t = {
+        avail : 'a[@bits 1][@rtlname "AVAIL"];
+        o : 'a[@bits ((31) - (0) + 1)][@rtlname "O"];
+        prdone : 'a[@bits 1][@rtlname "PRDONE"];
+        prerror : 'a[@bits 1][@rtlname "PRERROR"];
+      }[@@deriving sexp_of, hardcaml]
+    end
+    module T = Hardcaml.Interface.Empty
+
+    open struct include Hardcaml.Instantiation.With_interface(I)(O) end
+    let create ?lib ?arch ?attributes ?instance ?(name="ICAPE3") ?parameters inputs =
+      let parameters = Option.value ~default:params parameters in
+      create ?lib ?arch ?instance ?attributes ~parameters ~name inputs
+  end
+end
+
 module LUT2 = struct
   module type P = sig
     val init : Hardcaml.Parameter.Bit_vector.t

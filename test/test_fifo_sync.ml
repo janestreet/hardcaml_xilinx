@@ -7,6 +7,8 @@ let%expect_test "Rtl" =
       Fifo_sync.create
         ~fifo_memory_type:Block
         ~build_mode
+        ~nearly_empty:3
+        ~nearly_full:12
         ()
         ~capacity:16
         ~clock:(input "clock" 1)
@@ -56,151 +58,153 @@ let%expect_test "Rtl" =
         output [4:0] used;
 
         /* signal declarations */
-        wire _30 = 1'b0;
-        wire [4:0] _28 = 5'b00001;
+        wire _31 = 1'b0;
+        wire [4:0] _17 = 5'b00011;
         wire _29;
-        reg _32;
+        wire _30;
+        reg _33;
+        wire _38 = 1'b0;
         wire _37 = 1'b0;
-        wire _36 = 1'b0;
-        wire [4:0] _33 = 5'b01111;
-        wire _34;
+        wire [4:0] _34 = 5'b01100;
         wire _35;
-        reg _38;
+        wire _36;
+        reg _39;
+        wire [31:0] _65 = 32'b00000000000000000000000000000000;
         wire [31:0] _64 = 32'b00000000000000000000000000000000;
-        wire [31:0] _63 = 32'b00000000000000000000000000000000;
+        wire [3:0] _43 = 4'b0000;
         wire [3:0] _42 = 4'b0000;
-        wire [3:0] _41 = 4'b0000;
-        wire [3:0] _39 = 4'b0001;
+        wire [3:0] _40 = 4'b0001;
         wire [3:0] WRITE_ADDRESS_NEXT;
-        reg [3:0] _43;
+        reg [3:0] _44;
         wire [3:0] WRITE_ADDRESS;
         (* RAM_STYLE="block" *)
-        reg [31:0] _61[0:15];
+        reg [31:0] _62[0:15];
         wire vdd = 1'b1;
-        wire _54 = 1'b0;
-        wire [4:0] _52 = 5'b00000;
-        wire [4:0] _24 = 5'b00001;
-        wire [4:0] _25;
-        wire [4:0] _22 = 5'b00001;
-        wire [4:0] _23;
+        wire _55 = 1'b0;
+        wire [4:0] _53 = 5'b00000;
+        wire [4:0] _25 = 5'b00001;
         wire [4:0] _26;
+        wire [4:0] _23 = 5'b00001;
+        wire [4:0] _24;
+        wire [4:0] _27;
+        wire [4:0] _46 = 5'b00000;
         wire [4:0] _45 = 5'b00000;
-        wire [4:0] _44 = 5'b00000;
-        reg [4:0] _46;
+        reg [4:0] _47;
         wire [4:0] _8;
+        wire _51 = 1'b0;
         wire _50 = 1'b0;
-        wire _49 = 1'b0;
-        wire [4:0] _47 = 5'b10000;
-        wire _48;
-        reg _51;
+        wire [4:0] _48 = 5'b10000;
+        wire _49;
+        reg _52;
         wire _9;
-        wire _19;
+        wire _20;
         wire WR_INT;
-        wire _21;
+        wire _22;
         wire [4:0] USED_NEXT;
-        wire _53;
-        reg _55;
+        wire _54;
+        reg _56;
         wire _11;
-        wire _17;
+        wire _18;
         wire RD_INT;
+        wire [3:0] _60 = 4'b0000;
         wire [3:0] _59 = 4'b0000;
-        wire [3:0] _58 = 4'b0000;
-        wire [3:0] _56 = 4'b0001;
+        wire [3:0] _57 = 4'b0001;
         wire [3:0] READ_ADDRESS_NEXT;
-        reg [3:0] _60;
+        reg [3:0] _61;
         wire [3:0] READ_ADDRESS;
-        wire [31:0] _62;
-        reg [31:0] _65;
+        wire [31:0] _63;
+        reg [31:0] _66;
 
         /* logic */
-        assign _29 = USED_NEXT < _28;
+        assign _29 = _17 < USED_NEXT;
+        assign _30 = ~ _29;
         always @(posedge clock) begin
             if (clear)
-                _32 <= vdd;
+                _33 <= vdd;
             else
-                if (_21)
-                    _32 <= _29;
+                if (_22)
+                    _33 <= _30;
         end
-        assign _34 = USED_NEXT < _33;
-        assign _35 = ~ _34;
+        assign _35 = USED_NEXT < _34;
+        assign _36 = ~ _35;
         always @(posedge clock) begin
             if (clear)
-                _38 <= _37;
+                _39 <= _38;
             else
-                if (_21)
-                    _38 <= _35;
+                if (_22)
+                    _39 <= _36;
         end
-        assign WRITE_ADDRESS_NEXT = WRITE_ADDRESS + _39;
+        assign WRITE_ADDRESS_NEXT = WRITE_ADDRESS + _40;
         always @(posedge clock) begin
             if (clear)
-                _43 <= _42;
+                _44 <= _43;
             else
                 if (WR_INT)
-                    _43 <= WRITE_ADDRESS_NEXT;
+                    _44 <= WRITE_ADDRESS_NEXT;
         end
-        assign WRITE_ADDRESS = _43;
+        assign WRITE_ADDRESS = _44;
         always @(posedge clock) begin
             if (WR_INT)
-                _61[WRITE_ADDRESS] <= d;
+                _62[WRITE_ADDRESS] <= d;
         end
-        assign _25 = _8 - _24;
-        assign _23 = _8 + _22;
-        assign _26 = RD_INT ? _25 : _23;
+        assign _26 = _8 - _25;
+        assign _24 = _8 + _23;
+        assign _27 = RD_INT ? _26 : _24;
         always @(posedge clock) begin
             if (clear)
-                _46 <= _45;
+                _47 <= _46;
             else
-                if (_21)
-                    _46 <= USED_NEXT;
+                if (_22)
+                    _47 <= USED_NEXT;
         end
-        assign _8 = _46;
-        assign _48 = USED_NEXT == _47;
+        assign _8 = _47;
+        assign _49 = USED_NEXT == _48;
         always @(posedge clock) begin
             if (clear)
-                _51 <= _50;
+                _52 <= _51;
             else
-                if (_21)
-                    _51 <= _48;
+                if (_22)
+                    _52 <= _49;
         end
-        assign _9 = _51;
-        assign _19 = ~ _9;
-        assign WR_INT = wr & _19;
-        assign _21 = RD_INT ^ WR_INT;
-        assign USED_NEXT = _21 ? _26 : _8;
-        assign _53 = USED_NEXT == _52;
+        assign _9 = _52;
+        assign _20 = ~ _9;
+        assign WR_INT = wr & _20;
+        assign _22 = RD_INT ^ WR_INT;
+        assign USED_NEXT = _22 ? _27 : _8;
+        assign _54 = USED_NEXT == _53;
         always @(posedge clock) begin
             if (clear)
-                _55 <= vdd;
+                _56 <= vdd;
             else
-                if (_21)
-                    _55 <= _53;
+                if (_22)
+                    _56 <= _54;
         end
-        assign _11 = _55;
-        assign _17 = ~ _11;
-        assign RD_INT = rd & _17;
-        assign READ_ADDRESS_NEXT = READ_ADDRESS + _56;
+        assign _11 = _56;
+        assign _18 = ~ _11;
+        assign RD_INT = rd & _18;
+        assign READ_ADDRESS_NEXT = READ_ADDRESS + _57;
         always @(posedge clock) begin
             if (clear)
-                _60 <= _59;
+                _61 <= _60;
             else
                 if (RD_INT)
-                    _60 <= READ_ADDRESS_NEXT;
+                    _61 <= READ_ADDRESS_NEXT;
         end
-        assign READ_ADDRESS = _60;
-        assign _62 = _61[READ_ADDRESS];
+        assign READ_ADDRESS = _61;
+        assign _63 = _62[READ_ADDRESS];
         always @(posedge clock) begin
             if (RD_INT)
-                _65 <= _62;
+                _66 <= _63;
         end
 
         /* aliases */
 
         /* output assignments */
-        assign q = _65;
+        assign q = _66;
         assign full = _9;
         assign empty = _11;
-        assign nearly_full = _38;
-        assign nearly_empty = _32;
+        assign nearly_full = _39;
+        assign nearly_empty = _33;
         assign used = _8;
 
     endmodule |}];
@@ -250,7 +254,7 @@ let%expect_test "Rtl" =
         assign _18 = _14[43:43];
         assign _19 = _14[0:0];
         xpm_fifo_sync
-            #( .FIFO_MEMORY_TYPE("block"), .FIFO_WRITE_DEPTH(16), .WRITE_DATA_WIDTH(32), .READ_MODE("std"), .FIFO_READ_LATENCY(1), .FULL_RESET_VALUE(0), .USE_ADV_FEATURES("0707"), .READ_DATA_WIDTH(32), .WR_DATA_COUNT_WIDTH(5), .PROG_FULL_THRESH(0), .RD_DATA_COUNT_WIDTH(5), .PROG_EMPTY_THRESH(16), .DOUT_RESET_VALUE("0"), .ECC_MODE("no_ecc"), .SIM_ASSERT_CHK(0), .WAKEUP_TIME(0) )
+            #( .FIFO_MEMORY_TYPE("block"), .FIFO_WRITE_DEPTH(16), .WRITE_DATA_WIDTH(32), .READ_MODE("std"), .FIFO_READ_LATENCY(1), .FULL_RESET_VALUE(0), .USE_ADV_FEATURES("0707"), .READ_DATA_WIDTH(32), .WR_DATA_COUNT_WIDTH(5), .PROG_FULL_THRESH(12), .RD_DATA_COUNT_WIDTH(5), .PROG_EMPTY_THRESH(3), .DOUT_RESET_VALUE("0"), .ECC_MODE("no_ecc"), .SIM_ASSERT_CHK(0), .WAKEUP_TIME(0) )
             the_xpm_fifo_sync
             ( .sleep(gnd), .rst(clear), .wr_clk(clock), .wr_en(wr), .din(d), .rd_en(rd), .injectsbiterr(gnd), .injectdbiterr(gnd), .dbiterr(_14[55:55]), .sbiterr(_14[54:54]), .data_valid(_14[53:53]), .almost_empty(_14[52:52]), .rd_rst_busy(_14[51:51]), .underflow(_14[50:50]), .rd_data_count(_14[49:45]), .prog_empty(_14[44:44]), .empty(_14[43:43]), .dout(_14[42:11]), .wr_ack(_14[10:10]), .almost_full(_14[9:9]), .wr_rst_busy(_14[8:8]), .overflow(_14[7:7]), .wr_data_count(_14[6:2]), .prog_full(_14[1:1]), .full(_14[0:0]) );
         assign _20 = _14[42:11];
