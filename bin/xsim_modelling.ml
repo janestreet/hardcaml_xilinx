@@ -1,4 +1,5 @@
 (* Generate an RTL model we can run XSIM and test the xpm against our hardcaml model. *)
+open Base
 open Hardcaml
 open Signal
 module Test = Hardcaml_xilinx_test.Test_collision
@@ -20,7 +21,8 @@ let command_resizing =
   Command.basic
     ~summary:"ram with resizing"
     [%map_open.Command
-      let () = return () in
+      let seed = flag "-seed" (optional int) ~doc:"Set random number generator seed" in
+      Option.iter seed ~f:Random.init;
       fun () -> Hardcaml_xilinx_test.Test_ram_with_resizing.For_rtl_sim.generate ()]
 ;;
 

@@ -2,6 +2,6 @@
  (action (bash "%{first_dep} tdpram > xram.v")))
 
 (rule (targets resizing.v) (deps (:first_dep ../bin/xsim_modelling.exe))
- (action (bash "%{first_dep} resizing > resizing.v")))
+ (action (bash "%{first_dep} -seed 1234 resizing > resizing.v")))
 
-(alias (name DEFAULT) (deps xram.v resizing.v))
+(alias (name fpga-runtest) (deps xram.v resizing.v))
