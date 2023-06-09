@@ -11,6 +11,7 @@ module Xpm_2019_1 = struct
         ?nearly_full
         ?(nearly_empty = 16)
         ?instance
+        ?read_latency
         ()
         ~capacity
         ~clk
@@ -31,7 +32,11 @@ module Xpm_2019_1 = struct
         ;;
 
         let read_mode = if showahead then "fwft" else "std"
-        let fifo_read_latency = if showahead then 0 else 1
+
+        let fifo_read_latency =
+          Option.value read_latency ~default:(if showahead then 0 else 1)
+        ;;
+
         let write_data_width = width d
         let read_data_width = width d
         let fifo_write_depth = capacity
@@ -45,9 +50,14 @@ module Xpm_2019_1 = struct
            for our configuration. *)
         let () =
           let read_mode_val = if String.equal read_mode "std" then 0 else 1 in
+          let min_thresh = 3 + (read_mode_val * 2) in
+          let max_thresh = fifo_write_depth - 3 - (read_mode_val * 2) in
           let check_prog_thresh thresh =
-            assert (thresh >= 3 + (read_mode_val * 2));
-            assert (thresh <= fifo_write_depth - 3 - (read_mode_val * 2))
+            if thresh < min_thresh
+            then raise_s [%message "threshold too low!" (thresh : int) (min_thresh : int)];
+            if thresh > max_thresh
+            then
+              raise_s [%message "threshold too high!" (thresh : int) (max_thresh : int)]
           in
           check_prog_thresh prog_full_thresh;
           check_prog_thresh prog_empty_thresh
@@ -87,6 +97,7 @@ module Xpm_2022_1 = struct
         ?(nearly_empty = 16)
         ?instance
         ?cascade_height:arg_cascade_height
+        ?read_latency
         ()
         ~capacity
         ~clk
@@ -106,7 +117,11 @@ module Xpm_2022_1 = struct
         ;;
 
         let read_mode = if showahead then "fwft" else "std"
-        let fifo_read_latency = if showahead then 0 else 1
+
+        let fifo_read_latency =
+          Option.value read_latency ~default:(if showahead then 0 else 1)
+        ;;
+
         let write_data_width = width d
         let read_data_width = width d
         let fifo_write_depth = capacity

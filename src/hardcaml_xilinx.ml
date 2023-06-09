@@ -3,6 +3,7 @@ module Cascade_height = Cascade_height
 module Collision_mode = Collision_mode
 module Dual_port_ram = Dual_port_ram
 module Fifo_async = Fifo_async
+module Fifo_memory_type = Fifo_memory_type
 module Fifo_sync = Fifo_sync
 module Icape3 = Icape3
 module Memory_builder = Memory_builder

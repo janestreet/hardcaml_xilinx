@@ -11,9 +11,14 @@ open Hardcaml
     If the [overflow_check] (resp [underflow_check)]) logic is enabled a write will not
     occur when the fifo is full (resp read when empty).
 
-    [showahead] reduces the fifo read latency from 1 to 0 cycles relative to [rd]. *)
+    [showahead] reduces the fifo read latency from 1 to 0 cycles relative to [rd].
+    Optionally the [read_latency] can be increased when [showahead] is false, to add extra
+    pipelining to the FIFO output. *)
 val create
-  :  ?overflow_check:bool (** default is [true] *)
+  :  ?read_latency:int
+  (** Default is None which will either set [read_latency] to 0 or 1 if [showahead] is
+      true or false respectively. *)
+  -> ?overflow_check:bool (** default is [true] *)
   -> ?showahead:bool (** default is [false] **)
   -> ?underflow_check:bool (** default is [true] *)
   -> ?build_mode:Build_mode.t (** default is [Synthesis] *)

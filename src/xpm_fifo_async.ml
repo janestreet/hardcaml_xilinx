@@ -7,6 +7,8 @@ let create
       ?(showahead = false)
       ?(underflow_check = true)
       ?fifo_memory_type:arg_fifo_memory_type
+      ?nearly_full
+      ?(nearly_empty = 16)
       ()
       ~capacity
       ~latency
@@ -40,8 +42,33 @@ let create
       let fifo_write_depth = capacity
       let wr_data_count_width = num_bits_to_represent capacity
       let rd_data_count_width = num_bits_to_represent capacity
-      let prog_full_thresh = capacity - 16
-      let prog_empty_thresh = 16
+      let prog_full_thresh = Option.value nearly_full ~default:(capacity - 16)
+      let prog_empty_thresh = nearly_empty
+
+      (* There are limitations on the range for [prog_*_thresh], see docs for details.
+         The checks are slightly simplified because write_data_width = read_data_width
+         for our configuration. *)
+      let () =
+        let read_mode_val = if String.equal read_mode "std" then 0 else 1 in
+        let empty_min_thresh = 3 + (read_mode_val * 2) in
+        let empty_max_thresh = fifo_write_depth - 3 - (read_mode_val * 2) in
+        let full_min_thresh = empty_min_thresh + cdc_sync_stages in
+        let full_max_thresh = empty_max_thresh in
+        let check_prog_thresh ~min_thresh ~max_thresh thresh =
+          if thresh < min_thresh
+          then raise_s [%message "threshold too low!" (thresh : int) (min_thresh : int)];
+          if thresh > max_thresh
+          then raise_s [%message "threshold too high!" (thresh : int) (max_thresh : int)]
+        in
+        check_prog_thresh
+          ~min_thresh:full_min_thresh
+          ~max_thresh:full_max_thresh
+          prog_full_thresh;
+        check_prog_thresh
+          ~min_thresh:empty_min_thresh
+          ~max_thresh:empty_max_thresh
+          prog_empty_thresh
+      ;;
     end)
   in
   let o : _ X.O.t =

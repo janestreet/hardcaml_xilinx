@@ -19,6 +19,9 @@ val create
   -> ?build_mode:Build_mode.t (* default is [Synthesis] *)
   -> ?fifo_memory_type:Fifo_memory_type.t
   (** See [Xpm_fifo_async] parameters in [xpm.ml] for default. *)
+  -> ?nearly_full:int
+  -> ?nearly_empty:int
+  -> ?scope:Scope.t
   -> unit
   -> capacity:int
   -> read_clock:Signal.t

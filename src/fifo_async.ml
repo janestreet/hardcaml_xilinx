@@ -5,6 +5,9 @@ let create
       ?(showahead = false)
       ?(build_mode = Build_mode.Synthesis)
       ?fifo_memory_type
+      ?nearly_full
+      ?nearly_empty
+      ?scope
       ()
       ~capacity
       ~read_clock
@@ -23,10 +26,23 @@ let create
   | Simulation ->
     (* Unfortunately, we cannot properly simulate asynchronous fifos. The choice of
        clock here is arbitrary *)
-    Fifo.create ~showahead () ~capacity ~clock:read_clock ~clear ~rd:read ~wr:write ~d
+    Fifo.create
+      ?scope
+      ?nearly_full
+      ?nearly_empty
+      ~showahead
+      ()
+      ~capacity
+      ~clock:read_clock
+      ~clear
+      ~rd:read
+      ~wr:write
+      ~d
   | Synthesis ->
     Xpm_fifo_async.create
       ?fifo_memory_type
+      ?nearly_full
+      ?nearly_empty
       ~showahead
       ()
       ~latency:(if showahead then 0 else 1)

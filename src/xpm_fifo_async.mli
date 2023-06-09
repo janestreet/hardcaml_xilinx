@@ -10,6 +10,10 @@ val create
   -> ?underflow_check:bool (** default is [true] *)
   -> ?fifo_memory_type:Fifo_memory_type.t
   (** See [Xpm_fifo_async] parameters in [xpm.ml] for default. *)
+  -> ?nearly_full:int
+  (** usage level at which the [nearly_full] flag is asserted, defaults to [capacity - 16] *)
+  -> ?nearly_empty:int
+  (** usage level at which the [nearly_empty] flag is asserted, defaults to 16 *)
   -> unit
   -> capacity:int
   -> latency:int

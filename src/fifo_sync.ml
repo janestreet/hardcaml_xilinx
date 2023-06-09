@@ -2,6 +2,7 @@ open! Base
 open Hardcaml
 
 let create
+      ?read_latency
       ?(overflow_check = true)
       ?(showahead = false)
       ?(underflow_check = true)
@@ -21,6 +22,15 @@ let create
       ~d
       ~rd
   =
+  (* Check if read_latency is set that its value makes sense. *)
+  Option.iter read_latency ~f:(fun read_latency ->
+    if showahead && read_latency <> 0
+    then
+      raise_s
+        [%message
+          "Cannot set showahead = true and read_latency <> 0 for Fifo_sync."
+            (read_latency : int)
+            (showahead : bool)]);
   match (build_mode : Build_mode.t) with
   | Synthesis ->
     (match xpm_version with
@@ -33,6 +43,7 @@ let create
          ?nearly_full
          ?nearly_empty
          ?instance
+         ?read_latency
          ()
          ~capacity
          ~clk:clock
@@ -50,6 +61,7 @@ let create
          ?nearly_empty
          ?instance
          ?cascade_height
+         ?read_latency
          ()
          ~capacity
          ~clk:clock
@@ -65,6 +77,7 @@ let create
       ~showahead
       ?nearly_full
       ?nearly_empty
+      ?read_latency
       ()
       ~capacity
       ~clock
