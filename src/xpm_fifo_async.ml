@@ -90,5 +90,7 @@ let create
   ; nearly_full = o.prog_full
   ; nearly_empty = o.prog_empty
   ; used = o.wr_data_count
+  ; rd_rst_busy = o.rd_rst_busy
+  ; wr_rst_busy = o.wr_rst_busy
   }
 ;;
