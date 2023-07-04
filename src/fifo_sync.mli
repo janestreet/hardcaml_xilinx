@@ -39,3 +39,45 @@ val create
   -> d:Signal.t
   -> rd:Signal.t
   -> Signal.t Fifo.t
+
+module With_interface (X : Hardcaml.Interface.S) : sig
+  module I : sig
+    type 'a t =
+      { clock : 'a
+      ; clear : 'a
+      ; d : 'a X.t
+      ; wr : 'a
+      ; rd : 'a
+      }
+    [@@deriving sexp_of, hardcaml]
+  end
+
+  module X_with_valid : Interface.S with type 'a t = ('a, 'a X.t) With_valid.t2
+
+  module O : sig
+    type 'a t =
+      { q : 'a X_with_valid.t
+      ; overflow : 'a
+      (** sticky error flag indicating whether this fifo has overflowed. *)
+      ; underflow : 'a
+      (** sticky error flag indicating whether this fifo has underflowed. *)
+      }
+    [@@deriving sexp_of, hardcaml]
+  end
+
+  val hierarchical
+    :  ?instance:string
+    -> Scope.t
+    -> build_mode:Build_mode.t
+    -> ?read_latency:int
+    -> ?overflow_check:bool
+    -> ?showahead:bool
+    -> ?underflow_check:bool
+    -> ?fifo_memory_type:Fifo_memory_type.t
+    -> ?xpm_version:[ `Xpm_2019_1 | `Xpm_2022_1 ]
+    -> ?cascade_height:int
+    -> ?nearly_full:int
+    -> ?nearly_empty:int
+    -> capacity:int
+    -> Interface.Create_fn(I)(O).t
+end
