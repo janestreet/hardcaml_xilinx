@@ -86,9 +86,62 @@ let%expect_test "True_dual_port_ram" =
         assign _18 = write_b | read_b;
         assign _16 = write_a | read_a;
         xpm_memory_tdpram
-            #( .MEMORY_SIZE(128), .MEMORY_PRIMITIVE("distributed"), .CLOCKING_MODE("common_clock"), .ECC_MODE("no_ecc"), .MEMORY_INIT_FILE("none"), .MEMORY_INIT_PARAM(""), .USE_MEM_INIT(0), .WAKEUP_TIME("disable_sleep"), .AUTO_SLEEP_TIME(0), .MESSAGE_CONTROL(0), .USE_EMBEDDED_CONSTRAINT(0), .MEMORY_OPTIMIZATION("false"), .CASCADE_HEIGHT(0), .SIM_ASSERT_CHK(0), .WRITE_DATA_WIDTH_A(8), .READ_DATA_WIDTH_A(8), .BYTE_WRITE_WIDTH_A(8), .ADDR_WIDTH_A(4), .READ_RESET_VALUE_A("0"), .READ_LATENCY_A(1), .WRITE_MODE_A("read_first"), .RST_MODE_A("SYNC"), .WRITE_DATA_WIDTH_B(8), .READ_DATA_WIDTH_B(8), .BYTE_WRITE_WIDTH_B(8), .ADDR_WIDTH_B(4), .READ_RESET_VALUE_B("0"), .READ_LATENCY_B(1), .WRITE_MODE_B("read_first"), .RST_MODE_B("SYNC") )
+            #( .MEMORY_SIZE(128),
+              .MEMORY_PRIMITIVE("distributed"),
+              .CLOCKING_MODE("common_clock"),
+              .ECC_MODE("no_ecc"),
+              .MEMORY_INIT_FILE("none"),
+              .MEMORY_INIT_PARAM(""),
+              .USE_MEM_INIT(0),
+              .WAKEUP_TIME("disable_sleep"),
+              .AUTO_SLEEP_TIME(0),
+              .MESSAGE_CONTROL(0),
+              .USE_EMBEDDED_CONSTRAINT(0),
+              .MEMORY_OPTIMIZATION("false"),
+              .CASCADE_HEIGHT(0),
+              .SIM_ASSERT_CHK(0),
+              .WRITE_DATA_WIDTH_A(8),
+              .READ_DATA_WIDTH_A(8),
+              .BYTE_WRITE_WIDTH_A(8),
+              .ADDR_WIDTH_A(4),
+              .READ_RESET_VALUE_A("0"),
+              .READ_LATENCY_A(1),
+              .WRITE_MODE_A("read_first"),
+              .RST_MODE_A("SYNC"),
+              .WRITE_DATA_WIDTH_B(8),
+              .READ_DATA_WIDTH_B(8),
+              .BYTE_WRITE_WIDTH_B(8),
+              .ADDR_WIDTH_B(4),
+              .READ_RESET_VALUE_B("0"),
+              .READ_LATENCY_B(1),
+              .WRITE_MODE_B("read_first"),
+              .RST_MODE_B("SYNC") )
             the_xpm_memory_tdpram
-            ( .sleep(gnd), .clka(clock_a), .rsta(clear_a), .ena(_16), .regcea(vdd), .wea(write_a), .addra(address_a), .dina(data_a), .injectsbiterra(gnd), .injectdbiterra(gnd), .clkb(clock_b), .rstb(clear_b), .enb(_18), .regceb(vdd), .web(write_b), .addrb(address_b), .dinb(data_b), .injectsbiterrb(gnd), .injectdbiterrb(gnd), .dbiterrb(_20[19:19]), .sbiterrb(_20[18:18]), .doutb(_20[17:10]), .dbiterra(_20[9:9]), .sbiterra(_20[8:8]), .douta(_20[7:0]) );
+            ( .sleep(gnd),
+              .clka(clock_a),
+              .rsta(clear_a),
+              .ena(_16),
+              .regcea(vdd),
+              .wea(write_a),
+              .addra(address_a),
+              .dina(data_a),
+              .injectsbiterra(gnd),
+              .injectdbiterra(gnd),
+              .clkb(clock_b),
+              .rstb(clear_b),
+              .enb(_18),
+              .regceb(vdd),
+              .web(write_b),
+              .addrb(address_b),
+              .dinb(data_b),
+              .injectsbiterrb(gnd),
+              .injectdbiterrb(gnd),
+              .dbiterrb(_20[19:19]),
+              .sbiterrb(_20[18:18]),
+              .doutb(_20[17:10]),
+              .dbiterra(_20[9:9]),
+              .sbiterra(_20[8:8]),
+              .douta(_20[7:0]) );
         assign _22 = _20[7:0];
 
         /* aliases */
@@ -147,9 +200,62 @@ let%expect_test "True_dual_port_ram" =
         assign _18 = write_b | read_b;
         assign _16 = write_a | read_a;
         xpm_memory_tdpram
-            #( .MEMORY_SIZE(128), .MEMORY_PRIMITIVE("block"), .CLOCKING_MODE("common_clock"), .ECC_MODE("no_ecc"), .MEMORY_INIT_FILE("none"), .MEMORY_INIT_PARAM(""), .USE_MEM_INIT(0), .WAKEUP_TIME("disable_sleep"), .AUTO_SLEEP_TIME(0), .MESSAGE_CONTROL(0), .USE_EMBEDDED_CONSTRAINT(0), .MEMORY_OPTIMIZATION("false"), .CASCADE_HEIGHT(0), .SIM_ASSERT_CHK(0), .WRITE_DATA_WIDTH_A(8), .READ_DATA_WIDTH_A(8), .BYTE_WRITE_WIDTH_A(8), .ADDR_WIDTH_A(4), .READ_RESET_VALUE_A("0"), .READ_LATENCY_A(1), .WRITE_MODE_A("read_first"), .RST_MODE_A("SYNC"), .WRITE_DATA_WIDTH_B(8), .READ_DATA_WIDTH_B(8), .BYTE_WRITE_WIDTH_B(8), .ADDR_WIDTH_B(4), .READ_RESET_VALUE_B("0"), .READ_LATENCY_B(1), .WRITE_MODE_B("read_first"), .RST_MODE_B("SYNC") )
+            #( .MEMORY_SIZE(128),
+              .MEMORY_PRIMITIVE("block"),
+              .CLOCKING_MODE("common_clock"),
+              .ECC_MODE("no_ecc"),
+              .MEMORY_INIT_FILE("none"),
+              .MEMORY_INIT_PARAM(""),
+              .USE_MEM_INIT(0),
+              .WAKEUP_TIME("disable_sleep"),
+              .AUTO_SLEEP_TIME(0),
+              .MESSAGE_CONTROL(0),
+              .USE_EMBEDDED_CONSTRAINT(0),
+              .MEMORY_OPTIMIZATION("false"),
+              .CASCADE_HEIGHT(0),
+              .SIM_ASSERT_CHK(0),
+              .WRITE_DATA_WIDTH_A(8),
+              .READ_DATA_WIDTH_A(8),
+              .BYTE_WRITE_WIDTH_A(8),
+              .ADDR_WIDTH_A(4),
+              .READ_RESET_VALUE_A("0"),
+              .READ_LATENCY_A(1),
+              .WRITE_MODE_A("read_first"),
+              .RST_MODE_A("SYNC"),
+              .WRITE_DATA_WIDTH_B(8),
+              .READ_DATA_WIDTH_B(8),
+              .BYTE_WRITE_WIDTH_B(8),
+              .ADDR_WIDTH_B(4),
+              .READ_RESET_VALUE_B("0"),
+              .READ_LATENCY_B(1),
+              .WRITE_MODE_B("read_first"),
+              .RST_MODE_B("SYNC") )
             the_xpm_memory_tdpram
-            ( .sleep(gnd), .clka(clock_a), .rsta(clear_a), .ena(_16), .regcea(vdd), .wea(write_a), .addra(address_a), .dina(data_a), .injectsbiterra(gnd), .injectdbiterra(gnd), .clkb(clock_b), .rstb(clear_b), .enb(_18), .regceb(vdd), .web(write_b), .addrb(address_b), .dinb(data_b), .injectsbiterrb(gnd), .injectdbiterrb(gnd), .dbiterrb(_20[19:19]), .sbiterrb(_20[18:18]), .doutb(_20[17:10]), .dbiterra(_20[9:9]), .sbiterra(_20[8:8]), .douta(_20[7:0]) );
+            ( .sleep(gnd),
+              .clka(clock_a),
+              .rsta(clear_a),
+              .ena(_16),
+              .regcea(vdd),
+              .wea(write_a),
+              .addra(address_a),
+              .dina(data_a),
+              .injectsbiterra(gnd),
+              .injectdbiterra(gnd),
+              .clkb(clock_b),
+              .rstb(clear_b),
+              .enb(_18),
+              .regceb(vdd),
+              .web(write_b),
+              .addrb(address_b),
+              .dinb(data_b),
+              .injectsbiterrb(gnd),
+              .injectdbiterrb(gnd),
+              .dbiterrb(_20[19:19]),
+              .sbiterrb(_20[18:18]),
+              .doutb(_20[17:10]),
+              .dbiterra(_20[9:9]),
+              .sbiterra(_20[8:8]),
+              .douta(_20[7:0]) );
         assign _22 = _20[7:0];
 
         /* aliases */
@@ -208,9 +314,62 @@ let%expect_test "True_dual_port_ram" =
         assign _18 = write_b | read_b;
         assign _16 = write_a | read_a;
         xpm_memory_tdpram
-            #( .MEMORY_SIZE(128), .MEMORY_PRIMITIVE("ultra"), .CLOCKING_MODE("common_clock"), .ECC_MODE("no_ecc"), .MEMORY_INIT_FILE("none"), .MEMORY_INIT_PARAM(""), .USE_MEM_INIT(0), .WAKEUP_TIME("disable_sleep"), .AUTO_SLEEP_TIME(0), .MESSAGE_CONTROL(0), .USE_EMBEDDED_CONSTRAINT(0), .MEMORY_OPTIMIZATION("false"), .CASCADE_HEIGHT(0), .SIM_ASSERT_CHK(0), .WRITE_DATA_WIDTH_A(8), .READ_DATA_WIDTH_A(8), .BYTE_WRITE_WIDTH_A(8), .ADDR_WIDTH_A(4), .READ_RESET_VALUE_A("0"), .READ_LATENCY_A(1), .WRITE_MODE_A("no_change"), .RST_MODE_A("SYNC"), .WRITE_DATA_WIDTH_B(8), .READ_DATA_WIDTH_B(8), .BYTE_WRITE_WIDTH_B(8), .ADDR_WIDTH_B(4), .READ_RESET_VALUE_B("0"), .READ_LATENCY_B(1), .WRITE_MODE_B("no_change"), .RST_MODE_B("SYNC") )
+            #( .MEMORY_SIZE(128),
+              .MEMORY_PRIMITIVE("ultra"),
+              .CLOCKING_MODE("common_clock"),
+              .ECC_MODE("no_ecc"),
+              .MEMORY_INIT_FILE("none"),
+              .MEMORY_INIT_PARAM(""),
+              .USE_MEM_INIT(0),
+              .WAKEUP_TIME("disable_sleep"),
+              .AUTO_SLEEP_TIME(0),
+              .MESSAGE_CONTROL(0),
+              .USE_EMBEDDED_CONSTRAINT(0),
+              .MEMORY_OPTIMIZATION("false"),
+              .CASCADE_HEIGHT(0),
+              .SIM_ASSERT_CHK(0),
+              .WRITE_DATA_WIDTH_A(8),
+              .READ_DATA_WIDTH_A(8),
+              .BYTE_WRITE_WIDTH_A(8),
+              .ADDR_WIDTH_A(4),
+              .READ_RESET_VALUE_A("0"),
+              .READ_LATENCY_A(1),
+              .WRITE_MODE_A("no_change"),
+              .RST_MODE_A("SYNC"),
+              .WRITE_DATA_WIDTH_B(8),
+              .READ_DATA_WIDTH_B(8),
+              .BYTE_WRITE_WIDTH_B(8),
+              .ADDR_WIDTH_B(4),
+              .READ_RESET_VALUE_B("0"),
+              .READ_LATENCY_B(1),
+              .WRITE_MODE_B("no_change"),
+              .RST_MODE_B("SYNC") )
             the_xpm_memory_tdpram
-            ( .sleep(gnd), .clka(clock_a), .rsta(clear_a), .ena(_16), .regcea(vdd), .wea(write_a), .addra(address_a), .dina(data_a), .injectsbiterra(gnd), .injectdbiterra(gnd), .clkb(clock_b), .rstb(clear_b), .enb(_18), .regceb(vdd), .web(write_b), .addrb(address_b), .dinb(data_b), .injectsbiterrb(gnd), .injectdbiterrb(gnd), .dbiterrb(_20[19:19]), .sbiterrb(_20[18:18]), .doutb(_20[17:10]), .dbiterra(_20[9:9]), .sbiterra(_20[8:8]), .douta(_20[7:0]) );
+            ( .sleep(gnd),
+              .clka(clock_a),
+              .rsta(clear_a),
+              .ena(_16),
+              .regcea(vdd),
+              .wea(write_a),
+              .addra(address_a),
+              .dina(data_a),
+              .injectsbiterra(gnd),
+              .injectdbiterra(gnd),
+              .clkb(clock_b),
+              .rstb(clear_b),
+              .enb(_18),
+              .regceb(vdd),
+              .web(write_b),
+              .addrb(address_b),
+              .dinb(data_b),
+              .injectsbiterrb(gnd),
+              .injectdbiterrb(gnd),
+              .dbiterrb(_20[19:19]),
+              .sbiterrb(_20[18:18]),
+              .doutb(_20[17:10]),
+              .dbiterra(_20[9:9]),
+              .sbiterra(_20[8:8]),
+              .douta(_20[7:0]) );
         assign _22 = _20[7:0];
 
         /* aliases */
@@ -323,9 +482,62 @@ let%expect_test "True_dual_port_ram" =
         assign _18 = write_b | read_b;
         assign _16 = write_a | read_a;
         xpm_memory_tdpram
-            #( .MEMORY_SIZE(60), .MEMORY_PRIMITIVE("block"), .CLOCKING_MODE("common_clock"), .ECC_MODE("no_ecc"), .MEMORY_INIT_FILE("none"), .MEMORY_INIT_PARAM(""), .USE_MEM_INIT(0), .WAKEUP_TIME("disable_sleep"), .AUTO_SLEEP_TIME(0), .MESSAGE_CONTROL(0), .USE_EMBEDDED_CONSTRAINT(0), .MEMORY_OPTIMIZATION("false"), .CASCADE_HEIGHT(0), .SIM_ASSERT_CHK(0), .WRITE_DATA_WIDTH_A(4), .READ_DATA_WIDTH_A(4), .BYTE_WRITE_WIDTH_A(4), .ADDR_WIDTH_A(4), .READ_RESET_VALUE_A("0"), .READ_LATENCY_A(1), .WRITE_MODE_A("read_first"), .RST_MODE_A("SYNC"), .WRITE_DATA_WIDTH_B(12), .READ_DATA_WIDTH_B(12), .BYTE_WRITE_WIDTH_B(12), .ADDR_WIDTH_B(3), .READ_RESET_VALUE_B("0"), .READ_LATENCY_B(1), .WRITE_MODE_B("read_first"), .RST_MODE_B("SYNC") )
+            #( .MEMORY_SIZE(60),
+              .MEMORY_PRIMITIVE("block"),
+              .CLOCKING_MODE("common_clock"),
+              .ECC_MODE("no_ecc"),
+              .MEMORY_INIT_FILE("none"),
+              .MEMORY_INIT_PARAM(""),
+              .USE_MEM_INIT(0),
+              .WAKEUP_TIME("disable_sleep"),
+              .AUTO_SLEEP_TIME(0),
+              .MESSAGE_CONTROL(0),
+              .USE_EMBEDDED_CONSTRAINT(0),
+              .MEMORY_OPTIMIZATION("false"),
+              .CASCADE_HEIGHT(0),
+              .SIM_ASSERT_CHK(0),
+              .WRITE_DATA_WIDTH_A(4),
+              .READ_DATA_WIDTH_A(4),
+              .BYTE_WRITE_WIDTH_A(4),
+              .ADDR_WIDTH_A(4),
+              .READ_RESET_VALUE_A("0"),
+              .READ_LATENCY_A(1),
+              .WRITE_MODE_A("read_first"),
+              .RST_MODE_A("SYNC"),
+              .WRITE_DATA_WIDTH_B(12),
+              .READ_DATA_WIDTH_B(12),
+              .BYTE_WRITE_WIDTH_B(12),
+              .ADDR_WIDTH_B(3),
+              .READ_RESET_VALUE_B("0"),
+              .READ_LATENCY_B(1),
+              .WRITE_MODE_B("read_first"),
+              .RST_MODE_B("SYNC") )
             the_xpm_memory_tdpram
-            ( .sleep(gnd), .clka(clock_a), .rsta(clear_a), .ena(_16), .regcea(vdd), .wea(write_a), .addra(address_a), .dina(data_a), .injectsbiterra(gnd), .injectdbiterra(gnd), .clkb(clock_b), .rstb(clear_b), .enb(_18), .regceb(vdd), .web(write_b), .addrb(address_b), .dinb(data_b), .injectsbiterrb(gnd), .injectdbiterrb(gnd), .dbiterrb(_20[19:19]), .sbiterrb(_20[18:18]), .doutb(_20[17:6]), .dbiterra(_20[5:5]), .sbiterra(_20[4:4]), .douta(_20[3:0]) );
+            ( .sleep(gnd),
+              .clka(clock_a),
+              .rsta(clear_a),
+              .ena(_16),
+              .regcea(vdd),
+              .wea(write_a),
+              .addra(address_a),
+              .dina(data_a),
+              .injectsbiterra(gnd),
+              .injectdbiterra(gnd),
+              .clkb(clock_b),
+              .rstb(clear_b),
+              .enb(_18),
+              .regceb(vdd),
+              .web(write_b),
+              .addrb(address_b),
+              .dinb(data_b),
+              .injectsbiterrb(gnd),
+              .injectdbiterrb(gnd),
+              .dbiterrb(_20[19:19]),
+              .sbiterrb(_20[18:18]),
+              .doutb(_20[17:6]),
+              .dbiterra(_20[5:5]),
+              .sbiterra(_20[4:4]),
+              .douta(_20[3:0]) );
         assign _22 = _20[3:0];
 
         /* aliases */
@@ -523,7 +735,8 @@ let%expect_test "byte enables" =
             if (_22)
                 _23 <= _18;
         end
-        assign _35 = { _23, _34 };
+        assign _35 = { _23,
+                       _34 };
         assign _45 = ~ _25;
         assign _46 = read_a & _45;
         assign _27 = write_b[0:0];
@@ -562,7 +775,8 @@ let%expect_test "byte enables" =
             if (_40)
                 _41 <= _36;
         end
-        assign _48 = { _41, _47 };
+        assign _48 = { _41,
+                       _47 };
 
         /* aliases */
 

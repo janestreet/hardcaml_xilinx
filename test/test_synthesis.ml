@@ -135,7 +135,8 @@ let%expect_test "verilog" =
         /* logic */
         assign _11 = i1[0:0];
         assign _10 = i2[0:0];
-        assign _12 = { _10, _11 };
+        assign _12 = { _10,
+                       _11 };
         always @* begin
             case (_12)
             0: _13 <= gnd;
@@ -146,7 +147,8 @@ let%expect_test "verilog" =
         end
         assign _5 = i1[1:1];
         assign _4 = i2[1:1];
-        assign _6 = { _4, _5 };
+        assign _6 = { _4,
+                      _5 };
         always @* begin
             case (_6)
             0: _9 <= gnd;
@@ -155,7 +157,8 @@ let%expect_test "verilog" =
             default: _9 <= gnd;
             endcase
         end
-        assign _14 = { _9, _13 };
+        assign _14 = { _9,
+                       _13 };
 
         /* aliases */
 
@@ -200,24 +203,31 @@ let%expect_test "verilog" =
         assign _10 = _8[1:1];
         assign _7 = i1[0:0];
         assign _6 = i2[0:0];
-        assign _8 = { _6, _7 };
+        assign _8 = { _6,
+                      _7 };
         assign _9 = _8[0:0];
         LUT2
             #( .INIT("0110") )
             the_LUT2
-            ( .I0(_9), .I1(_10), .O(_12) );
+            ( .I0(_9),
+              .I1(_10),
+              .O(_12) );
         assign _1 = _12;
         assign _17 = _15[1:1];
         assign _14 = i1[1:1];
         assign _13 = i2[1:1];
-        assign _15 = { _13, _14 };
+        assign _15 = { _13,
+                       _14 };
         assign _16 = _15[0:0];
         LUT2
             #( .INIT("0110") )
             the_LUT2_0
-            ( .I0(_16), .I1(_17), .O(_19) );
+            ( .I0(_16),
+              .I1(_17),
+              .O(_19) );
         assign _4 = _19;
-        assign _20 = { _4, _1 };
+        assign _20 = { _4,
+                       _1 };
 
         /* aliases */
 

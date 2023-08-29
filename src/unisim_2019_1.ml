@@ -95,14 +95,14 @@ end
 
 module IBUFDS_GTE4 = struct
   module type P = sig
-    val refclk_en_tx_path : Hardcaml.Parameter.Std_logic.t
-    val refclk_hrow_ck_sel : Hardcaml.Parameter.Std_logic_vector.t
-    val refclk_icntl_rx : Hardcaml.Parameter.Std_logic_vector.t
+    val refclk_en_tx_path : Hardcaml.Logic.Std_logic.t
+    val refclk_hrow_ck_sel : Hardcaml.Logic.Std_logic_vector.t
+    val refclk_icntl_rx : Hardcaml.Logic.Std_logic_vector.t
   end
   module P : P = struct
-    let refclk_en_tx_path = Hardcaml.Parameter.Std_logic.L0
-    let refclk_hrow_ck_sel = Hardcaml.Parameter.Std_logic_vector.of_string"00"
-    let refclk_icntl_rx = Hardcaml.Parameter.Std_logic_vector.of_string"00"
+    let refclk_en_tx_path = Hardcaml.Logic.Std_logic.L0
+    let refclk_hrow_ck_sel = Hardcaml.Logic.Std_logic_vector.of_string"00"
+    let refclk_icntl_rx = Hardcaml.Logic.Std_logic_vector.of_string"00"
   end
   module Make (P : P) = struct
     let params = [
@@ -136,12 +136,12 @@ end
 
 module ICAPE3 = struct
   module type P = sig
-    val device_id : Hardcaml.Parameter.Bit_vector.t
+    val device_id : Hardcaml.Logic.Bit_vector.t
     val icap_auto_switch : string
     val sim_cfg_file_name : string
   end
   module P : P = struct
-    let device_id = Hardcaml.Parameter.Bit_vector.of_string "00000011011000101000000010010011"
+    let device_id = Hardcaml.Logic.Bit_vector.of_string "00000011011000101000000010010011"
     let icap_auto_switch = "DISABLE"
     let sim_cfg_file_name = "NONE"
   end
@@ -180,10 +180,10 @@ end
 
 module LUT2 = struct
   module type P = sig
-    val init : Hardcaml.Parameter.Bit_vector.t
+    val init : Hardcaml.Logic.Bit_vector.t
   end
   module P : P = struct
-    let init = Hardcaml.Parameter.Bit_vector.of_string "0000"
+    let init = Hardcaml.Logic.Bit_vector.of_string "0000"
   end
   module Make (P : P) = struct
     let params = [

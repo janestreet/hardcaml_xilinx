@@ -20,7 +20,7 @@ module Config : sig
     { rtl_attributes : Rtl_attribute.t list option
     ; rw_order : [ `Wbr | `Rbw ]
     }
-  [@@deriving sexp_of, fields]
+  [@@deriving sexp_of]
 
   type how_to_instantiate_ram =
     | Xpm of Ram_arch.t
@@ -33,7 +33,6 @@ module Config : sig
     ; how_to_instantiate_ram : how_to_instantiate_ram
     ; simulation_name : string option
     }
-  [@@deriving fields]
 
   type t =
     { underlying_memories : underlying_memory list

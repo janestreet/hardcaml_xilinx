@@ -257,9 +257,51 @@ let%expect_test "Rtl" =
         assign _19 = _15[43:43];
         assign _20 = _15[0:0];
         xpm_fifo_async
-            #( .FIFO_MEMORY_TYPE("block"), .FIFO_WRITE_DEPTH(16), .RELATED_CLOCKS(0), .WRITE_DATA_WIDTH(32), .READ_MODE("std"), .FIFO_READ_LATENCY(1), .FULL_RESET_VALUE(0), .USE_ADV_FEATURES("0707"), .READ_DATA_WIDTH(32), .CDC_SYNC_STAGES(2), .WR_DATA_COUNT_WIDTH(5), .PROG_FULL_THRESH(12), .RD_DATA_COUNT_WIDTH(5), .PROG_EMPTY_THRESH(3), .DOUT_RESET_VALUE("0"), .ECC_MODE("no_ecc"), .SIM_ASSERT_CHK(0), .WAKEUP_TIME(0) )
+            #( .FIFO_MEMORY_TYPE("block"),
+              .FIFO_WRITE_DEPTH(16),
+              .RELATED_CLOCKS(0),
+              .WRITE_DATA_WIDTH(32),
+              .READ_MODE("std"),
+              .FIFO_READ_LATENCY(1),
+              .FULL_RESET_VALUE(0),
+              .USE_ADV_FEATURES("0707"),
+              .READ_DATA_WIDTH(32),
+              .CDC_SYNC_STAGES(2),
+              .WR_DATA_COUNT_WIDTH(5),
+              .PROG_FULL_THRESH(12),
+              .RD_DATA_COUNT_WIDTH(5),
+              .PROG_EMPTY_THRESH(3),
+              .DOUT_RESET_VALUE("0"),
+              .ECC_MODE("no_ecc"),
+              .SIM_ASSERT_CHK(0),
+              .WAKEUP_TIME(0) )
             the_xpm_fifo_async
-            ( .sleep(gnd), .rst(clear), .wr_clk(write_clock), .wr_en(write), .din(d), .rd_clk(read_clock), .rd_en(read), .injectsbiterr(gnd), .injectdbiterr(gnd), .dbiterr(_15[55:55]), .sbiterr(_15[54:54]), .data_valid(_15[53:53]), .almost_empty(_15[52:52]), .rd_rst_busy(_15[51:51]), .underflow(_15[50:50]), .rd_data_count(_15[49:45]), .prog_empty(_15[44:44]), .empty(_15[43:43]), .dout(_15[42:11]), .wr_ack(_15[10:10]), .almost_full(_15[9:9]), .wr_rst_busy(_15[8:8]), .overflow(_15[7:7]), .wr_data_count(_15[6:2]), .prog_full(_15[1:1]), .full(_15[0:0]) );
+            ( .sleep(gnd),
+              .rst(clear),
+              .wr_clk(write_clock),
+              .wr_en(write),
+              .din(d),
+              .rd_clk(read_clock),
+              .rd_en(read),
+              .injectsbiterr(gnd),
+              .injectdbiterr(gnd),
+              .dbiterr(_15[55:55]),
+              .sbiterr(_15[54:54]),
+              .data_valid(_15[53:53]),
+              .almost_empty(_15[52:52]),
+              .rd_rst_busy(_15[51:51]),
+              .underflow(_15[50:50]),
+              .rd_data_count(_15[49:45]),
+              .prog_empty(_15[44:44]),
+              .empty(_15[43:43]),
+              .dout(_15[42:11]),
+              .wr_ack(_15[10:10]),
+              .almost_full(_15[9:9]),
+              .wr_rst_busy(_15[8:8]),
+              .overflow(_15[7:7]),
+              .wr_data_count(_15[6:2]),
+              .prog_full(_15[1:1]),
+              .full(_15[0:0]) );
         assign _21 = _15[42:11];
 
         /* aliases */
