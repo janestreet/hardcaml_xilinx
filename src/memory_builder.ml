@@ -35,11 +35,11 @@ module Config = struct
   [@@deriving sexp_of, fields ~getters]
 
   let create_simple_1d_config
-        ~depth
-        ~num_bits_per_entry
-        ~ram_read_latency
-        ~how_to_instantiate_ram
-        ~simulation_name
+    ~depth
+    ~num_bits_per_entry
+    ~ram_read_latency
+    ~how_to_instantiate_ram
+    ~simulation_name
     =
     { underlying_memories =
         [ { how_to_instantiate_ram
@@ -80,21 +80,21 @@ module Config = struct
 end
 
 let instantiate_underlying_memory
-      ~clock
-      ~clear
-      ~scope
-      ~build_mode
-      ~write_address_a
-      ~write_enable_a
-      ~write_data_a
-      ~write_address_b
-      ~write_enable_b
-      ~write_data_b
-      ~read_address_a
-      ~read_address_b
-      ~read_enable_a
-      ~read_enable_b
-      ~(config : Config.t)
+  ~clock
+  ~clear
+  ~scope
+  ~build_mode
+  ~write_address_a
+  ~write_enable_a
+  ~write_data_a
+  ~write_address_b
+  ~write_enable_b
+  ~write_data_b
+  ~read_address_a
+  ~read_address_b
+  ~read_enable_a
+  ~read_enable_b
+  ~(config : Config.t)
   =
   let ( -- ) = Scope.naming scope in
   if Signal.width write_data_a <> Signal.width write_data_b
@@ -227,8 +227,8 @@ module Read_port_1d = struct
   end
 
   module Specialize_with_config (The_config : Config.S) = Specialize (struct
-      let address_width = Config.vertical_index_width The_config.t
-    end)
+    let address_width = Config.vertical_index_width The_config.t
+  end)
 end
 
 module Read_port_2d = struct
@@ -479,26 +479,26 @@ module Component (M : Hardcaml.Interface.S) (The_config : Config.S) = struct
       let low = i * num_bits_per_entry in
       Signal.select read_data high low)
     |> (function
-      | [ hd ] -> hd
-      | cases ->
-        let select_horizontal =
-          Signal.pipeline
-            ~n:config.underlying_ram_read_latency
-            spec_no_clear
-            horizontal_index
-        in
-        Signal.mux select_horizontal cases)
+         | [ hd ] -> hd
+         | cases ->
+           let select_horizontal =
+             Signal.pipeline
+               ~n:config.underlying_ram_read_latency
+               spec_no_clear
+               horizontal_index
+           in
+           Signal.mux select_horizontal cases)
     |> (fun x ->
-      if config.combinational_output
-      then x
-      else (
-        let enable =
-          Signal.pipeline
-            ~n:config.underlying_ram_read_latency
-            spec_no_clear
-            read_enable
-        in
-        Signal.reg ~enable spec_no_clear x))
+         if config.combinational_output
+         then x
+         else (
+           let enable =
+             Signal.pipeline
+               ~n:config.underlying_ram_read_latency
+               spec_no_clear
+               read_enable
+           in
+           Signal.reg ~enable spec_no_clear x))
     |> M.Of_signal.unpack
   ;;
 
@@ -608,14 +608,14 @@ module Create (M : Hardcaml.Interface.S) = struct
   let num_bits_per_entry = M.fold ~init:0 ~f:( + ) M.port_widths
 
   let create
-        ?(name = "memory_builder_component")
-        ~instance
-        ~build_mode
-        ~(config : Config.t)
-        ~scope
-        ~clock
-        ~clear
-        ()
+    ?(name = "memory_builder_component")
+    ~instance
+    ~build_mode
+    ~(config : Config.t)
+    ~scope
+    ~clock
+    ~clear
+    ()
     =
     let create_read_ports () = Read_port_wires.create config in
     let create_write_ports () = Write_port_wires.create ~num_bits_per_entry config in
@@ -673,17 +673,17 @@ module Create (M : Hardcaml.Interface.S) = struct
   ;;
 
   let create_simple_1d
-        ?name
-        ?simulation_name
-        ~instance
-        ~build_mode
-        ~depth
-        ~ram_read_latency
-        ~how_to_instantiate_ram
-        ~scope
-        ~clock
-        ~clear
-        ()
+    ?name
+    ?simulation_name
+    ~instance
+    ~build_mode
+    ~depth
+    ~ram_read_latency
+    ~how_to_instantiate_ram
+    ~scope
+    ~clock
+    ~clear
+    ()
     =
     let config =
       Config.create_simple_1d_config
@@ -710,8 +710,8 @@ let ( <==? ) dst src =
 ;;
 
 let validate_not_reading_from_port_A_in_inferred_ram
-      (how_to_instantiate_ram : Config.how_to_instantiate_ram)
-      (port_label : Port_label.t)
+  (how_to_instantiate_ram : Config.how_to_instantiate_ram)
+  (port_label : Port_label.t)
   =
   match how_to_instantiate_ram, port_label with
   | Inferred _, A -> raise_s [%message "Cannot write to port A in inferred RAM!"]
@@ -739,8 +739,8 @@ let set_read_port_2d (t : _ t) port_label (read_port : _ Read_port_2d.t) =
 let read_latency (t : _ t) = Config.read_latency t.config
 
 let validate_not_writing_to_port_B_in_distributed_ram
-      (how_to_instantiate_ram : Config.how_to_instantiate_ram)
-      (port_label : Port_label.t)
+  (how_to_instantiate_ram : Config.how_to_instantiate_ram)
+  (port_label : Port_label.t)
   =
   match how_to_instantiate_ram, port_label with
   | Xpm Distributed, B -> raise_s [%message "Cannot write to port B in distributed RAM!"]
@@ -748,8 +748,8 @@ let validate_not_writing_to_port_B_in_distributed_ram
 ;;
 
 let validate_not_writing_to_port_B_in_inferred_ram
-      (how_to_instantiate_ram : Config.how_to_instantiate_ram)
-      (port_label : Port_label.t)
+  (how_to_instantiate_ram : Config.how_to_instantiate_ram)
+  (port_label : Port_label.t)
   =
   match how_to_instantiate_ram, port_label with
   | Inferred _, B -> raise_s [%message "Cannot write to port B in inferred RAM!"]

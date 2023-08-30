@@ -31,6 +31,7 @@ module Xpm_memory_tdpram = struct
     val write_mode_b : string
     val rst_mode_b : string
   end
+
   module P : P = struct
     let memory_size = 2048
     let memory_primitive = "auto"
@@ -63,80 +64,127 @@ module Xpm_memory_tdpram = struct
     let write_mode_b = "no_change"
     let rst_mode_b = "SYNC"
   end
+
   module Make (P : P) = struct
-    let params = [
-      Hardcaml.Parameter.create ~name:"MEMORY_SIZE" ~value:(Int P.memory_size);
-      Hardcaml.Parameter.create ~name:"MEMORY_PRIMITIVE" ~value:(String P.memory_primitive);
-      Hardcaml.Parameter.create ~name:"CLOCKING_MODE" ~value:(String P.clocking_mode);
-      Hardcaml.Parameter.create ~name:"ECC_MODE" ~value:(String P.ecc_mode);
-      Hardcaml.Parameter.create ~name:"MEMORY_INIT_FILE" ~value:(String P.memory_init_file);
-      Hardcaml.Parameter.create ~name:"MEMORY_INIT_PARAM" ~value:(String P.memory_init_param);
-      Hardcaml.Parameter.create ~name:"USE_MEM_INIT" ~value:(Int P.use_mem_init);
-      Hardcaml.Parameter.create ~name:"WAKEUP_TIME" ~value:(String P.wakeup_time);
-      Hardcaml.Parameter.create ~name:"AUTO_SLEEP_TIME" ~value:(Int P.auto_sleep_time);
-      Hardcaml.Parameter.create ~name:"MESSAGE_CONTROL" ~value:(Int P.message_control);
-      Hardcaml.Parameter.create ~name:"USE_EMBEDDED_CONSTRAINT" ~value:(Int P.use_embedded_constraint);
-      Hardcaml.Parameter.create ~name:"MEMORY_OPTIMIZATION" ~value:(String P.memory_optimization);
-      Hardcaml.Parameter.create ~name:"CASCADE_HEIGHT" ~value:(Int P.cascade_height);
-      Hardcaml.Parameter.create ~name:"SIM_ASSERT_CHK" ~value:(Int P.sim_assert_chk);
-      Hardcaml.Parameter.create ~name:"WRITE_DATA_WIDTH_A" ~value:(Int P.write_data_width_a);
-      Hardcaml.Parameter.create ~name:"READ_DATA_WIDTH_A" ~value:(Int P.read_data_width_a);
-      Hardcaml.Parameter.create ~name:"BYTE_WRITE_WIDTH_A" ~value:(Int P.byte_write_width_a);
-      Hardcaml.Parameter.create ~name:"ADDR_WIDTH_A" ~value:(Int P.addr_width_a);
-      Hardcaml.Parameter.create ~name:"READ_RESET_VALUE_A" ~value:(String P.read_reset_value_a);
-      Hardcaml.Parameter.create ~name:"READ_LATENCY_A" ~value:(Int P.read_latency_a);
-      Hardcaml.Parameter.create ~name:"WRITE_MODE_A" ~value:(String P.write_mode_a);
-      Hardcaml.Parameter.create ~name:"RST_MODE_A" ~value:(String P.rst_mode_a);
-      Hardcaml.Parameter.create ~name:"WRITE_DATA_WIDTH_B" ~value:(Int P.write_data_width_b);
-      Hardcaml.Parameter.create ~name:"READ_DATA_WIDTH_B" ~value:(Int P.read_data_width_b);
-      Hardcaml.Parameter.create ~name:"BYTE_WRITE_WIDTH_B" ~value:(Int P.byte_write_width_b);
-      Hardcaml.Parameter.create ~name:"ADDR_WIDTH_B" ~value:(Int P.addr_width_b);
-      Hardcaml.Parameter.create ~name:"READ_RESET_VALUE_B" ~value:(String P.read_reset_value_b);
-      Hardcaml.Parameter.create ~name:"READ_LATENCY_B" ~value:(Int P.read_latency_b);
-      Hardcaml.Parameter.create ~name:"WRITE_MODE_B" ~value:(String P.write_mode_b);
-      Hardcaml.Parameter.create ~name:"RST_MODE_B" ~value:(String P.rst_mode_b);
-    ]
+    let params =
+      [ Hardcaml.Parameter.create ~name:"MEMORY_SIZE" ~value:(Int P.memory_size)
+      ; Hardcaml.Parameter.create
+          ~name:"MEMORY_PRIMITIVE"
+          ~value:(String P.memory_primitive)
+      ; Hardcaml.Parameter.create ~name:"CLOCKING_MODE" ~value:(String P.clocking_mode)
+      ; Hardcaml.Parameter.create ~name:"ECC_MODE" ~value:(String P.ecc_mode)
+      ; Hardcaml.Parameter.create
+          ~name:"MEMORY_INIT_FILE"
+          ~value:(String P.memory_init_file)
+      ; Hardcaml.Parameter.create
+          ~name:"MEMORY_INIT_PARAM"
+          ~value:(String P.memory_init_param)
+      ; Hardcaml.Parameter.create ~name:"USE_MEM_INIT" ~value:(Int P.use_mem_init)
+      ; Hardcaml.Parameter.create ~name:"WAKEUP_TIME" ~value:(String P.wakeup_time)
+      ; Hardcaml.Parameter.create ~name:"AUTO_SLEEP_TIME" ~value:(Int P.auto_sleep_time)
+      ; Hardcaml.Parameter.create ~name:"MESSAGE_CONTROL" ~value:(Int P.message_control)
+      ; Hardcaml.Parameter.create
+          ~name:"USE_EMBEDDED_CONSTRAINT"
+          ~value:(Int P.use_embedded_constraint)
+      ; Hardcaml.Parameter.create
+          ~name:"MEMORY_OPTIMIZATION"
+          ~value:(String P.memory_optimization)
+      ; Hardcaml.Parameter.create ~name:"CASCADE_HEIGHT" ~value:(Int P.cascade_height)
+      ; Hardcaml.Parameter.create ~name:"SIM_ASSERT_CHK" ~value:(Int P.sim_assert_chk)
+      ; Hardcaml.Parameter.create
+          ~name:"WRITE_DATA_WIDTH_A"
+          ~value:(Int P.write_data_width_a)
+      ; Hardcaml.Parameter.create
+          ~name:"READ_DATA_WIDTH_A"
+          ~value:(Int P.read_data_width_a)
+      ; Hardcaml.Parameter.create
+          ~name:"BYTE_WRITE_WIDTH_A"
+          ~value:(Int P.byte_write_width_a)
+      ; Hardcaml.Parameter.create ~name:"ADDR_WIDTH_A" ~value:(Int P.addr_width_a)
+      ; Hardcaml.Parameter.create
+          ~name:"READ_RESET_VALUE_A"
+          ~value:(String P.read_reset_value_a)
+      ; Hardcaml.Parameter.create ~name:"READ_LATENCY_A" ~value:(Int P.read_latency_a)
+      ; Hardcaml.Parameter.create ~name:"WRITE_MODE_A" ~value:(String P.write_mode_a)
+      ; Hardcaml.Parameter.create ~name:"RST_MODE_A" ~value:(String P.rst_mode_a)
+      ; Hardcaml.Parameter.create
+          ~name:"WRITE_DATA_WIDTH_B"
+          ~value:(Int P.write_data_width_b)
+      ; Hardcaml.Parameter.create
+          ~name:"READ_DATA_WIDTH_B"
+          ~value:(Int P.read_data_width_b)
+      ; Hardcaml.Parameter.create
+          ~name:"BYTE_WRITE_WIDTH_B"
+          ~value:(Int P.byte_write_width_b)
+      ; Hardcaml.Parameter.create ~name:"ADDR_WIDTH_B" ~value:(Int P.addr_width_b)
+      ; Hardcaml.Parameter.create
+          ~name:"READ_RESET_VALUE_B"
+          ~value:(String P.read_reset_value_b)
+      ; Hardcaml.Parameter.create ~name:"READ_LATENCY_B" ~value:(Int P.read_latency_b)
+      ; Hardcaml.Parameter.create ~name:"WRITE_MODE_B" ~value:(String P.write_mode_b)
+      ; Hardcaml.Parameter.create ~name:"RST_MODE_B" ~value:(String P.rst_mode_b)
+      ]
+    ;;
 
     module I = struct
-      type 'a t = {
-        sleep : 'a[@bits 1][@rtlname "sleep"];
-        clka : 'a[@bits 1][@rtlname "clka"];
-        rsta : 'a[@bits 1][@rtlname "rsta"];
-        ena : 'a[@bits 1][@rtlname "ena"];
-        regcea : 'a[@bits 1][@rtlname "regcea"];
-        wea : 'a[@bits ((((P.write_data_width_a / P.byte_write_width_a) - 1)) - (0) + 1)][@rtlname "wea"];
-        addra : 'a[@bits (((P.addr_width_a - 1)) - (0) + 1)][@rtlname "addra"];
-        dina : 'a[@bits (((P.write_data_width_a - 1)) - (0) + 1)][@rtlname "dina"];
-        injectsbiterra : 'a[@bits 1][@rtlname "injectsbiterra"];
-        injectdbiterra : 'a[@bits 1][@rtlname "injectdbiterra"];
-        clkb : 'a[@bits 1][@rtlname "clkb"];
-        rstb : 'a[@bits 1][@rtlname "rstb"];
-        enb : 'a[@bits 1][@rtlname "enb"];
-        regceb : 'a[@bits 1][@rtlname "regceb"];
-        web : 'a[@bits ((((P.write_data_width_b / P.byte_write_width_b) - 1)) - (0) + 1)][@rtlname "web"];
-        addrb : 'a[@bits (((P.addr_width_b - 1)) - (0) + 1)][@rtlname "addrb"];
-        dinb : 'a[@bits (((P.write_data_width_b - 1)) - (0) + 1)][@rtlname "dinb"];
-        injectsbiterrb : 'a[@bits 1][@rtlname "injectsbiterrb"];
-        injectdbiterrb : 'a[@bits 1][@rtlname "injectdbiterrb"];
-      }[@@deriving sexp_of, hardcaml]
+      type 'a t =
+        { sleep : 'a [@bits 1] [@rtlname "sleep"]
+        ; clka : 'a [@bits 1] [@rtlname "clka"]
+        ; rsta : 'a [@bits 1] [@rtlname "rsta"]
+        ; ena : 'a [@bits 1] [@rtlname "ena"]
+        ; regcea : 'a [@bits 1] [@rtlname "regcea"]
+        ; wea : 'a
+             [@bits (P.write_data_width_a / P.byte_write_width_a) - 1 - 0 + 1]
+             [@rtlname "wea"]
+        ; addra : 'a [@bits P.addr_width_a - 1 - 0 + 1] [@rtlname "addra"]
+        ; dina : 'a [@bits P.write_data_width_a - 1 - 0 + 1] [@rtlname "dina"]
+        ; injectsbiterra : 'a [@bits 1] [@rtlname "injectsbiterra"]
+        ; injectdbiterra : 'a [@bits 1] [@rtlname "injectdbiterra"]
+        ; clkb : 'a [@bits 1] [@rtlname "clkb"]
+        ; rstb : 'a [@bits 1] [@rtlname "rstb"]
+        ; enb : 'a [@bits 1] [@rtlname "enb"]
+        ; regceb : 'a [@bits 1] [@rtlname "regceb"]
+        ; web : 'a
+             [@bits (P.write_data_width_b / P.byte_write_width_b) - 1 - 0 + 1]
+             [@rtlname "web"]
+        ; addrb : 'a [@bits P.addr_width_b - 1 - 0 + 1] [@rtlname "addrb"]
+        ; dinb : 'a [@bits P.write_data_width_b - 1 - 0 + 1] [@rtlname "dinb"]
+        ; injectsbiterrb : 'a [@bits 1] [@rtlname "injectsbiterrb"]
+        ; injectdbiterrb : 'a [@bits 1] [@rtlname "injectdbiterrb"]
+        }
+      [@@deriving sexp_of, hardcaml]
     end
 
     module O = struct
-      type 'a t = {
-        douta : 'a[@bits (((P.read_data_width_a - 1)) - (0) + 1)][@rtlname "douta"];
-        sbiterra : 'a[@bits 1][@rtlname "sbiterra"];
-        dbiterra : 'a[@bits 1][@rtlname "dbiterra"];
-        doutb : 'a[@bits (((P.read_data_width_b - 1)) - (0) + 1)][@rtlname "doutb"];
-        sbiterrb : 'a[@bits 1][@rtlname "sbiterrb"];
-        dbiterrb : 'a[@bits 1][@rtlname "dbiterrb"];
-      }[@@deriving sexp_of, hardcaml]
+      type 'a t =
+        { douta : 'a [@bits P.read_data_width_a - 1 - 0 + 1] [@rtlname "douta"]
+        ; sbiterra : 'a [@bits 1] [@rtlname "sbiterra"]
+        ; dbiterra : 'a [@bits 1] [@rtlname "dbiterra"]
+        ; doutb : 'a [@bits P.read_data_width_b - 1 - 0 + 1] [@rtlname "doutb"]
+        ; sbiterrb : 'a [@bits 1] [@rtlname "sbiterrb"]
+        ; dbiterrb : 'a [@bits 1] [@rtlname "dbiterrb"]
+        }
+      [@@deriving sexp_of, hardcaml]
     end
+
     module T = Hardcaml.Interface.Empty
 
-    open struct include Hardcaml.Instantiation.With_interface(I)(O) end
-    let create ?lib ?arch ?attributes ?instance ?(name="xpm_memory_tdpram") ?parameters inputs =
+    open struct
+      include Hardcaml.Instantiation.With_interface (I) (O)
+    end
+
+    let create
+      ?lib
+      ?arch
+      ?attributes
+      ?instance
+      ?(name = "xpm_memory_tdpram")
+      ?parameters
+      inputs
+      =
       let parameters = Option.value ~default:params parameters in
       create ?lib ?arch ?instance ?attributes ~parameters ~name inputs
+    ;;
   end
 end
 
@@ -161,6 +209,7 @@ module Xpm_fifo_async = struct
     val sim_assert_chk : int
     val wakeup_time : int
   end
+
   module P : P = struct
     let fifo_memory_type = "auto"
     let fifo_write_depth = 2048
@@ -181,69 +230,102 @@ module Xpm_fifo_async = struct
     let sim_assert_chk = 0
     let wakeup_time = 0
   end
+
   module Make (P : P) = struct
-    let params = [
-      Hardcaml.Parameter.create ~name:"FIFO_MEMORY_TYPE" ~value:(String P.fifo_memory_type);
-      Hardcaml.Parameter.create ~name:"FIFO_WRITE_DEPTH" ~value:(Int P.fifo_write_depth);
-      Hardcaml.Parameter.create ~name:"RELATED_CLOCKS" ~value:(Int P.related_clocks);
-      Hardcaml.Parameter.create ~name:"WRITE_DATA_WIDTH" ~value:(Int P.write_data_width);
-      Hardcaml.Parameter.create ~name:"READ_MODE" ~value:(String P.read_mode);
-      Hardcaml.Parameter.create ~name:"FIFO_READ_LATENCY" ~value:(Int P.fifo_read_latency);
-      Hardcaml.Parameter.create ~name:"FULL_RESET_VALUE" ~value:(Int P.full_reset_value);
-      Hardcaml.Parameter.create ~name:"USE_ADV_FEATURES" ~value:(String P.use_adv_features);
-      Hardcaml.Parameter.create ~name:"READ_DATA_WIDTH" ~value:(Int P.read_data_width);
-      Hardcaml.Parameter.create ~name:"CDC_SYNC_STAGES" ~value:(Int P.cdc_sync_stages);
-      Hardcaml.Parameter.create ~name:"WR_DATA_COUNT_WIDTH" ~value:(Int P.wr_data_count_width);
-      Hardcaml.Parameter.create ~name:"PROG_FULL_THRESH" ~value:(Int P.prog_full_thresh);
-      Hardcaml.Parameter.create ~name:"RD_DATA_COUNT_WIDTH" ~value:(Int P.rd_data_count_width);
-      Hardcaml.Parameter.create ~name:"PROG_EMPTY_THRESH" ~value:(Int P.prog_empty_thresh);
-      Hardcaml.Parameter.create ~name:"DOUT_RESET_VALUE" ~value:(String P.dout_reset_value);
-      Hardcaml.Parameter.create ~name:"ECC_MODE" ~value:(String P.ecc_mode);
-      Hardcaml.Parameter.create ~name:"SIM_ASSERT_CHK" ~value:(Int P.sim_assert_chk);
-      Hardcaml.Parameter.create ~name:"WAKEUP_TIME" ~value:(Int P.wakeup_time);
-    ]
+    let params =
+      [ Hardcaml.Parameter.create
+          ~name:"FIFO_MEMORY_TYPE"
+          ~value:(String P.fifo_memory_type)
+      ; Hardcaml.Parameter.create ~name:"FIFO_WRITE_DEPTH" ~value:(Int P.fifo_write_depth)
+      ; Hardcaml.Parameter.create ~name:"RELATED_CLOCKS" ~value:(Int P.related_clocks)
+      ; Hardcaml.Parameter.create ~name:"WRITE_DATA_WIDTH" ~value:(Int P.write_data_width)
+      ; Hardcaml.Parameter.create ~name:"READ_MODE" ~value:(String P.read_mode)
+      ; Hardcaml.Parameter.create
+          ~name:"FIFO_READ_LATENCY"
+          ~value:(Int P.fifo_read_latency)
+      ; Hardcaml.Parameter.create ~name:"FULL_RESET_VALUE" ~value:(Int P.full_reset_value)
+      ; Hardcaml.Parameter.create
+          ~name:"USE_ADV_FEATURES"
+          ~value:(String P.use_adv_features)
+      ; Hardcaml.Parameter.create ~name:"READ_DATA_WIDTH" ~value:(Int P.read_data_width)
+      ; Hardcaml.Parameter.create ~name:"CDC_SYNC_STAGES" ~value:(Int P.cdc_sync_stages)
+      ; Hardcaml.Parameter.create
+          ~name:"WR_DATA_COUNT_WIDTH"
+          ~value:(Int P.wr_data_count_width)
+      ; Hardcaml.Parameter.create ~name:"PROG_FULL_THRESH" ~value:(Int P.prog_full_thresh)
+      ; Hardcaml.Parameter.create
+          ~name:"RD_DATA_COUNT_WIDTH"
+          ~value:(Int P.rd_data_count_width)
+      ; Hardcaml.Parameter.create
+          ~name:"PROG_EMPTY_THRESH"
+          ~value:(Int P.prog_empty_thresh)
+      ; Hardcaml.Parameter.create
+          ~name:"DOUT_RESET_VALUE"
+          ~value:(String P.dout_reset_value)
+      ; Hardcaml.Parameter.create ~name:"ECC_MODE" ~value:(String P.ecc_mode)
+      ; Hardcaml.Parameter.create ~name:"SIM_ASSERT_CHK" ~value:(Int P.sim_assert_chk)
+      ; Hardcaml.Parameter.create ~name:"WAKEUP_TIME" ~value:(Int P.wakeup_time)
+      ]
+    ;;
 
     module I = struct
-      type 'a t = {
-        sleep : 'a[@bits 1][@rtlname "sleep"];
-        rst : 'a[@bits 1][@rtlname "rst"];
-        wr_clk : 'a[@bits 1][@rtlname "wr_clk"];
-        wr_en : 'a[@bits 1][@rtlname "wr_en"];
-        din : 'a[@bits (((P.write_data_width - 1)) - (0) + 1)][@rtlname "din"];
-        rd_clk : 'a[@bits 1][@rtlname "rd_clk"];
-        rd_en : 'a[@bits 1][@rtlname "rd_en"];
-        injectsbiterr : 'a[@bits 1][@rtlname "injectsbiterr"];
-        injectdbiterr : 'a[@bits 1][@rtlname "injectdbiterr"];
-      }[@@deriving sexp_of, hardcaml]
+      type 'a t =
+        { sleep : 'a [@bits 1] [@rtlname "sleep"]
+        ; rst : 'a [@bits 1] [@rtlname "rst"]
+        ; wr_clk : 'a [@bits 1] [@rtlname "wr_clk"]
+        ; wr_en : 'a [@bits 1] [@rtlname "wr_en"]
+        ; din : 'a [@bits P.write_data_width - 1 - 0 + 1] [@rtlname "din"]
+        ; rd_clk : 'a [@bits 1] [@rtlname "rd_clk"]
+        ; rd_en : 'a [@bits 1] [@rtlname "rd_en"]
+        ; injectsbiterr : 'a [@bits 1] [@rtlname "injectsbiterr"]
+        ; injectdbiterr : 'a [@bits 1] [@rtlname "injectdbiterr"]
+        }
+      [@@deriving sexp_of, hardcaml]
     end
 
     module O = struct
-      type 'a t = {
-        full : 'a[@bits 1][@rtlname "full"];
-        prog_full : 'a[@bits 1][@rtlname "prog_full"];
-        wr_data_count : 'a[@bits (((P.wr_data_count_width - 1)) - (0) + 1)][@rtlname "wr_data_count"];
-        overflow : 'a[@bits 1][@rtlname "overflow"];
-        wr_rst_busy : 'a[@bits 1][@rtlname "wr_rst_busy"];
-        almost_full : 'a[@bits 1][@rtlname "almost_full"];
-        wr_ack : 'a[@bits 1][@rtlname "wr_ack"];
-        dout : 'a[@bits (((P.read_data_width - 1)) - (0) + 1)][@rtlname "dout"];
-        empty : 'a[@bits 1][@rtlname "empty"];
-        prog_empty : 'a[@bits 1][@rtlname "prog_empty"];
-        rd_data_count : 'a[@bits (((P.rd_data_count_width - 1)) - (0) + 1)][@rtlname "rd_data_count"];
-        underflow : 'a[@bits 1][@rtlname "underflow"];
-        rd_rst_busy : 'a[@bits 1][@rtlname "rd_rst_busy"];
-        almost_empty : 'a[@bits 1][@rtlname "almost_empty"];
-        data_valid : 'a[@bits 1][@rtlname "data_valid"];
-        sbiterr : 'a[@bits 1][@rtlname "sbiterr"];
-        dbiterr : 'a[@bits 1][@rtlname "dbiterr"];
-      }[@@deriving sexp_of, hardcaml]
+      type 'a t =
+        { full : 'a [@bits 1] [@rtlname "full"]
+        ; prog_full : 'a [@bits 1] [@rtlname "prog_full"]
+        ; wr_data_count : 'a
+             [@bits P.wr_data_count_width - 1 - 0 + 1] [@rtlname "wr_data_count"]
+        ; overflow : 'a [@bits 1] [@rtlname "overflow"]
+        ; wr_rst_busy : 'a [@bits 1] [@rtlname "wr_rst_busy"]
+        ; almost_full : 'a [@bits 1] [@rtlname "almost_full"]
+        ; wr_ack : 'a [@bits 1] [@rtlname "wr_ack"]
+        ; dout : 'a [@bits P.read_data_width - 1 - 0 + 1] [@rtlname "dout"]
+        ; empty : 'a [@bits 1] [@rtlname "empty"]
+        ; prog_empty : 'a [@bits 1] [@rtlname "prog_empty"]
+        ; rd_data_count : 'a
+             [@bits P.rd_data_count_width - 1 - 0 + 1] [@rtlname "rd_data_count"]
+        ; underflow : 'a [@bits 1] [@rtlname "underflow"]
+        ; rd_rst_busy : 'a [@bits 1] [@rtlname "rd_rst_busy"]
+        ; almost_empty : 'a [@bits 1] [@rtlname "almost_empty"]
+        ; data_valid : 'a [@bits 1] [@rtlname "data_valid"]
+        ; sbiterr : 'a [@bits 1] [@rtlname "sbiterr"]
+        ; dbiterr : 'a [@bits 1] [@rtlname "dbiterr"]
+        }
+      [@@deriving sexp_of, hardcaml]
     end
+
     module T = Hardcaml.Interface.Empty
 
-    open struct include Hardcaml.Instantiation.With_interface(I)(O) end
-    let create ?lib ?arch ?attributes ?instance ?(name="xpm_fifo_async") ?parameters inputs =
+    open struct
+      include Hardcaml.Instantiation.With_interface (I) (O)
+    end
+
+    let create
+      ?lib
+      ?arch
+      ?attributes
+      ?instance
+      ?(name = "xpm_fifo_async")
+      ?parameters
+      inputs
+      =
       let parameters = Option.value ~default:params parameters in
       create ?lib ?arch ?instance ?attributes ~parameters ~name inputs
+    ;;
   end
 end
 
@@ -266,6 +348,7 @@ module Xpm_fifo_sync = struct
     val sim_assert_chk : int
     val wakeup_time : int
   end
+
   module P : P = struct
     let fifo_memory_type = "auto"
     let fifo_write_depth = 2048
@@ -284,66 +367,98 @@ module Xpm_fifo_sync = struct
     let sim_assert_chk = 0
     let wakeup_time = 0
   end
+
   module Make (P : P) = struct
-    let params = [
-      Hardcaml.Parameter.create ~name:"FIFO_MEMORY_TYPE" ~value:(String P.fifo_memory_type);
-      Hardcaml.Parameter.create ~name:"FIFO_WRITE_DEPTH" ~value:(Int P.fifo_write_depth);
-      Hardcaml.Parameter.create ~name:"WRITE_DATA_WIDTH" ~value:(Int P.write_data_width);
-      Hardcaml.Parameter.create ~name:"READ_MODE" ~value:(String P.read_mode);
-      Hardcaml.Parameter.create ~name:"FIFO_READ_LATENCY" ~value:(Int P.fifo_read_latency);
-      Hardcaml.Parameter.create ~name:"FULL_RESET_VALUE" ~value:(Int P.full_reset_value);
-      Hardcaml.Parameter.create ~name:"USE_ADV_FEATURES" ~value:(String P.use_adv_features);
-      Hardcaml.Parameter.create ~name:"READ_DATA_WIDTH" ~value:(Int P.read_data_width);
-      Hardcaml.Parameter.create ~name:"WR_DATA_COUNT_WIDTH" ~value:(Int P.wr_data_count_width);
-      Hardcaml.Parameter.create ~name:"PROG_FULL_THRESH" ~value:(Int P.prog_full_thresh);
-      Hardcaml.Parameter.create ~name:"RD_DATA_COUNT_WIDTH" ~value:(Int P.rd_data_count_width);
-      Hardcaml.Parameter.create ~name:"PROG_EMPTY_THRESH" ~value:(Int P.prog_empty_thresh);
-      Hardcaml.Parameter.create ~name:"DOUT_RESET_VALUE" ~value:(String P.dout_reset_value);
-      Hardcaml.Parameter.create ~name:"ECC_MODE" ~value:(String P.ecc_mode);
-      Hardcaml.Parameter.create ~name:"SIM_ASSERT_CHK" ~value:(Int P.sim_assert_chk);
-      Hardcaml.Parameter.create ~name:"WAKEUP_TIME" ~value:(Int P.wakeup_time);
-    ]
+    let params =
+      [ Hardcaml.Parameter.create
+          ~name:"FIFO_MEMORY_TYPE"
+          ~value:(String P.fifo_memory_type)
+      ; Hardcaml.Parameter.create ~name:"FIFO_WRITE_DEPTH" ~value:(Int P.fifo_write_depth)
+      ; Hardcaml.Parameter.create ~name:"WRITE_DATA_WIDTH" ~value:(Int P.write_data_width)
+      ; Hardcaml.Parameter.create ~name:"READ_MODE" ~value:(String P.read_mode)
+      ; Hardcaml.Parameter.create
+          ~name:"FIFO_READ_LATENCY"
+          ~value:(Int P.fifo_read_latency)
+      ; Hardcaml.Parameter.create ~name:"FULL_RESET_VALUE" ~value:(Int P.full_reset_value)
+      ; Hardcaml.Parameter.create
+          ~name:"USE_ADV_FEATURES"
+          ~value:(String P.use_adv_features)
+      ; Hardcaml.Parameter.create ~name:"READ_DATA_WIDTH" ~value:(Int P.read_data_width)
+      ; Hardcaml.Parameter.create
+          ~name:"WR_DATA_COUNT_WIDTH"
+          ~value:(Int P.wr_data_count_width)
+      ; Hardcaml.Parameter.create ~name:"PROG_FULL_THRESH" ~value:(Int P.prog_full_thresh)
+      ; Hardcaml.Parameter.create
+          ~name:"RD_DATA_COUNT_WIDTH"
+          ~value:(Int P.rd_data_count_width)
+      ; Hardcaml.Parameter.create
+          ~name:"PROG_EMPTY_THRESH"
+          ~value:(Int P.prog_empty_thresh)
+      ; Hardcaml.Parameter.create
+          ~name:"DOUT_RESET_VALUE"
+          ~value:(String P.dout_reset_value)
+      ; Hardcaml.Parameter.create ~name:"ECC_MODE" ~value:(String P.ecc_mode)
+      ; Hardcaml.Parameter.create ~name:"SIM_ASSERT_CHK" ~value:(Int P.sim_assert_chk)
+      ; Hardcaml.Parameter.create ~name:"WAKEUP_TIME" ~value:(Int P.wakeup_time)
+      ]
+    ;;
 
     module I = struct
-      type 'a t = {
-        sleep : 'a[@bits 1][@rtlname "sleep"];
-        rst : 'a[@bits 1][@rtlname "rst"];
-        wr_clk : 'a[@bits 1][@rtlname "wr_clk"];
-        wr_en : 'a[@bits 1][@rtlname "wr_en"];
-        din : 'a[@bits (((P.write_data_width - 1)) - (0) + 1)][@rtlname "din"];
-        rd_en : 'a[@bits 1][@rtlname "rd_en"];
-        injectsbiterr : 'a[@bits 1][@rtlname "injectsbiterr"];
-        injectdbiterr : 'a[@bits 1][@rtlname "injectdbiterr"];
-      }[@@deriving sexp_of, hardcaml]
+      type 'a t =
+        { sleep : 'a [@bits 1] [@rtlname "sleep"]
+        ; rst : 'a [@bits 1] [@rtlname "rst"]
+        ; wr_clk : 'a [@bits 1] [@rtlname "wr_clk"]
+        ; wr_en : 'a [@bits 1] [@rtlname "wr_en"]
+        ; din : 'a [@bits P.write_data_width - 1 - 0 + 1] [@rtlname "din"]
+        ; rd_en : 'a [@bits 1] [@rtlname "rd_en"]
+        ; injectsbiterr : 'a [@bits 1] [@rtlname "injectsbiterr"]
+        ; injectdbiterr : 'a [@bits 1] [@rtlname "injectdbiterr"]
+        }
+      [@@deriving sexp_of, hardcaml]
     end
 
     module O = struct
-      type 'a t = {
-        full : 'a[@bits 1][@rtlname "full"];
-        prog_full : 'a[@bits 1][@rtlname "prog_full"];
-        wr_data_count : 'a[@bits (((P.wr_data_count_width - 1)) - (0) + 1)][@rtlname "wr_data_count"];
-        overflow : 'a[@bits 1][@rtlname "overflow"];
-        wr_rst_busy : 'a[@bits 1][@rtlname "wr_rst_busy"];
-        almost_full : 'a[@bits 1][@rtlname "almost_full"];
-        wr_ack : 'a[@bits 1][@rtlname "wr_ack"];
-        dout : 'a[@bits (((P.read_data_width - 1)) - (0) + 1)][@rtlname "dout"];
-        empty : 'a[@bits 1][@rtlname "empty"];
-        prog_empty : 'a[@bits 1][@rtlname "prog_empty"];
-        rd_data_count : 'a[@bits (((P.rd_data_count_width - 1)) - (0) + 1)][@rtlname "rd_data_count"];
-        underflow : 'a[@bits 1][@rtlname "underflow"];
-        rd_rst_busy : 'a[@bits 1][@rtlname "rd_rst_busy"];
-        almost_empty : 'a[@bits 1][@rtlname "almost_empty"];
-        data_valid : 'a[@bits 1][@rtlname "data_valid"];
-        sbiterr : 'a[@bits 1][@rtlname "sbiterr"];
-        dbiterr : 'a[@bits 1][@rtlname "dbiterr"];
-      }[@@deriving sexp_of, hardcaml]
+      type 'a t =
+        { full : 'a [@bits 1] [@rtlname "full"]
+        ; prog_full : 'a [@bits 1] [@rtlname "prog_full"]
+        ; wr_data_count : 'a
+             [@bits P.wr_data_count_width - 1 - 0 + 1] [@rtlname "wr_data_count"]
+        ; overflow : 'a [@bits 1] [@rtlname "overflow"]
+        ; wr_rst_busy : 'a [@bits 1] [@rtlname "wr_rst_busy"]
+        ; almost_full : 'a [@bits 1] [@rtlname "almost_full"]
+        ; wr_ack : 'a [@bits 1] [@rtlname "wr_ack"]
+        ; dout : 'a [@bits P.read_data_width - 1 - 0 + 1] [@rtlname "dout"]
+        ; empty : 'a [@bits 1] [@rtlname "empty"]
+        ; prog_empty : 'a [@bits 1] [@rtlname "prog_empty"]
+        ; rd_data_count : 'a
+             [@bits P.rd_data_count_width - 1 - 0 + 1] [@rtlname "rd_data_count"]
+        ; underflow : 'a [@bits 1] [@rtlname "underflow"]
+        ; rd_rst_busy : 'a [@bits 1] [@rtlname "rd_rst_busy"]
+        ; almost_empty : 'a [@bits 1] [@rtlname "almost_empty"]
+        ; data_valid : 'a [@bits 1] [@rtlname "data_valid"]
+        ; sbiterr : 'a [@bits 1] [@rtlname "sbiterr"]
+        ; dbiterr : 'a [@bits 1] [@rtlname "dbiterr"]
+        }
+      [@@deriving sexp_of, hardcaml]
     end
+
     module T = Hardcaml.Interface.Empty
 
-    open struct include Hardcaml.Instantiation.With_interface(I)(O) end
-    let create ?lib ?arch ?attributes ?instance ?(name="xpm_fifo_sync") ?parameters inputs =
+    open struct
+      include Hardcaml.Instantiation.With_interface (I) (O)
+    end
+
+    let create
+      ?lib
+      ?arch
+      ?attributes
+      ?instance
+      ?(name = "xpm_fifo_sync")
+      ?parameters
+      inputs
+      =
       let parameters = Option.value ~default:params parameters in
       create ?lib ?arch ?instance ?attributes ~parameters ~name inputs
+    ;;
   end
 end
-

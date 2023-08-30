@@ -104,20 +104,20 @@ module For_rtl_sim = struct
                ~f:(fun addr -> step ~write_enable ~write_address:addr ~write_data:0 ())
            ; [ step ~read_enable ~read_address:0 () ]
            ; List.init (1 lsl Config.log_num_words) ~f:(fun i ->
-             step ~write_enable ~write_address:i ~write_data:i ())
+               step ~write_enable ~write_address:i ~write_data:i ())
            ; List.init
                (1 lsl (Config.log_num_words - Config.log_scale_between_ports))
                ~f:(fun i -> step ~read_enable ~read_address:i ())
            ; List.init 1000 ~f:(fun _ ->
-             step
-               ~write_enable:(Random.int 2)
-               ~read_enable:(Random.int 2)
-               ~write_address:(Random.int (1 lsl Config.log_num_words))
-               ~read_address:
-                 (Random.int
-                    (1 lsl (Config.log_num_words - Config.log_scale_between_ports)))
-               ~write_data:(Random.int (1 lsl Config.bits_per_word))
-               ())
+               step
+                 ~write_enable:(Random.int 2)
+                 ~read_enable:(Random.int 2)
+                 ~write_address:(Random.int (1 lsl Config.log_num_words))
+                 ~read_address:
+                   (Random.int
+                      (1 lsl (Config.log_num_words - Config.log_scale_between_ports)))
+                 ~write_data:(Random.int (1 lsl Config.bits_per_word))
+                 ())
            ])
     in
     create

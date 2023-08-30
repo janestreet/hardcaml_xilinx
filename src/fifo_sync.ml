@@ -2,25 +2,25 @@ open! Base
 open Hardcaml
 
 let create
-      ?read_latency
-      ?(overflow_check = true)
-      ?(showahead = false)
-      ?(underflow_check = true)
-      ?(build_mode = Build_mode.Synthesis)
-      ?scope
-      ?fifo_memory_type
-      ?instance
-      ?(xpm_version = `Xpm_2019_1)
-      ?cascade_height
-      ?nearly_full
-      ?nearly_empty
-      ()
-      ~capacity
-      ~clock
-      ~clear
-      ~wr
-      ~d
-      ~rd
+  ?read_latency
+  ?(overflow_check = true)
+  ?(showahead = false)
+  ?(underflow_check = true)
+  ?(build_mode = Build_mode.Synthesis)
+  ?scope
+  ?fifo_memory_type
+  ?instance
+  ?(xpm_version = `Xpm_2019_1)
+  ?cascade_height
+  ?nearly_full
+  ?nearly_empty
+  ()
+  ~capacity
+  ~clock
+  ~clear
+  ~wr
+  ~d
+  ~rd
   =
   (* Check if read_latency is set that its value makes sense. *)
   Option.iter read_latency ~f:(fun read_latency ->
@@ -125,19 +125,19 @@ module With_interface (X : Hardcaml.Interface.S) = struct
   ;;
 
   let create
-        scope
-        ~build_mode
-        ?read_latency
-        ?overflow_check
-        ?showahead
-        ?underflow_check
-        ?fifo_memory_type
-        ?xpm_version
-        ?cascade_height
-        ?nearly_full
-        ?nearly_empty
-        ~capacity
-        ({ clock; clear; d; wr; rd } : _ I.t)
+    scope
+    ~build_mode
+    ?read_latency
+    ?overflow_check
+    ?showahead
+    ?underflow_check
+    ?fifo_memory_type
+    ?xpm_version
+    ?cascade_height
+    ?nearly_full
+    ?nearly_empty
+    ~capacity
+    ({ clock; clear; d; wr; rd } : _ I.t)
     =
     let ( -- ) = Scope.naming scope in
     let spec = Reg_spec.create ~clock ~clear () in
@@ -174,19 +174,19 @@ module With_interface (X : Hardcaml.Interface.S) = struct
   ;;
 
   let hierarchical
-        ?(instance = "fifo_with_interface")
-        scope
-        ~build_mode
-        ?read_latency
-        ?overflow_check
-        ?showahead
-        ?underflow_check
-        ?fifo_memory_type
-        ?xpm_version
-        ?cascade_height
-        ?nearly_full
-        ?nearly_empty
-        ~capacity
+    ?(instance = "fifo_with_interface")
+    scope
+    ~build_mode
+    ?read_latency
+    ?overflow_check
+    ?showahead
+    ?underflow_check
+    ?fifo_memory_type
+    ?xpm_version
+    ?cascade_height
+    ?nearly_full
+    ?nearly_empty
+    ~capacity
     =
     let module H = Hierarchy.In_scope (I) (O) in
     H.hierarchical

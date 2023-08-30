@@ -4,21 +4,21 @@ open Signal
 
 module Xpm_2019_1 = struct
   let create
-        ?(overflow_check = true)
-        ?(showahead = false)
-        ?(underflow_check = true)
-        ?fifo_memory_type:arg_fifo_memory_type
-        ?nearly_full
-        ?(nearly_empty = 16)
-        ?instance
-        ?read_latency
-        ()
-        ~capacity
-        ~clk
-        ~clr
-        ~wr
-        ~d
-        ~rd
+    ?(overflow_check = true)
+    ?(showahead = false)
+    ?(underflow_check = true)
+    ?fifo_memory_type:arg_fifo_memory_type
+    ?nearly_full
+    ?(nearly_empty = 16)
+    ?instance
+    ?read_latency
+    ()
+    ~capacity
+    ~clk
+    ~clr
+    ~wr
+    ~d
+    ~rd
     =
     (* Where is REMOVE_WR_RD_PROT_LOGIC? Its in the docs, but not on the component. *)
     ignore (overflow_check, underflow_check);
@@ -91,22 +91,22 @@ end
 
 module Xpm_2022_1 = struct
   let create
-        ?(overflow_check = true)
-        ?(showahead = false)
-        ?(underflow_check = true)
-        ?fifo_memory_type:arg_fifo_memory_type
-        ?nearly_full
-        ?(nearly_empty = 16)
-        ?instance
-        ?cascade_height:arg_cascade_height
-        ?read_latency
-        ()
-        ~capacity
-        ~clk
-        ~clr
-        ~wr
-        ~d
-        ~rd
+    ?(overflow_check = true)
+    ?(showahead = false)
+    ?(underflow_check = true)
+    ?fifo_memory_type:arg_fifo_memory_type
+    ?nearly_full
+    ?(nearly_empty = 16)
+    ?instance
+    ?cascade_height:arg_cascade_height
+    ?read_latency
+    ()
+    ~capacity
+    ~clk
+    ~clr
+    ~wr
+    ~d
+    ~rd
     =
     ignore (overflow_check, underflow_check);
     let module XFifo =

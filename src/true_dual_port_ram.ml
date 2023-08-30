@@ -80,18 +80,18 @@ module Size_calculations = struct
 end
 
 let create_xpm
-      ~read_latency
-      ~arch
-      ~clock_a
-      ~clock_b
-      ~clear_a
-      ~clear_b
-      ~size
-      ~byte_write_width
-      ~(port_a : _ Ram_port.t)
-      ~(port_b : _ Ram_port.t)
-      ~cascade_height:arg_cascade_height
-      ~memory_optimization:arg_memory_optimization
+  ~read_latency
+  ~arch
+  ~clock_a
+  ~clock_b
+  ~clear_a
+  ~clear_b
+  ~size
+  ~byte_write_width
+  ~(port_a : _ Ram_port.t)
+  ~(port_b : _ Ram_port.t)
+  ~cascade_height:arg_cascade_height
+  ~memory_optimization:arg_memory_optimization
   =
   let byte_write_width (port : _ Ram_port.t) =
     match byte_write_width with
@@ -202,13 +202,13 @@ let rec output_pipe ~clock ~clear ~latency ~enable d =
    the other port, we must put port [a] into [Read_before_write] mode, and port [b] into
    [Write_before_read] mode. *)
 let create_base_rtl_ram
-      ~simulation_name
-      ~(arch : Ram_arch.t)
-      ~clock_a
-      ~clock_b
-      ~size
-      ~(port_a : _ Ram_port.t)
-      ~(port_b : _ Ram_port.t)
+  ~simulation_name
+  ~(arch : Ram_arch.t)
+  ~clock_a
+  ~clock_b
+  ~size
+  ~(port_a : _ Ram_port.t)
+  ~(port_b : _ Ram_port.t)
   =
   let reg clock enable = reg (Reg_spec.create ~clock ()) ~enable in
   let read_enable (port : _ Ram_port.t) =
@@ -253,16 +253,16 @@ let create_base_rtl_ram
 ;;
 
 let create_rtl'
-      ~simulation_name
-      ~read_latency
-      ~arch
-      ~clock_a
-      ~clock_b
-      ~clear_a
-      ~clear_b
-      ~size
-      ~(port_a : _ Ram_port.t)
-      ~(port_b : _ Ram_port.t)
+  ~simulation_name
+  ~read_latency
+  ~arch
+  ~clock_a
+  ~clock_b
+  ~clear_a
+  ~clear_b
+  ~size
+  ~(port_a : _ Ram_port.t)
+  ~(port_b : _ Ram_port.t)
   =
   assert (read_latency > 0);
   let q =
@@ -284,17 +284,17 @@ let create_rtl'
 
 (* Instantiate the core rtl ram multiple times so that it can support byte enables.*)
 let create_rtl
-      ~simulation_name
-      ~read_latency
-      ~arch
-      ~clock_a
-      ~clock_b
-      ~clear_a
-      ~clear_b
-      ~size
-      ~(byte_write_width : Byte_write_width.t)
-      ~(port_a : _ Ram_port.t)
-      ~(port_b : _ Ram_port.t)
+  ~simulation_name
+  ~read_latency
+  ~arch
+  ~clock_a
+  ~clock_b
+  ~clear_a
+  ~clear_b
+  ~size
+  ~(byte_write_width : Byte_write_width.t)
+  ~(port_a : _ Ram_port.t)
+  ~(port_b : _ Ram_port.t)
   =
   let { Size_calculations.size_a; size_b; width_a; width_b } =
     Size_calculations.create ~size ~port_a ~port_b
@@ -396,14 +396,14 @@ let create_rtl
 ;;
 
 let create
-      ?(read_latency = 1)
-      ?(arch = Ram_arch.Blockram No_change)
-      ?(byte_write_width = Byte_write_width.Full)
-      ?memory_optimization
-      ?cascade_height
-      ?simulation_name
-      ~(build_mode : Build_mode.t)
-      ()
+  ?(read_latency = 1)
+  ?(arch = Ram_arch.Blockram No_change)
+  ?(byte_write_width = Byte_write_width.Full)
+  ?memory_optimization
+  ?cascade_height
+  ?simulation_name
+  ~(build_mode : Build_mode.t)
+  ()
   =
   match build_mode with
   | Simulation -> create_rtl ~simulation_name ~read_latency ~arch ~byte_write_width

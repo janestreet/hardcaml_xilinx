@@ -3,13 +3,13 @@ open Signal
 
 let%expect_test "True_dual_port_ram" =
   let create
-        ?(address_width_a = 4)
-        ?(data_width_a = 8)
-        ?(address_width_b = 4)
-        ?(data_width_b = 8)
-        ?size
-        arch
-        build_mode
+    ?(address_width_a = 4)
+    ?(data_width_a = 8)
+    ?(address_width_b = 4)
+    ?(data_width_b = 8)
+    ?size
+    arch
+    build_mode
     =
     let port port ~address_width ~data_width =
       let input name width = input (name ^ "_" ^ port) width in

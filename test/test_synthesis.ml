@@ -96,7 +96,6 @@ module Test_xilinx_primitives (Lut_size : Lut_size) = struct
 end
 
 module _ = Test_xilinx_primitives (Lut4)
-
 module _ = Test_xilinx_primitives (Lut6)
 
 let%expect_test "verilog" =

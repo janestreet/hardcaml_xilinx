@@ -3,22 +3,22 @@ open Hardcaml
 open Signal
 
 let create
-      ?read_latency
-      ?arch
-      ?(byte_write_width = Byte_write_width.Full)
-      ?memory_optimization
-      ?cascade_height
-      ?simulation_name
-      ~build_mode
-      ()
-      ~clock
-      ~clear
-      ~size
-      ~write_address
-      ~write_enable
-      ~data
-      ~read_address
-      ~read_enable
+  ?read_latency
+  ?arch
+  ?(byte_write_width = Byte_write_width.Full)
+  ?memory_optimization
+  ?cascade_height
+  ?simulation_name
+  ~build_mode
+  ()
+  ~clock
+  ~clear
+  ~size
+  ~write_address
+  ~write_enable
+  ~data
+  ~read_address
+  ~read_enable
   =
   let _, q =
     Dual_port_ram.create

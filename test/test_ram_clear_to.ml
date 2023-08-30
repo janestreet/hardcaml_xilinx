@@ -5,12 +5,12 @@ open Hardcaml_waveterm
 module Port = Ram_port
 
 let create_circuit
-      ?(create = True_dual_port_ram.create)
-      ?(byte_write_width = Byte_write_width.Full)
-      ()
-      ~read_latency
-      ~address_bits
-      ~data_bits
+  ?(create = True_dual_port_ram.create)
+  ?(byte_write_width = Byte_write_width.Full)
+  ()
+  ~read_latency
+  ~address_bits
+  ~data_bits
   =
   let port_sizes =
     let write_enable =

@@ -2,20 +2,20 @@ open! Base
 open Hardcaml
 
 let create
-      ?(showahead = false)
-      ?(build_mode = Build_mode.Synthesis)
-      ?fifo_memory_type
-      ?nearly_full
-      ?nearly_empty
-      ?scope
-      ()
-      ~capacity
-      ~read_clock
-      ~write_clock
-      ~clear
-      ~write
-      ~d
-      ~read
+  ?(showahead = false)
+  ?(build_mode = Build_mode.Synthesis)
+  ?fifo_memory_type
+  ?nearly_full
+  ?nearly_empty
+  ?scope
+  ()
+  ~capacity
+  ~read_clock
+  ~write_clock
+  ~clear
+  ~write
+  ~d
+  ~read
   =
   Option.iter fifo_memory_type ~f:(fun fifo_memory_type ->
     match fifo_memory_type with

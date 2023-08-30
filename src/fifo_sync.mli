@@ -16,7 +16,7 @@ open Hardcaml
     pipelining to the FIFO output. *)
 val create
   :  ?read_latency:int
-  (** Default is None which will either set [read_latency] to 0 or 1 if [showahead] is
+       (** Default is None which will either set [read_latency] to 0 or 1 if [showahead] is
       true or false respectively. *)
   -> ?overflow_check:bool (** default is [true] *)
   -> ?showahead:bool (** default is [false] **)
@@ -24,10 +24,10 @@ val create
   -> ?build_mode:Build_mode.t (** default is [Synthesis] *)
   -> ?scope:Scope.t
   -> ?fifo_memory_type:Fifo_memory_type.t
-  (** See [Xpm_fifo_sync] parameters in [xpm.ml] for default. *)
+       (** See [Xpm_fifo_sync] parameters in [xpm.ml] for default. *)
   -> ?instance:string (** Only used in synthesis *)
   -> ?xpm_version:[ `Xpm_2019_1 | `Xpm_2022_1 ]
-  (** Used to decide which XPM version instantiation to use *)
+       (** Used to decide which XPM version instantiation to use *)
   -> ?cascade_height:int (** default is [0] -> Vivado chooses; only used for Xpm 2022.1 *)
   -> ?nearly_full:int (** usage level at which [nearly_full] will be asserted *)
   -> ?nearly_empty:int (** usage level at which [nearly_empty] will be asserted *)
@@ -58,9 +58,9 @@ module With_interface (X : Hardcaml.Interface.S) : sig
     type 'a t =
       { q : 'a X_with_valid.t
       ; overflow : 'a
-      (** sticky error flag indicating whether this fifo has overflowed. *)
+          (** sticky error flag indicating whether this fifo has overflowed. *)
       ; underflow : 'a
-      (** sticky error flag indicating whether this fifo has underflowed. *)
+          (** sticky error flag indicating whether this fifo has underflowed. *)
       }
     [@@deriving sexp_of, hardcaml]
   end
