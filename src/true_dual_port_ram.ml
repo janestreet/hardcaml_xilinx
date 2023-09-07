@@ -92,6 +92,7 @@ let create_xpm
   ~(port_b : _ Ram_port.t)
   ~cascade_height:arg_cascade_height
   ~memory_optimization:arg_memory_optimization
+  ~clocking_mode:arg_clocking_mode
   =
   let byte_write_width (port : _ Ram_port.t) =
     match byte_write_width with
@@ -118,6 +119,16 @@ let create_xpm
       match arg_cascade_height with
       | None -> cascade_height
       | Some arg_cascade_height -> Cascade_height.to_xpm_args arg_cascade_height
+    ;;
+
+    let clocking_mode =
+      Option.value
+        arg_clocking_mode
+        ~default:
+          (if Uid.compare (Signal.uid clock_a) (Signal.uid clock_b) = 0
+           then Clocking_mode.Common_clock
+           else Clocking_mode.Independent_clock)
+      |> Clocking_mode.to_xpm_args
     ;;
 
     let write_data_width_a = width_a
@@ -282,6 +293,37 @@ let create_rtl'
       q.(1) )
 ;;
 
+let raise_port_widths_not_exact_multiple max_width min_width =
+  raise_s
+    [%message
+      "max port data width must be an exact integer multiple of min port data width. \
+       (update the simulation model if something else is required)"
+        (max_width : int)
+        (min_width : int)]
+;;
+
+let raise_ratio_between_port_widths_not_power_of_2 scale =
+  raise_s
+    [%message
+      "ratio between port widths must be a power of 2. (update the simulation model if \
+       non-power-of-2 scale is required)"
+        (scale : int)]
+;;
+
+let raise_9bit_enables_not_supported_with_resizing () =
+  raise_s
+    [%message
+      "9-bit byte enables not supported when port resizing is used (update the \
+       simulation model if this is required)"]
+;;
+
+let raise_port_width_not_divisible_by_byte_size () =
+  raise_s
+    [%message
+      "port widths must be divisible by the byte length if using byte enables (update \
+       the simulation model if something else is required)."]
+;;
+
 (* Instantiate the core rtl ram multiple times so that it can support byte enables.*)
 let create_rtl
   ~simulation_name
@@ -302,39 +344,42 @@ let create_rtl
   let (port_a_split, read_select_a), (port_b_split, read_select_b) =
     if width_a <> width_b
     then (
+      (* Check support for byte enable width and port resizing mode. *)
       let min_width = Int.min width_a width_b in
       let max_width = Int.max width_a width_b in
       if max_width % min_width <> 0
-      then
-        raise_s
-          [%message
-            "max port data width must be an exact integer multiple of min port data \
-             width. (update the simulation model if something else is required)"
-              (max_width : int)
-              (min_width : int)];
+      then raise_port_widths_not_exact_multiple max_width min_width;
       let scale = max_width / min_width in
-      if not (Int.is_pow2 scale)
-      then
-        raise_s
-          [%message
-            "ratio between port widths must be a power of 2. (update the simulation \
-             model if non-power-of-2 scale is required)"
-              (scale : int)];
-      (match byte_write_width with
-       | B8 | B9 ->
-         raise_s
-           [%message
-             "byte enables not supported when port resizing is used (update the \
-              simulation model if this is required)"]
-       | Full -> ());
+      if not (Int.is_pow2 scale) then raise_ratio_between_port_widths_not_power_of_2 scale;
+      let underlying_ram_width =
+        match byte_write_width with
+        | B9 -> raise_9bit_enables_not_supported_with_resizing ()
+        | B8 ->
+          if not (max_width % 8 = 0 && min_width % 8 = 0)
+          then raise_port_width_not_divisible_by_byte_size ();
+          8
+        | Full -> min_width
+      in
       let log_scale = Int.ceil_log2 scale in
+      let split_to_underlying_rams (port : _ Ram_port.t) =
+        let split_data = split_lsb ~part_width:underlying_ram_width port.data in
+        let split_enables e =
+          match byte_write_width with
+          | B8 | B9 -> bits_lsb e
+          | Full -> List.map split_data ~f:(Fn.const e)
+        in
+        N_ary.List3.map_exn
+          split_data
+          (List.map split_data ~f:(Fn.const port.read_enable))
+          (* read enable is always single bit *)
+          (split_enables port.write_enable)
+          ~f:(fun data read_enable write_enable ->
+            { port with data; read_enable; write_enable })
+      in
       let map_port (port : _ Ram_port.t) =
         if width port.data = max_width
         then (
-          let ports =
-            split_lsb ~part_width:min_width port.data
-            |> List.map ~f:(fun data -> { port with data })
-          in
+          let ports = split_to_underlying_rams port in
           ports, None)
         else (
           assert (width port.data = min_width);
@@ -342,14 +387,19 @@ let create_rtl
           let address = drop_bottom port.address log_scale in
           let ports =
             List.init (1 lsl log_scale) ~f:(fun word ->
-              let enable = sel_bottom port.address log_scale ==:. word in
-              { port with
-                address
-              ; write_enable = port.write_enable &: enable
-              ; read_enable = port.read_enable &: enable
-              })
+              let port =
+                let enable = sel_bottom port.address log_scale ==:. word in
+                { port with
+                  address
+                ; write_enable =
+                    port.write_enable &: repeat enable (width port.write_enable)
+                ; read_enable = port.read_enable &: repeat enable (width port.read_enable)
+                }
+              in
+              split_to_underlying_rams port)
+            |> List.concat
           in
-          ports, Some (read_select, port.read_enable))
+          ports, Some (read_select, port.read_enable, min_width / underlying_ram_width))
       in
       map_port port_a, map_port port_b)
     else (
@@ -386,7 +436,12 @@ let create_rtl
   in
   let qa, qb = List.unzip qs in
   let apply_read_select spec q rs =
-    Option.map rs ~f:(fun (rs, re) ->
+    Option.map rs ~f:(fun (rs, re, group_size) ->
+      (* need to recombine pieces from [underlying_ram_width] to [min_width] *)
+      let q =
+        List.groupi q ~break:(fun i _ _ -> i % group_size = 0) |> List.map ~f:concat_lsb
+      in
+      assert (List.length q = 1 lsl width rs);
       mux (pipeline spec ~n:(read_latency - 1) (reg spec ~enable:re rs)) q)
     |> Option.value ~default:(concat_lsb q)
   in
@@ -401,6 +456,7 @@ let create
   ?(byte_write_width = Byte_write_width.Full)
   ?memory_optimization
   ?cascade_height
+  ?clocking_mode
   ?simulation_name
   ~(build_mode : Build_mode.t)
   ()
@@ -408,5 +464,11 @@ let create
   match build_mode with
   | Simulation -> create_rtl ~simulation_name ~read_latency ~arch ~byte_write_width
   | Synthesis ->
-    create_xpm ~read_latency ~arch ~byte_write_width ~cascade_height ~memory_optimization
+    create_xpm
+      ~read_latency
+      ~arch
+      ~byte_write_width
+      ~cascade_height
+      ~memory_optimization
+      ~clocking_mode
 ;;

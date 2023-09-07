@@ -7,10 +7,12 @@ module For_rtl_sim = struct
   module Config = struct
     (* Fiddle with the following parameters and run a sim to see the behaviour. *)
     let log_num_words = 6
-    let bits_per_word = 8
+    let bits_per_word = 16
     let log_scale_between_ports = -1
     let read_latency = 1
     let collision_mode = None
+    let byte_write_width = Some Hardcaml_xilinx.Byte_write_width.B8
+    let clocking_mode = None
   end
 
   module Ram = Ram_with_resizing.Make (Config)
@@ -37,7 +39,7 @@ module For_rtl_sim = struct
 
   module Step = struct
     type 'a t =
-      { write_enable : 'a
+      { write_enable : 'a [@bits Ram.write_enable_bits]
       ; read_enable : 'a
       ; write_address : 'a [@bits Ram.write_address_bits]
       ; read_address : 'a [@bits Ram.read_address_bits]
@@ -64,7 +66,8 @@ module For_rtl_sim = struct
           ; write_data = Option.value ~default:prev.write_data write_data
           }
         in
-        { Step.write_enable = Signal.of_int ~width:1 d.write_enable
+        { Step.write_enable =
+            Signal.of_int ~width:Step.port_widths.write_enable d.write_enable
         ; read_enable = Signal.of_int ~width:1 d.read_enable
         ; write_address =
             Signal.of_int ~width:Step.port_widths.write_address d.write_address
@@ -90,7 +93,8 @@ module For_rtl_sim = struct
   ;;
 
   let testbench scope (i : _ I.t) =
-    let write_enable, read_enable = 1, 1 in
+    let max_write_enable = (1 lsl Ram.write_enable_bits) - 1 in
+    let write_enable, read_enable = max_write_enable, 1 in
     let p =
       steps
         ~clock:i.clock
@@ -110,7 +114,7 @@ module For_rtl_sim = struct
                ~f:(fun i -> step ~read_enable ~read_address:i ())
            ; List.init 1000 ~f:(fun _ ->
                step
-                 ~write_enable:(Random.int 2)
+                 ~write_enable:(Random.int (max_write_enable + 1))
                  ~read_enable:(Random.int 2)
                  ~write_address:(Random.int (1 lsl Config.log_num_words))
                  ~read_address:
@@ -122,11 +126,13 @@ module For_rtl_sim = struct
     in
     create
       scope
-      { Ram.I.clock = i.clock
-      ; clear = i.clear
+      { Ram.I.write_clock = i.clock
+      ; write_clear = i.clear
       ; write_enable = p.write_enable
       ; write_address = p.write_address
       ; write_data = p.write_data
+      ; read_clock = i.clock
+      ; read_clear = i.clear
       ; read_enable = p.read_enable
       ; read_address = p.read_address
       }
@@ -142,8 +148,14 @@ end
 
 let ( <-. ) a b = a := Bits.of_int ~width:(Bits.width !a) b
 
-let test ?(read_latency = 1) log_scale_between_ports =
-  let bits_per_word = 4 in
+let test
+  ?(strobe_enable = true)
+  ?(bits_per_word = 4)
+  ?byte_write_width
+  ?(read_latency = 1)
+  log_scale_between_ports
+  =
+  assert (bits_per_word = 4 || bits_per_word = 8);
   let log_num_words = 3 in
   let module Ram =
     Ram_with_resizing.Make (struct
@@ -152,6 +164,8 @@ let test ?(read_latency = 1) log_scale_between_ports =
       let log_num_words = log_num_words
       let read_latency = read_latency
       let collision_mode = None
+      let byte_write_width = byte_write_width
+      let clocking_mode = None
     end)
   in
   print_s
@@ -159,7 +173,8 @@ let test ?(read_latency = 1) log_scale_between_ports =
       (Ram.write_address_bits : int)
         (Ram.read_address_bits : int)
         (Ram.write_data_bits : int)
-        (Ram.read_data_bits : int)];
+        (Ram.read_data_bits : int)
+        (Ram.write_enable_bits : int)];
   let module Sim = Cyclesim.With_interface (Ram.I) (Ram.O) in
   let sim =
     Sim.create (Ram.create ~build_mode:Simulation (Scope.create ~flatten_design:true ()))
@@ -171,10 +186,14 @@ let test ?(read_latency = 1) log_scale_between_ports =
     1 lsl if log_scale_between_ports >= 0 then 0 else -log_scale_between_ports
   in
   print_s [%message (scale_up : int)];
-  inputs.write_enable <-. 1;
   for i = 0 to ((1 lsl log_num_words) / scale_up) - 1 do
+    inputs.write_enable
+    <-.
+    if strobe_enable
+    then 1 lsl (i % Ram.write_enable_bits)
+    else (1 lsl Ram.write_enable_bits) - 1;
     inputs.write_address <-. i;
-    inputs.write_data <-. 0x4321 + (i * 0x11111111 * scale_up);
+    inputs.write_data <-. 0x4321 + (i * 0x11111111 * scale_up * (bits_per_word / 4));
     Cyclesim.cycle sim
   done;
   inputs.write_enable <-. 0;
@@ -191,7 +210,7 @@ let test ?(read_latency = 1) log_scale_between_ports =
   for _ = 0 to read_latency do
     Cyclesim.cycle sim
   done;
-  Waveform.expect ~display_width:90 ~display_height:22 ~wave_width:1 waves
+  Waveform.expect ~display_width:90 ~display_height:24 ~wave_width:1 waves
 ;;
 
 let%expect_test "no scale" =
@@ -199,19 +218,21 @@ let%expect_test "no scale" =
   [%expect
     {|
 ((Ram.write_address_bits 3) (Ram.read_address_bits 3) (Ram.write_data_bits 4)
- (Ram.read_data_bits 4))
+ (Ram.read_data_bits 4) (Ram.write_enable_bits 1))
 (scale_up 1)
 ┌Signals───────────┐┌Waves───────────────────────────────────────────────────────────────┐
-│clock             ││┌─┐ ┌─┐ ┌─┐ ┌─┐ ┌─┐ ┌─┐ ┌─┐ ┌─┐ ┌─┐ ┌─┐ ┌─┐ ┌─┐ ┌─┐ ┌─┐ ┌─┐ ┌─┐ ┌─┐ │
-│                  ││  └─┘ └─┘ └─┘ └─┘ └─┘ └─┘ └─┘ └─┘ └─┘ └─┘ └─┘ └─┘ └─┘ └─┘ └─┘ └─┘ └─│
 │                  ││────────────────────────────────────┬───┬───┬───┬───┬───┬───┬───────│
 │read_address      ││ 0                                  │1  │2  │3  │4  │5  │6  │7      │
 │                  ││────────────────────────────────────┴───┴───┴───┴───┴───┴───┴───────│
+│read_clock        ││                                                                    │
+│                  ││────────────────────────────────────────────────────────────────────│
 │read_enable       ││                                ┌───────────────────────────────┐   │
 │                  ││────────────────────────────────┘                               └───│
 │                  ││────┬───┬───┬───┬───┬───┬───┬───────────────────────────────────────│
 │write_address     ││ 0  │1  │2  │3  │4  │5  │6  │7                                      │
 │                  ││────┴───┴───┴───┴───┴───┴───┴───────────────────────────────────────│
+│write_clock       ││                                                                    │
+│                  ││────────────────────────────────────────────────────────────────────│
 │                  ││────┬───┬───┬───┬───┬───┬───┬───────────────────────────────────────│
 │write_data        ││ 1  │2  │3  │4  │5  │6  │7  │8                                      │
 │                  ││────┴───┴───┴───┴───┴───┴───┴───────────────────────────────────────│
@@ -231,21 +252,23 @@ let%expect_test "write port wider x2" =
   [%expect
     {|
 ((Ram.write_address_bits 2) (Ram.read_address_bits 3) (Ram.write_data_bits 8)
- (Ram.read_data_bits 4))
+ (Ram.read_data_bits 4) (Ram.write_enable_bits 1))
 (scale_up 2)
 ┌Signals───────────┐┌Waves───────────────────────────────────────────────────────────────┐
-│clock             ││┌─┐ ┌─┐ ┌─┐ ┌─┐ ┌─┐ ┌─┐ ┌─┐ ┌─┐ ┌─┐ ┌─┐ ┌─┐ ┌─┐ ┌─┐ ┌─┐ ┌─┐ ┌─┐ ┌─┐ │
-│                  ││  └─┘ └─┘ └─┘ └─┘ └─┘ └─┘ └─┘ └─┘ └─┘ └─┘ └─┘ └─┘ └─┘ └─┘ └─┘ └─┘ └─│
-│clear             ││                                                                    │
-│                  ││────────────────────────────────────────────────────────            │
 │                  ││────────────────────┬───┬───┬───┬───┬───┬───┬───────────            │
 │read_address      ││ 0                  │1  │2  │3  │4  │5  │6  │7                      │
 │                  ││────────────────────┴───┴───┴───┴───┴───┴───┴───────────            │
+│read_clear        ││                                                                    │
+│                  ││────────────────────────────────────────────────────────            │
+│read_clock        ││                                                                    │
+│                  ││────────────────────────────────────────────────────────            │
 │read_enable       ││                ┌───────────────────────────────┐                   │
 │                  ││────────────────┘                               └───────            │
 │                  ││────┬───┬───┬───────────────────────────────────────────            │
 │write_address     ││ 0  │1  │2  │3                                                      │
 │                  ││────┴───┴───┴───────────────────────────────────────────            │
+│write_clock       ││                                                                    │
+│                  ││────────────────────────────────────────────────────────            │
 │                  ││────┬───┬───┬───────────────────────────────────────────            │
 │write_data        ││ 21 │43 │65 │87                                                     │
 │                  ││────┴───┴───┴───────────────────────────────────────────            │
@@ -263,20 +286,22 @@ let%expect_test "write port wider x4" =
   [%expect
     {|
     ((Ram.write_address_bits 1) (Ram.read_address_bits 3)
-     (Ram.write_data_bits 16) (Ram.read_data_bits 4))
+     (Ram.write_data_bits 16) (Ram.read_data_bits 4) (Ram.write_enable_bits 1))
     (scale_up 4)
     ┌Signals───────────┐┌Waves───────────────────────────────────────────────────────────────┐
-    │clock             ││┌─┐ ┌─┐ ┌─┐ ┌─┐ ┌─┐ ┌─┐ ┌─┐ ┌─┐ ┌─┐ ┌─┐ ┌─┐ ┌─┐ ┌─┐ ┌─┐ ┌─┐ ┌─┐ ┌─┐ │
-    │                  ││  └─┘ └─┘ └─┘ └─┘ └─┘ └─┘ └─┘ └─┘ └─┘ └─┘ └─┘ └─┘ └─┘ └─┘ └─┘ └─┘ └─│
-    │clear             ││                                                                    │
-    │                  ││────────────────────────────────────────────────                    │
     │                  ││────────────┬───┬───┬───┬───┬───┬───┬───────────                    │
     │read_address      ││ 0          │1  │2  │3  │4  │5  │6  │7                              │
     │                  ││────────────┴───┴───┴───┴───┴───┴───┴───────────                    │
+    │read_clear        ││                                                                    │
+    │                  ││────────────────────────────────────────────────                    │
+    │read_clock        ││                                                                    │
+    │                  ││────────────────────────────────────────────────                    │
     │read_enable       ││        ┌───────────────────────────────┐                           │
     │                  ││────────┘                               └───────                    │
     │write_address     ││    ┌───────────────────────────────────────────                    │
     │                  ││────┘                                                               │
+    │write_clock       ││                                                                    │
+    │                  ││────────────────────────────────────────────────                    │
     │                  ││────┬───────────────────────────────────────────                    │
     │write_data        ││ 43.│8765                                                           │
     │                  ││────┴───────────────────────────────────────────                    │
@@ -306,19 +331,21 @@ let%expect_test "read port wider x2" =
   [%expect
     {|
 ((Ram.write_address_bits 3) (Ram.read_address_bits 2) (Ram.write_data_bits 4)
- (Ram.read_data_bits 8))
+ (Ram.read_data_bits 8) (Ram.write_enable_bits 1))
 (scale_up 1)
 ┌Signals───────────┐┌Waves───────────────────────────────────────────────────────────────┐
-│clock             ││┌─┐ ┌─┐ ┌─┐ ┌─┐ ┌─┐ ┌─┐ ┌─┐ ┌─┐ ┌─┐ ┌─┐ ┌─┐ ┌─┐ ┌─┐ ┌─┐ ┌─┐ ┌─┐ ┌─┐ │
-│                  ││  └─┘ └─┘ └─┘ └─┘ └─┘ └─┘ └─┘ └─┘ └─┘ └─┘ └─┘ └─┘ └─┘ └─┘ └─┘ └─┘ └─│
 │                  ││────────────────────────────────────┬───┬───┬───────────            │
 │read_address      ││ 0                                  │1  │2  │3                      │
 │                  ││────────────────────────────────────┴───┴───┴───────────            │
+│read_clock        ││                                                                    │
+│                  ││────────────────────────────────────────────────────────            │
 │read_enable       ││                                ┌───────────────┐                   │
 │                  ││────────────────────────────────┘               └───────            │
 │                  ││────┬───┬───┬───┬───┬───┬───┬───────────────────────────            │
 │write_address     ││ 0  │1  │2  │3  │4  │5  │6  │7                                      │
 │                  ││────┴───┴───┴───┴───┴───┴───┴───────────────────────────            │
+│write_clock       ││                                                                    │
+│                  ││────────────────────────────────────────────────────────            │
 │                  ││────┬───┬───┬───┬───┬───┬───┬───────────────────────────            │
 │write_data        ││ 1  │2  │3  │4  │5  │6  │7  │8                                      │
 │                  ││────┴───┴───┴───┴───┴───┴───┴───────────────────────────            │
@@ -338,18 +365,20 @@ let%expect_test "read port wider x4" =
   [%expect
     {|
     ((Ram.write_address_bits 3) (Ram.read_address_bits 1) (Ram.write_data_bits 4)
-     (Ram.read_data_bits 16))
+     (Ram.read_data_bits 16) (Ram.write_enable_bits 1))
     (scale_up 1)
     ┌Signals───────────┐┌Waves───────────────────────────────────────────────────────────────┐
-    │clock             ││┌─┐ ┌─┐ ┌─┐ ┌─┐ ┌─┐ ┌─┐ ┌─┐ ┌─┐ ┌─┐ ┌─┐ ┌─┐ ┌─┐ ┌─┐ ┌─┐ ┌─┐ ┌─┐ ┌─┐ │
-    │                  ││  └─┘ └─┘ └─┘ └─┘ └─┘ └─┘ └─┘ └─┘ └─┘ └─┘ └─┘ └─┘ └─┘ └─┘ └─┘ └─┘ └─│
     │read_address      ││                                    ┌───────────                    │
     │                  ││────────────────────────────────────┘                               │
+    │read_clock        ││                                                                    │
+    │                  ││────────────────────────────────────────────────                    │
     │read_enable       ││                                ┌───────┐                           │
     │                  ││────────────────────────────────┘       └───────                    │
     │                  ││────┬───┬───┬───┬───┬───┬───┬───────────────────                    │
     │write_address     ││ 0  │1  │2  │3  │4  │5  │6  │7                                      │
     │                  ││────┴───┴───┴───┴───┴───┴───┴───────────────────                    │
+    │write_clock       ││                                                                    │
+    │                  ││────────────────────────────────────────────────                    │
     │                  ││────┬───┬───┬───┬───┬───┬───┬───────────────────                    │
     │write_data        ││ 1  │2  │3  │4  │5  │6  │7  │8                                      │
     │                  ││────┴───┴───┴───┴───┴───┴───┴───────────────────                    │
@@ -370,20 +399,22 @@ let%expect_test "read port wider x4, read_latency=2" =
   [%expect
     {|
     ((Ram.write_address_bits 3) (Ram.read_address_bits 1) (Ram.write_data_bits 4)
-     (Ram.read_data_bits 16))
+     (Ram.read_data_bits 16) (Ram.write_enable_bits 1))
     (scale_up 1)
     ┌Signals───────────┐┌Waves───────────────────────────────────────────────────────────────┐
-    │clock             ││┌─┐ ┌─┐ ┌─┐ ┌─┐ ┌─┐ ┌─┐ ┌─┐ ┌─┐ ┌─┐ ┌─┐ ┌─┐ ┌─┐ ┌─┐ ┌─┐ ┌─┐ ┌─┐ ┌─┐ │
-    │                  ││  └─┘ └─┘ └─┘ └─┘ └─┘ └─┘ └─┘ └─┘ └─┘ └─┘ └─┘ └─┘ └─┘ └─┘ └─┘ └─┘ └─│
-    │clear             ││                                                                    │
-    │                  ││────────────────────────────────────────────────────                │
     │read_address      ││                                    ┌───────────────                │
     │                  ││────────────────────────────────────┘                               │
+    │read_clear        ││                                                                    │
+    │                  ││────────────────────────────────────────────────────                │
+    │read_clock        ││                                                                    │
+    │                  ││────────────────────────────────────────────────────                │
     │read_enable       ││                                ┌───────┐                           │
     │                  ││────────────────────────────────┘       └───────────                │
     │                  ││────┬───┬───┬───┬───┬───┬───┬───────────────────────                │
     │write_address     ││ 0  │1  │2  │3  │4  │5  │6  │7                                      │
     │                  ││────┴───┴───┴───┴───┴───┴───┴───────────────────────                │
+    │write_clock       ││                                                                    │
+    │                  ││────────────────────────────────────────────────────                │
     │                  ││────┬───┬───┬───┬───┬───┬───┬───────────────────────                │
     │write_data        ││ 1  │2  │3  │4  │5  │6  │7  │8                                      │
     │                  ││────┴───┴───┴───┴───┴───┴───┴───────────────────────                │
@@ -406,4 +437,72 @@ let%expect_test "read port wider x8 - raises" =
      (read_address_bits  0)
      (write_data_bits    4)
      (read_data_bits     32)) |}]
+;;
+
+let%expect_test "write port wider x2, with byte enables" =
+  test ~bits_per_word:8 ~byte_write_width:B8 (-1);
+  [%expect
+    {|
+    ((Ram.write_address_bits 2) (Ram.read_address_bits 3)
+     (Ram.write_data_bits 16) (Ram.read_data_bits 8) (Ram.write_enable_bits 2))
+    (scale_up 2)
+    ┌Signals───────────┐┌Waves───────────────────────────────────────────────────────────────┐
+    │                  ││────────────────────┬───┬───┬───┬───┬───┬───┬───────────            │
+    │read_address      ││ 0                  │1  │2  │3  │4  │5  │6  │7                      │
+    │                  ││────────────────────┴───┴───┴───┴───┴───┴───┴───────────            │
+    │read_clear        ││                                                                    │
+    │                  ││────────────────────────────────────────────────────────            │
+    │read_clock        ││                                                                    │
+    │                  ││────────────────────────────────────────────────────────            │
+    │read_enable       ││                ┌───────────────────────────────┐                   │
+    │                  ││────────────────┘                               └───────            │
+    │                  ││────┬───┬───┬───────────────────────────────────────────            │
+    │write_address     ││ 0  │1  │2  │3                                                      │
+    │                  ││────┴───┴───┴───────────────────────────────────────────            │
+    │write_clock       ││                                                                    │
+    │                  ││────────────────────────────────────────────────────────            │
+    │                  ││────┬───┬───┬───────────────────────────────────────────            │
+    │write_data        ││ 43.│87.│CB.│0FED                                                   │
+    │                  ││────┴───┴───┴───────────────────────────────────────────            │
+    │                  ││────┬───┬───┬───┬───────────────────────────────────────            │
+    │write_enable      ││ 1  │2  │1  │2  │0                                                  │
+    │                  ││────┴───┴───┴───┴───────────────────────────────────────            │
+    │                  ││────────────────────┬───┬───────┬───┬───┬───────┬───────            │
+    │q                 ││ 00                 │21 │00     │87 │A9 │00     │0F                 │
+    └──────────────────┘└────────────────────────────────────────────────────────────────────┘
+    a5df70a41a15da42fa14ba59249b0683 |}]
+;;
+
+let%expect_test "write port wider x2, with byte enables all high" =
+  test ~strobe_enable:false ~bits_per_word:8 ~byte_write_width:B8 (-1);
+  [%expect
+    {|
+    ((Ram.write_address_bits 2) (Ram.read_address_bits 3)
+     (Ram.write_data_bits 16) (Ram.read_data_bits 8) (Ram.write_enable_bits 2))
+    (scale_up 2)
+    ┌Signals───────────┐┌Waves───────────────────────────────────────────────────────────────┐
+    │                  ││────────────────────┬───┬───┬───┬───┬───┬───┬───────────            │
+    │read_address      ││ 0                  │1  │2  │3  │4  │5  │6  │7                      │
+    │                  ││────────────────────┴───┴───┴───┴───┴───┴───┴───────────            │
+    │read_clear        ││                                                                    │
+    │                  ││────────────────────────────────────────────────────────            │
+    │read_clock        ││                                                                    │
+    │                  ││────────────────────────────────────────────────────────            │
+    │read_enable       ││                ┌───────────────────────────────┐                   │
+    │                  ││────────────────┘                               └───────            │
+    │                  ││────┬───┬───┬───────────────────────────────────────────            │
+    │write_address     ││ 0  │1  │2  │3                                                      │
+    │                  ││────┴───┴───┴───────────────────────────────────────────            │
+    │write_clock       ││                                                                    │
+    │                  ││────────────────────────────────────────────────────────            │
+    │                  ││────┬───┬───┬───────────────────────────────────────────            │
+    │write_data        ││ 43.│87.│CB.│0FED                                                   │
+    │                  ││────┴───┴───┴───────────────────────────────────────────            │
+    │                  ││────────────────┬───────────────────────────────────────            │
+    │write_enable      ││ 3              │0                                                  │
+    │                  ││────────────────┴───────────────────────────────────────            │
+    │                  ││────────────────────┬───┬───┬───┬───┬───┬───┬───┬───────            │
+    │q                 ││ 00                 │21 │43 │65 │87 │A9 │CB │ED │0F                 │
+    └──────────────────┘└────────────────────────────────────────────────────────────────────┘
+    2b8c50b44901d80fe241e4e9f0e05a2d |}]
 ;;

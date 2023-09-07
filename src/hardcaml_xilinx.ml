@@ -1,5 +1,6 @@
 module Byte_write_width = Byte_write_width
 module Cascade_height = Cascade_height
+module Clocking_mode = Clocking_mode
 module Collision_mode = Collision_mode
 module Dual_port_ram = Dual_port_ram
 module Fifo_async = Fifo_async

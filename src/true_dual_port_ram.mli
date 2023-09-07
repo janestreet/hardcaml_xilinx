@@ -38,7 +38,10 @@ val create
   -> ?byte_write_width:Byte_write_width.t (** Default is [Full] *)
   -> ?memory_optimization:bool
   -> ?cascade_height:Cascade_height.t
-       (** See [Xpm_memory_tdpram] parameters in [xpm.ml] for default. *)
+  -> ?clocking_mode:Clocking_mode.t
+       (** By default, we make a best-guess effort to choose the correct clocking model - if
+      the two clocks have the same [Uid.t], we pick [Common_clock]; otherwise, we pick 
+      [Independent_clock] *)
   -> ?simulation_name:string
        (** In simulation, set the name of the underlying [multiport_memory] node. *)
   -> build_mode:Build_mode.t

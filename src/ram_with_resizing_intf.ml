@@ -7,6 +7,8 @@ module type Config = sig
   val log_scale_between_ports : int
   val read_latency : int
   val collision_mode : Collision_mode.t option
+  val byte_write_width : Byte_write_width.t option
+  val clocking_mode : Clocking_mode.t option
 end
 
 module type S = sig
@@ -22,13 +24,18 @@ module type S = sig
   (** number of bits in the read bus. *)
   val read_data_bits : int
 
+  (** the number of bits in the write enable. *)
+  val write_enable_bits : int
+
   module I : sig
     type 'a t =
-      { clock : 'a
-      ; clear : 'a
+      { write_clock : 'a
+      ; write_clear : 'a
       ; write_address : 'a
       ; write_data : 'a
       ; write_enable : 'a
+      ; read_clock : 'a
+      ; read_clear : 'a
       ; read_address : 'a
       ; read_enable : 'a
       }

@@ -51,13 +51,31 @@ module Make (Config : Config) = struct
             (read_data_bits : int)]
   ;;
 
+  let write_enable_bits_of ~write_data_bits =
+    let byte_write_width_in_bits =
+      match byte_write_width with
+      | None -> write_data_bits
+      | Some v ->
+        (match v with
+         | Byte_write_width.B8 -> 8
+         | B9 -> 9
+         | Full -> write_data_bits)
+    in
+    assert (write_data_bits % byte_write_width_in_bits = 0);
+    write_data_bits / byte_write_width_in_bits
+  ;;
+
+  let write_enable_bits = write_enable_bits_of ~write_data_bits
+
   module I = struct
     type 'a t =
-      { clock : 'a
-      ; clear : 'a
+      { write_clock : 'a
+      ; write_clear : 'a
       ; write_address : 'a [@bits write_address_bits]
       ; write_data : 'a [@bits write_data_bits]
-      ; write_enable : 'a
+      ; write_enable : 'a [@bits write_enable_bits]
+      ; read_clock : 'a
+      ; read_clear : 'a
       ; read_address : 'a [@bits read_address_bits]
       ; read_enable : 'a
       }
@@ -74,11 +92,13 @@ module Make (Config : Config) = struct
         ~read_latency
         ~build_mode
         ~arch:(Blockram (Option.value ~default:Read_before_write collision_mode))
+        ?byte_write_width
+        ?clocking_mode
         ()
-        ~clock_a:i.clock
-        ~clock_b:i.clock
-        ~clear_a:i.clear
-        ~clear_b:i.clear
+        ~clock_a:i.write_clock
+        ~clock_b:i.read_clock
+        ~clear_a:i.write_clear
+        ~clear_b:i.read_clear
         ~size:(1 lsl write_address_bits)
         ~port_a:
           { address = i.write_address
@@ -89,7 +109,7 @@ module Make (Config : Config) = struct
         ~port_b:
           { address = i.read_address
           ; data = zero read_data_bits
-          ; write_enable = gnd
+          ; write_enable = zero (write_enable_bits_of ~write_data_bits:read_data_bits)
           ; read_enable = i.read_enable
           }
     in

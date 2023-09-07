@@ -88,7 +88,7 @@ let%expect_test "True_dual_port_ram" =
         xpm_memory_tdpram
             #( .MEMORY_SIZE(128),
               .MEMORY_PRIMITIVE("distributed"),
-              .CLOCKING_MODE("common_clock"),
+              .CLOCKING_MODE("independent_clock"),
               .ECC_MODE("no_ecc"),
               .MEMORY_INIT_FILE("none"),
               .MEMORY_INIT_PARAM(""),
@@ -202,7 +202,7 @@ let%expect_test "True_dual_port_ram" =
         xpm_memory_tdpram
             #( .MEMORY_SIZE(128),
               .MEMORY_PRIMITIVE("block"),
-              .CLOCKING_MODE("common_clock"),
+              .CLOCKING_MODE("independent_clock"),
               .ECC_MODE("no_ecc"),
               .MEMORY_INIT_FILE("none"),
               .MEMORY_INIT_PARAM(""),
@@ -316,7 +316,7 @@ let%expect_test "True_dual_port_ram" =
         xpm_memory_tdpram
             #( .MEMORY_SIZE(128),
               .MEMORY_PRIMITIVE("ultra"),
-              .CLOCKING_MODE("common_clock"),
+              .CLOCKING_MODE("independent_clock"),
               .ECC_MODE("no_ecc"),
               .MEMORY_INIT_FILE("none"),
               .MEMORY_INIT_PARAM(""),
@@ -389,8 +389,9 @@ let%expect_test "True_dual_port_ram" =
       (Blockram Read_before_write)
       build_mode
   in
-  require_does_raise [%here] (fun () -> test_bad_address_width Synthesis);
-  [%expect {| "Assert_failure true_dual_port_ram.ml:147:2" |}];
+  require_does_raise [%here] ~hide_positions:true (fun () ->
+    test_bad_address_width Synthesis);
+  [%expect {| "Assert_failure true_dual_port_ram.ml:LINE:COL" |}];
   require_does_raise [%here] (fun () -> test_bad_address_width Simulation);
   [%expect
     {|
@@ -484,7 +485,7 @@ let%expect_test "True_dual_port_ram" =
         xpm_memory_tdpram
             #( .MEMORY_SIZE(60),
               .MEMORY_PRIMITIVE("block"),
-              .CLOCKING_MODE("common_clock"),
+              .CLOCKING_MODE("independent_clock"),
               .ECC_MODE("no_ecc"),
               .MEMORY_INIT_FILE("none"),
               .MEMORY_INIT_PARAM(""),
@@ -783,6 +784,196 @@ let%expect_test "byte enables" =
         /* output assignments */
         assign qa = _48;
         assign qb = _35;
+
+    endmodule |}]
+;;
+
+let%expect_test "byte enables with resizing" =
+  let create arch =
+    let port port ~address_width ~data_width =
+      let input name width = input (name ^ "_" ^ port) width in
+      { Ram_port.address = input "address" address_width
+      ; write_enable = input "write" (data_width / 8)
+      ; read_enable = input "read" 1
+      ; data = input "data" data_width
+      }
+    in
+    let qa, qb =
+      True_dual_port_ram.create
+        ~memory_optimization:false
+        ~cascade_height:Inferred
+        ~arch
+        ~build_mode:Simulation
+        ()
+        ~clock_a:(input "clock_a" 1)
+        ~clock_b:(input "clock_b" 1)
+        ~clear_a:(input "clear_a" 1)
+        ~clear_b:(input "clear_b" 1)
+        ~size:16
+        ~byte_write_width:B8
+        ~port_a:(port "a" ~address_width:4 ~data_width:16)
+        ~port_b:(port "b" ~address_width:5 ~data_width:8)
+    in
+    Circuit.create_exn ~name:"true_dual_port_ram" [ output "qa" qa; output "qb" qb ]
+    |> Rtl.print Verilog
+  in
+  create (Blockram No_change);
+  [%expect
+    {|
+    module true_dual_port_ram (
+        read_b,
+        clear_b,
+        read_a,
+        write_b,
+        data_b,
+        clock_b,
+        write_a,
+        data_a,
+        clock_a,
+        address_b,
+        address_a,
+        qa,
+        qb
+    );
+
+        input read_b;
+        input clear_b;
+        input read_a;
+        input write_b;
+        input [7:0] data_b;
+        input clock_b;
+        input [1:0] write_a;
+        input [15:0] data_a;
+        input clock_a;
+        input [4:0] address_b;
+        input [3:0] address_a;
+        output [15:0] qa;
+        output [7:0] qb;
+
+        /* signal declarations */
+        wire _44;
+        wire _43;
+        wire _45;
+        wire [7:0] _42 = 8'b00000000;
+        wire [7:0] _41 = 8'b00000000;
+        wire [7:0] _40;
+        reg [7:0] _46;
+        wire _30;
+        wire _29;
+        wire _31;
+        wire [7:0] _28 = 8'b00000000;
+        wire [7:0] _27 = 8'b00000000;
+        wire [7:0] _26;
+        reg [7:0] _32;
+        wire _16 = 1'b0;
+        wire _15 = 1'b0;
+        wire _14;
+        reg _17;
+        wire [7:0] _47;
+        wire _57;
+        wire _58;
+        wire [7:0] _56 = 8'b00000000;
+        wire [7:0] _55 = 8'b00000000;
+        wire _22 = 1'b0;
+        wire _21;
+        wire _23;
+        wire _24;
+        wire _20;
+        wire [7:0] _19;
+        reg [7:0] _25[0:15];
+        wire [7:0] _54;
+        reg [7:0] _59;
+        wire _51;
+        wire _52;
+        wire [7:0] _50 = 8'b00000000;
+        wire [7:0] _49 = 8'b00000000;
+        wire _36 = 1'b1;
+        wire _35;
+        wire _37;
+        wire _38;
+        wire _34;
+        wire [7:0] _33;
+        wire [3:0] _18;
+        reg [7:0] _39[0:15];
+        wire [7:0] _48;
+        reg [7:0] _53;
+        wire [15:0] _60;
+
+        /* logic */
+        assign _44 = ~ _38;
+        assign _43 = read_b & _37;
+        assign _45 = _43 & _44;
+        assign _40 = _39[_18];
+        always @(posedge clock_b) begin
+            if (_45)
+                _46 <= _40;
+        end
+        assign _30 = ~ _24;
+        assign _29 = read_b & _23;
+        assign _31 = _29 & _30;
+        assign _26 = _25[_18];
+        always @(posedge clock_b) begin
+            if (_31)
+                _32 <= _26;
+        end
+        assign _14 = address_b[0:0];
+        always @(posedge clock_b) begin
+            if (clear_b)
+                _17 <= _16;
+            else
+                if (read_b)
+                    _17 <= _14;
+        end
+        assign _47 = _17 ? _46 : _32;
+        assign _57 = ~ _20;
+        assign _58 = read_a & _57;
+        assign _21 = address_b[0:0];
+        assign _23 = _21 == _22;
+        assign _24 = write_b & _23;
+        assign _20 = write_a[0:0];
+        assign _19 = data_a[7:0];
+        always @(posedge clock_a) begin
+            if (_20)
+                _25[address_a] <= _19;
+        end
+        always @(posedge clock_b) begin
+            if (_24)
+                _25[_18] <= data_b;
+        end
+        assign _54 = _25[address_a];
+        always @(posedge clock_a) begin
+            if (_58)
+                _59 <= _54;
+        end
+        assign _51 = ~ _34;
+        assign _52 = read_a & _51;
+        assign _35 = address_b[0:0];
+        assign _37 = _35 == _36;
+        assign _38 = write_b & _37;
+        assign _34 = write_a[1:1];
+        assign _33 = data_a[15:8];
+        assign _18 = address_b[4:1];
+        always @(posedge clock_a) begin
+            if (_34)
+                _39[address_a] <= _33;
+        end
+        always @(posedge clock_b) begin
+            if (_38)
+                _39[_18] <= data_b;
+        end
+        assign _48 = _39[address_a];
+        always @(posedge clock_a) begin
+            if (_52)
+                _53 <= _48;
+        end
+        assign _60 = { _53,
+                       _59 };
+
+        /* aliases */
+
+        /* output assignments */
+        assign qa = _60;
+        assign qb = _47;
 
     endmodule |}]
 ;;
