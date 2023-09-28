@@ -14,9 +14,9 @@ depends: [
   "base"
   "hardcaml"
   "n_ary"
-  "ppx_deriving_hardcaml"
+  "ppx_hardcaml"
   "ppx_jane"
-  "dune"                  {>= "2.0.0"}
+  "dune"         {>= "2.0.0"}
 ]
 available: arch != "arm32" & arch != "x86_32"
 synopsis: "Hardcaml wrappers for Xilinx memory primitives"
