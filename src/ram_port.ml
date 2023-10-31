@@ -7,4 +7,4 @@ type 'a t =
   ; read_enable : 'a
   ; write_enable : 'a
   }
-[@@deriving sexp_of, hardcaml]
+[@@deriving hardcaml]

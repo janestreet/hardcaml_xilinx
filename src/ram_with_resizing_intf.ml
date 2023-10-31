@@ -39,11 +39,11 @@ module type S = sig
       ; read_address : 'a
       ; read_enable : 'a
       }
-    [@@deriving sexp_of, hardcaml]
+    [@@deriving hardcaml]
   end
 
   module O : sig
-    type 'a t = { q : 'a } [@@deriving sexp_of, hardcaml]
+    type 'a t = { q : 'a } [@@deriving hardcaml]
   end
 
   val create : Scope.t -> build_mode:Build_mode.t -> Interface.Create_fn(I)(O).t

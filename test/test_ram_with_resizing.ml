@@ -22,11 +22,11 @@ module For_rtl_sim = struct
       { clock : 'a
       ; clear : 'a
       }
-    [@@deriving sexp_of, hardcaml]
+    [@@deriving hardcaml]
   end
 
   module O = struct
-    type 'a t = { q : 'a } [@@deriving sexp_of, hardcaml]
+    type 'a t = { q : 'a } [@@deriving hardcaml]
   end
 
   open Signal
@@ -45,7 +45,7 @@ module For_rtl_sim = struct
       ; read_address : 'a [@bits Ram.read_address_bits]
       ; write_data : 'a [@bits Ram.write_data_bits]
       }
-    [@@deriving sexp_of, hardcaml]
+    [@@deriving hardcaml]
   end
 
   let step ?write_enable ?read_enable ?write_address ?read_address ?write_data () =

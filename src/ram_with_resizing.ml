@@ -79,11 +79,11 @@ module Make (Config : Config) = struct
       ; read_address : 'a [@bits read_address_bits]
       ; read_enable : 'a
       }
-    [@@deriving sexp_of, hardcaml]
+    [@@deriving hardcaml]
   end
 
   module O = struct
-    type 'a t = { q : 'a [@bits read_data_bits] } [@@deriving sexp_of, hardcaml]
+    type 'a t = { q : 'a [@bits read_data_bits] } [@@deriving hardcaml]
   end
 
   let create _scope ~build_mode (i : _ I.t) =

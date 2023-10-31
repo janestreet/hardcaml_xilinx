@@ -49,7 +49,7 @@ module With_interface (X : Hardcaml.Interface.S) : sig
       ; wr : 'a
       ; rd : 'a
       }
-    [@@deriving sexp_of, hardcaml]
+    [@@deriving hardcaml]
   end
 
   module X_with_valid : Interface.S with type 'a t = ('a, 'a X.t) With_valid.t2
@@ -62,7 +62,7 @@ module With_interface (X : Hardcaml.Interface.S) : sig
       ; underflow : 'a
           (** sticky error flag indicating whether this fifo has underflowed. *)
       }
-    [@@deriving sexp_of, hardcaml]
+    [@@deriving hardcaml]
   end
 
   val hierarchical

@@ -9,7 +9,7 @@ module O_ports = struct
     { a : 'a [@bits data_bits]
     ; b : 'a [@bits data_bits]
     }
-  [@@deriving sexp_of, hardcaml]
+  [@@deriving hardcaml]
 end
 
 module O_rams = struct
@@ -20,7 +20,7 @@ module O_rams = struct
     ; bnc : 'a O_ports.t
     ; unc : 'a O_ports.t
     }
-  [@@deriving sexp_of, hardcaml ~rtlmangle:true]
+  [@@deriving hardcaml ~rtlmangle:true]
 end
 
 module O = struct
@@ -29,7 +29,7 @@ module O = struct
     ; xpm : 'a O_rams.t
     ; ok : 'a [@bits 10]
     }
-  [@@deriving sexp_of, hardcaml ~rtlmangle:true]
+  [@@deriving hardcaml ~rtlmangle:true]
 end
 
 let create_ram ~arch ~build_mode ~clock ~clear ~port_a ~port_b =

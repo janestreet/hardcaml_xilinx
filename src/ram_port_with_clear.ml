@@ -5,7 +5,7 @@ type 'a t =
   { port : 'a Ram_port.t
   ; clear_busy : 'a
   }
-[@@deriving sexp_of, hardcaml]
+[@@deriving hardcaml]
 
 module State = struct
   type t =

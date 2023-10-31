@@ -8,7 +8,7 @@ module Data = struct
     { bar : 'a [@bits 8]
     ; foo : 'a [@bits 8]
     }
-  [@@deriving sexp_of, hardcaml]
+  [@@deriving hardcaml]
 end
 
 let memory_config =
@@ -52,11 +52,11 @@ module I = struct
     ; write_port : 'a Write_port.t [@rtlprefix "wr_"]
     ; read_port : 'a Read_port.t [@rtlprefix "rd_"]
     }
-  [@@deriving sexp_of, hardcaml]
+  [@@deriving hardcaml]
 end
 
 module O = struct
-  type 'a t = { read_data : 'a Data.t [@rtlprefix "rd_"] } [@@deriving sexp_of, hardcaml]
+  type 'a t = { read_data : 'a Data.t [@rtlprefix "rd_"] } [@@deriving hardcaml]
 end
 
 let create scope (i : _ I.t) =

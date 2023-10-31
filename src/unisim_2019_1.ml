@@ -30,11 +30,11 @@ module IBUF = struct
     ;;
 
     module I = struct
-      type 'a t = { i : 'a [@bits 1] [@rtlname "I"] } [@@deriving sexp_of, hardcaml]
+      type 'a t = { i : 'a [@bits 1] [@rtlname "I"] } [@@deriving hardcaml]
     end
 
     module O = struct
-      type 'a t = { o : 'a [@bits 1] [@rtlname "O"] } [@@deriving sexp_of, hardcaml]
+      type 'a t = { o : 'a [@bits 1] [@rtlname "O"] } [@@deriving hardcaml]
     end
 
     module T = Hardcaml.Interface.Empty
@@ -92,11 +92,11 @@ module IBUFDS = struct
         { i : 'a [@bits 1] [@rtlname "I"]
         ; ib : 'a [@bits 1] [@rtlname "IB"]
         }
-      [@@deriving sexp_of, hardcaml]
+      [@@deriving hardcaml]
     end
 
     module O = struct
-      type 'a t = { o : 'a [@bits 1] [@rtlname "O"] } [@@deriving sexp_of, hardcaml]
+      type 'a t = { o : 'a [@bits 1] [@rtlname "O"] } [@@deriving hardcaml]
     end
 
     module T = Hardcaml.Interface.Empty
@@ -145,7 +145,7 @@ module IBUFDS_GTE4 = struct
         ; i : 'a [@bits 1] [@rtlname "I"]
         ; ib : 'a [@bits 1] [@rtlname "IB"]
         }
-      [@@deriving sexp_of, hardcaml]
+      [@@deriving hardcaml]
     end
 
     module O = struct
@@ -153,7 +153,7 @@ module IBUFDS_GTE4 = struct
         { o : 'a [@bits 1] [@rtlname "O"]
         ; odiv2 : 'a [@bits 1] [@rtlname "ODIV2"]
         }
-      [@@deriving sexp_of, hardcaml]
+      [@@deriving hardcaml]
     end
 
     module T = Hardcaml.Interface.Empty
@@ -202,7 +202,7 @@ module ICAPE3 = struct
         ; i : 'a [@bits 31 - 0 + 1] [@rtlname "I"]
         ; rdwrb : 'a [@bits 1] [@rtlname "RDWRB"]
         }
-      [@@deriving sexp_of, hardcaml]
+      [@@deriving hardcaml]
     end
 
     module O = struct
@@ -212,7 +212,7 @@ module ICAPE3 = struct
         ; prdone : 'a [@bits 1] [@rtlname "PRDONE"]
         ; prerror : 'a [@bits 1] [@rtlname "PRERROR"]
         }
-      [@@deriving sexp_of, hardcaml]
+      [@@deriving hardcaml]
     end
 
     module T = Hardcaml.Interface.Empty
@@ -245,11 +245,11 @@ module LUT2 = struct
         { i0 : 'a [@bits 1] [@rtlname "I0"]
         ; i1 : 'a [@bits 1] [@rtlname "I1"]
         }
-      [@@deriving sexp_of, hardcaml]
+      [@@deriving hardcaml]
     end
 
     module O = struct
-      type 'a t = { o : 'a [@bits 1] [@rtlname "O"] } [@@deriving sexp_of, hardcaml]
+      type 'a t = { o : 'a [@bits 1] [@rtlname "O"] } [@@deriving hardcaml]
     end
 
     module T = Hardcaml.Interface.Empty
@@ -298,7 +298,7 @@ module STARTUPE3 = struct
         ; usrdoneo : 'a [@bits 1] [@rtlname "USRDONEO"]
         ; usrdonets : 'a [@bits 1] [@rtlname "USRDONETS"]
         }
-      [@@deriving sexp_of, hardcaml]
+      [@@deriving hardcaml]
     end
 
     module O = struct
@@ -309,7 +309,7 @@ module STARTUPE3 = struct
         ; eos : 'a [@bits 1] [@rtlname "EOS"]
         ; preq : 'a [@bits 1] [@rtlname "PREQ"]
         }
-      [@@deriving sexp_of, hardcaml]
+      [@@deriving hardcaml]
     end
 
     module T = Hardcaml.Interface.Empty

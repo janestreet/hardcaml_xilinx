@@ -98,7 +98,7 @@ module With_interface (X : Hardcaml.Interface.S) = struct
       ; wr : 'a
       ; rd : 'a
       }
-    [@@deriving sexp_of, hardcaml]
+    [@@deriving hardcaml]
   end
 
   module X_with_valid = With_valid.Wrap.Make (X)
@@ -109,7 +109,7 @@ module With_interface (X : Hardcaml.Interface.S) = struct
       ; overflow : 'a
       ; underflow : 'a
       }
-    [@@deriving sexp_of, hardcaml]
+    [@@deriving hardcaml]
   end
 
   let always_reg ( -- ) spec ~width ~name =

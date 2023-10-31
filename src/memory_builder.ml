@@ -206,7 +206,7 @@ module Read_port_1d = struct
       { address : 'a
       ; enable : 'a
       }
-    [@@deriving sexp_of, hardcaml]
+    [@@deriving hardcaml]
   end
 
   include Pre
@@ -238,7 +238,7 @@ module Read_port_2d = struct
       ; vertical_index : 'a
       ; enable : 'a
       }
-    [@@deriving sexp_of, hardcaml]
+    [@@deriving hardcaml]
   end
 
   type 'a t = 'a Pre.t =
@@ -293,7 +293,7 @@ module Write_port_1d = struct
         ; enable : 'a [@bits 1]
         ; data : 'a M.t
         }
-      [@@deriving sexp_of, hardcaml]
+      [@@deriving hardcaml]
     end
 
     module Pre = struct
@@ -371,7 +371,7 @@ module Write_port_2d = struct
         ; enable : 'a [@bits 1]
         ; data : 'a M.t list [@length X.horizontal_dimension]
         }
-      [@@deriving sexp_of, hardcaml]
+      [@@deriving hardcaml]
     end
 
     module Pre = struct
@@ -454,7 +454,7 @@ module Component (M : Hardcaml.Interface.S) (The_config : Config.S) = struct
       ; read_port_a : 'a Read_port_2d.t [@rtlprefix "rda_"]
       ; read_port_b : 'a Read_port_2d.t [@rtlprefix "rdb_"]
       }
-    [@@deriving sexp_of, hardcaml]
+    [@@deriving hardcaml]
   end
 
   module O = struct
@@ -462,7 +462,7 @@ module Component (M : Hardcaml.Interface.S) (The_config : Config.S) = struct
       { read_data_a : 'a M.t [@rtlprefix "rd_a_"]
       ; read_data_b : 'a M.t [@rtlprefix "rd_b_"]
       }
-    [@@deriving sexp_of, hardcaml]
+    [@@deriving hardcaml]
   end
 
   let post_process_rd_data ~clock ~read_enable ~horizontal_index read_data =
