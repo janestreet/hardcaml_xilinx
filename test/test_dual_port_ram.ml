@@ -72,50 +72,49 @@ let%expect_test "True_dual_port_ram" =
         output [7:0] qa;
         output [7:0] qb;
 
-        /* signal declarations */
         wire [7:0] _21;
         wire _18;
-        wire vdd = 1'b1;
+        wire vdd;
         wire _16;
-        wire gnd = 1'b0;
+        wire gnd;
         wire [19:0] _20;
         wire [7:0] _22;
-
-        /* logic */
         assign _21 = _20[17:10];
         assign _18 = write_b | read_b;
+        assign vdd = 1'b1;
         assign _16 = write_a | read_a;
+        assign gnd = 1'b0;
         xpm_memory_tdpram
             #( .MEMORY_SIZE(128),
-              .MEMORY_PRIMITIVE("distributed"),
-              .CLOCKING_MODE("independent_clock"),
-              .ECC_MODE("no_ecc"),
-              .MEMORY_INIT_FILE("none"),
-              .MEMORY_INIT_PARAM(""),
-              .USE_MEM_INIT(0),
-              .WAKEUP_TIME("disable_sleep"),
-              .AUTO_SLEEP_TIME(0),
-              .MESSAGE_CONTROL(0),
-              .USE_EMBEDDED_CONSTRAINT(0),
-              .MEMORY_OPTIMIZATION("false"),
-              .CASCADE_HEIGHT(0),
-              .SIM_ASSERT_CHK(0),
-              .WRITE_DATA_WIDTH_A(8),
-              .READ_DATA_WIDTH_A(8),
-              .BYTE_WRITE_WIDTH_A(8),
-              .ADDR_WIDTH_A(4),
-              .READ_RESET_VALUE_A("0"),
-              .READ_LATENCY_A(1),
-              .WRITE_MODE_A("read_first"),
-              .RST_MODE_A("SYNC"),
-              .WRITE_DATA_WIDTH_B(8),
-              .READ_DATA_WIDTH_B(8),
-              .BYTE_WRITE_WIDTH_B(8),
-              .ADDR_WIDTH_B(4),
-              .READ_RESET_VALUE_B("0"),
-              .READ_LATENCY_B(1),
-              .WRITE_MODE_B("read_first"),
-              .RST_MODE_B("SYNC") )
+               .MEMORY_PRIMITIVE("distributed"),
+               .CLOCKING_MODE("independent_clock"),
+               .ECC_MODE("no_ecc"),
+               .MEMORY_INIT_FILE("none"),
+               .MEMORY_INIT_PARAM(""),
+               .USE_MEM_INIT(0),
+               .WAKEUP_TIME("disable_sleep"),
+               .AUTO_SLEEP_TIME(0),
+               .MESSAGE_CONTROL(0),
+               .USE_EMBEDDED_CONSTRAINT(0),
+               .MEMORY_OPTIMIZATION("false"),
+               .CASCADE_HEIGHT(0),
+               .SIM_ASSERT_CHK(0),
+               .WRITE_DATA_WIDTH_A(8),
+               .READ_DATA_WIDTH_A(8),
+               .BYTE_WRITE_WIDTH_A(8),
+               .ADDR_WIDTH_A(4),
+               .READ_RESET_VALUE_A("0"),
+               .READ_LATENCY_A(1),
+               .WRITE_MODE_A("read_first"),
+               .RST_MODE_A("SYNC"),
+               .WRITE_DATA_WIDTH_B(8),
+               .READ_DATA_WIDTH_B(8),
+               .BYTE_WRITE_WIDTH_B(8),
+               .ADDR_WIDTH_B(4),
+               .READ_RESET_VALUE_B("0"),
+               .READ_LATENCY_B(1),
+               .WRITE_MODE_B("read_first"),
+               .RST_MODE_B("SYNC") )
             the_xpm_memory_tdpram
             ( .sleep(gnd),
               .clka(clock_a),
@@ -143,10 +142,6 @@ let%expect_test "True_dual_port_ram" =
               .sbiterra(_20[8:8]),
               .douta(_20[7:0]) );
         assign _22 = _20[7:0];
-
-        /* aliases */
-
-        /* output assignments */
         assign qa = _22;
         assign qb = _21;
 
@@ -186,50 +181,49 @@ let%expect_test "True_dual_port_ram" =
         output [7:0] qa;
         output [7:0] qb;
 
-        /* signal declarations */
         wire [7:0] _21;
         wire _18;
-        wire vdd = 1'b1;
+        wire vdd;
         wire _16;
-        wire gnd = 1'b0;
+        wire gnd;
         wire [19:0] _20;
         wire [7:0] _22;
-
-        /* logic */
         assign _21 = _20[17:10];
         assign _18 = write_b | read_b;
+        assign vdd = 1'b1;
         assign _16 = write_a | read_a;
+        assign gnd = 1'b0;
         xpm_memory_tdpram
             #( .MEMORY_SIZE(128),
-              .MEMORY_PRIMITIVE("block"),
-              .CLOCKING_MODE("independent_clock"),
-              .ECC_MODE("no_ecc"),
-              .MEMORY_INIT_FILE("none"),
-              .MEMORY_INIT_PARAM(""),
-              .USE_MEM_INIT(0),
-              .WAKEUP_TIME("disable_sleep"),
-              .AUTO_SLEEP_TIME(0),
-              .MESSAGE_CONTROL(0),
-              .USE_EMBEDDED_CONSTRAINT(0),
-              .MEMORY_OPTIMIZATION("false"),
-              .CASCADE_HEIGHT(0),
-              .SIM_ASSERT_CHK(0),
-              .WRITE_DATA_WIDTH_A(8),
-              .READ_DATA_WIDTH_A(8),
-              .BYTE_WRITE_WIDTH_A(8),
-              .ADDR_WIDTH_A(4),
-              .READ_RESET_VALUE_A("0"),
-              .READ_LATENCY_A(1),
-              .WRITE_MODE_A("read_first"),
-              .RST_MODE_A("SYNC"),
-              .WRITE_DATA_WIDTH_B(8),
-              .READ_DATA_WIDTH_B(8),
-              .BYTE_WRITE_WIDTH_B(8),
-              .ADDR_WIDTH_B(4),
-              .READ_RESET_VALUE_B("0"),
-              .READ_LATENCY_B(1),
-              .WRITE_MODE_B("read_first"),
-              .RST_MODE_B("SYNC") )
+               .MEMORY_PRIMITIVE("block"),
+               .CLOCKING_MODE("independent_clock"),
+               .ECC_MODE("no_ecc"),
+               .MEMORY_INIT_FILE("none"),
+               .MEMORY_INIT_PARAM(""),
+               .USE_MEM_INIT(0),
+               .WAKEUP_TIME("disable_sleep"),
+               .AUTO_SLEEP_TIME(0),
+               .MESSAGE_CONTROL(0),
+               .USE_EMBEDDED_CONSTRAINT(0),
+               .MEMORY_OPTIMIZATION("false"),
+               .CASCADE_HEIGHT(0),
+               .SIM_ASSERT_CHK(0),
+               .WRITE_DATA_WIDTH_A(8),
+               .READ_DATA_WIDTH_A(8),
+               .BYTE_WRITE_WIDTH_A(8),
+               .ADDR_WIDTH_A(4),
+               .READ_RESET_VALUE_A("0"),
+               .READ_LATENCY_A(1),
+               .WRITE_MODE_A("read_first"),
+               .RST_MODE_A("SYNC"),
+               .WRITE_DATA_WIDTH_B(8),
+               .READ_DATA_WIDTH_B(8),
+               .BYTE_WRITE_WIDTH_B(8),
+               .ADDR_WIDTH_B(4),
+               .READ_RESET_VALUE_B("0"),
+               .READ_LATENCY_B(1),
+               .WRITE_MODE_B("read_first"),
+               .RST_MODE_B("SYNC") )
             the_xpm_memory_tdpram
             ( .sleep(gnd),
               .clka(clock_a),
@@ -257,10 +251,6 @@ let%expect_test "True_dual_port_ram" =
               .sbiterra(_20[8:8]),
               .douta(_20[7:0]) );
         assign _22 = _20[7:0];
-
-        /* aliases */
-
-        /* output assignments */
         assign qa = _22;
         assign qb = _21;
 
@@ -300,50 +290,49 @@ let%expect_test "True_dual_port_ram" =
         output [7:0] qa;
         output [7:0] qb;
 
-        /* signal declarations */
         wire [7:0] _21;
         wire _18;
-        wire vdd = 1'b1;
+        wire vdd;
         wire _16;
-        wire gnd = 1'b0;
+        wire gnd;
         wire [19:0] _20;
         wire [7:0] _22;
-
-        /* logic */
         assign _21 = _20[17:10];
         assign _18 = write_b | read_b;
+        assign vdd = 1'b1;
         assign _16 = write_a | read_a;
+        assign gnd = 1'b0;
         xpm_memory_tdpram
             #( .MEMORY_SIZE(128),
-              .MEMORY_PRIMITIVE("ultra"),
-              .CLOCKING_MODE("independent_clock"),
-              .ECC_MODE("no_ecc"),
-              .MEMORY_INIT_FILE("none"),
-              .MEMORY_INIT_PARAM(""),
-              .USE_MEM_INIT(0),
-              .WAKEUP_TIME("disable_sleep"),
-              .AUTO_SLEEP_TIME(0),
-              .MESSAGE_CONTROL(0),
-              .USE_EMBEDDED_CONSTRAINT(0),
-              .MEMORY_OPTIMIZATION("false"),
-              .CASCADE_HEIGHT(0),
-              .SIM_ASSERT_CHK(0),
-              .WRITE_DATA_WIDTH_A(8),
-              .READ_DATA_WIDTH_A(8),
-              .BYTE_WRITE_WIDTH_A(8),
-              .ADDR_WIDTH_A(4),
-              .READ_RESET_VALUE_A("0"),
-              .READ_LATENCY_A(1),
-              .WRITE_MODE_A("no_change"),
-              .RST_MODE_A("SYNC"),
-              .WRITE_DATA_WIDTH_B(8),
-              .READ_DATA_WIDTH_B(8),
-              .BYTE_WRITE_WIDTH_B(8),
-              .ADDR_WIDTH_B(4),
-              .READ_RESET_VALUE_B("0"),
-              .READ_LATENCY_B(1),
-              .WRITE_MODE_B("no_change"),
-              .RST_MODE_B("SYNC") )
+               .MEMORY_PRIMITIVE("ultra"),
+               .CLOCKING_MODE("independent_clock"),
+               .ECC_MODE("no_ecc"),
+               .MEMORY_INIT_FILE("none"),
+               .MEMORY_INIT_PARAM(""),
+               .USE_MEM_INIT(0),
+               .WAKEUP_TIME("disable_sleep"),
+               .AUTO_SLEEP_TIME(0),
+               .MESSAGE_CONTROL(0),
+               .USE_EMBEDDED_CONSTRAINT(0),
+               .MEMORY_OPTIMIZATION("false"),
+               .CASCADE_HEIGHT(0),
+               .SIM_ASSERT_CHK(0),
+               .WRITE_DATA_WIDTH_A(8),
+               .READ_DATA_WIDTH_A(8),
+               .BYTE_WRITE_WIDTH_A(8),
+               .ADDR_WIDTH_A(4),
+               .READ_RESET_VALUE_A("0"),
+               .READ_LATENCY_A(1),
+               .WRITE_MODE_A("no_change"),
+               .RST_MODE_A("SYNC"),
+               .WRITE_DATA_WIDTH_B(8),
+               .READ_DATA_WIDTH_B(8),
+               .BYTE_WRITE_WIDTH_B(8),
+               .ADDR_WIDTH_B(4),
+               .READ_RESET_VALUE_B("0"),
+               .READ_LATENCY_B(1),
+               .WRITE_MODE_B("no_change"),
+               .RST_MODE_B("SYNC") )
             the_xpm_memory_tdpram
             ( .sleep(gnd),
               .clka(clock_a),
@@ -371,10 +360,6 @@ let%expect_test "True_dual_port_ram" =
               .sbiterra(_20[8:8]),
               .douta(_20[7:0]) );
         assign _22 = _20[7:0];
-
-        /* aliases */
-
-        /* output assignments */
         assign qa = _22;
         assign qb = _21;
 
@@ -469,50 +454,49 @@ let%expect_test "True_dual_port_ram" =
         output [3:0] qa;
         output [11:0] qb;
 
-        /* signal declarations */
         wire [11:0] _21;
         wire _18;
-        wire vdd = 1'b1;
+        wire vdd;
         wire _16;
-        wire gnd = 1'b0;
+        wire gnd;
         wire [19:0] _20;
         wire [3:0] _22;
-
-        /* logic */
         assign _21 = _20[17:6];
         assign _18 = write_b | read_b;
+        assign vdd = 1'b1;
         assign _16 = write_a | read_a;
+        assign gnd = 1'b0;
         xpm_memory_tdpram
             #( .MEMORY_SIZE(60),
-              .MEMORY_PRIMITIVE("block"),
-              .CLOCKING_MODE("independent_clock"),
-              .ECC_MODE("no_ecc"),
-              .MEMORY_INIT_FILE("none"),
-              .MEMORY_INIT_PARAM(""),
-              .USE_MEM_INIT(0),
-              .WAKEUP_TIME("disable_sleep"),
-              .AUTO_SLEEP_TIME(0),
-              .MESSAGE_CONTROL(0),
-              .USE_EMBEDDED_CONSTRAINT(0),
-              .MEMORY_OPTIMIZATION("false"),
-              .CASCADE_HEIGHT(0),
-              .SIM_ASSERT_CHK(0),
-              .WRITE_DATA_WIDTH_A(4),
-              .READ_DATA_WIDTH_A(4),
-              .BYTE_WRITE_WIDTH_A(4),
-              .ADDR_WIDTH_A(4),
-              .READ_RESET_VALUE_A("0"),
-              .READ_LATENCY_A(1),
-              .WRITE_MODE_A("read_first"),
-              .RST_MODE_A("SYNC"),
-              .WRITE_DATA_WIDTH_B(12),
-              .READ_DATA_WIDTH_B(12),
-              .BYTE_WRITE_WIDTH_B(12),
-              .ADDR_WIDTH_B(3),
-              .READ_RESET_VALUE_B("0"),
-              .READ_LATENCY_B(1),
-              .WRITE_MODE_B("read_first"),
-              .RST_MODE_B("SYNC") )
+               .MEMORY_PRIMITIVE("block"),
+               .CLOCKING_MODE("independent_clock"),
+               .ECC_MODE("no_ecc"),
+               .MEMORY_INIT_FILE("none"),
+               .MEMORY_INIT_PARAM(""),
+               .USE_MEM_INIT(0),
+               .WAKEUP_TIME("disable_sleep"),
+               .AUTO_SLEEP_TIME(0),
+               .MESSAGE_CONTROL(0),
+               .USE_EMBEDDED_CONSTRAINT(0),
+               .MEMORY_OPTIMIZATION("false"),
+               .CASCADE_HEIGHT(0),
+               .SIM_ASSERT_CHK(0),
+               .WRITE_DATA_WIDTH_A(4),
+               .READ_DATA_WIDTH_A(4),
+               .BYTE_WRITE_WIDTH_A(4),
+               .ADDR_WIDTH_A(4),
+               .READ_RESET_VALUE_A("0"),
+               .READ_LATENCY_A(1),
+               .WRITE_MODE_A("read_first"),
+               .RST_MODE_A("SYNC"),
+               .WRITE_DATA_WIDTH_B(12),
+               .READ_DATA_WIDTH_B(12),
+               .BYTE_WRITE_WIDTH_B(12),
+               .ADDR_WIDTH_B(3),
+               .READ_RESET_VALUE_B("0"),
+               .READ_LATENCY_B(1),
+               .WRITE_MODE_B("read_first"),
+               .RST_MODE_B("SYNC") )
             the_xpm_memory_tdpram
             ( .sleep(gnd),
               .clka(clock_a),
@@ -540,10 +524,6 @@ let%expect_test "True_dual_port_ram" =
               .sbiterra(_20[4:4]),
               .douta(_20[3:0]) );
         assign _22 = _20[3:0];
-
-        /* aliases */
-
-        /* output assignments */
         assign qa = _22;
         assign qb = _21;
 
@@ -660,11 +640,11 @@ let%expect_test "byte enables" =
         read_a,
         write_b,
         data_b,
+        address_b,
         clock_b,
         write_a,
         data_a,
         clock_a,
-        address_b,
         address_a,
         qa,
         qb
@@ -674,33 +654,27 @@ let%expect_test "byte enables" =
         input read_a;
         input [1:0] write_b;
         input [15:0] data_b;
+        input [3:0] address_b;
         input clock_b;
         input [1:0] write_a;
         input [15:0] data_a;
         input clock_a;
-        input [3:0] address_b;
         input [3:0] address_a;
         output [15:0] qa;
         output [15:0] qb;
 
-        /* signal declarations */
         wire _32;
         wire _33;
-        wire [7:0] _31 = 8'b00000000;
-        wire [7:0] _30 = 8'b00000000;
+        wire [7:0] _31;
         wire [7:0] _29;
         reg [7:0] _34;
         wire _21;
         wire _22;
-        wire [7:0] _20 = 8'b00000000;
-        wire [7:0] _19 = 8'b00000000;
         wire [7:0] _18;
         reg [7:0] _23;
         wire [15:0] _35;
         wire _45;
         wire _46;
-        wire [7:0] _44 = 8'b00000000;
-        wire [7:0] _43 = 8'b00000000;
         wire _27;
         wire [7:0] _26;
         wire _25;
@@ -710,8 +684,6 @@ let%expect_test "byte enables" =
         reg [7:0] _47;
         wire _39;
         wire _40;
-        wire [7:0] _38 = 8'b00000000;
-        wire [7:0] _37 = 8'b00000000;
         wire _16;
         wire [7:0] _15;
         wire _14;
@@ -720,10 +692,9 @@ let%expect_test "byte enables" =
         wire [7:0] _36;
         reg [7:0] _41;
         wire [15:0] _48;
-
-        /* logic */
         assign _32 = ~ _27;
         assign _33 = read_b & _32;
+        assign _31 = 8'b00000000;
         assign _29 = _28[address_b];
         always @(posedge clock_b) begin
             if (_33)
@@ -778,10 +749,6 @@ let%expect_test "byte enables" =
         end
         assign _48 = { _41,
                        _47 };
-
-        /* aliases */
-
-        /* output assignments */
         assign qa = _48;
         assign qb = _35;
 
@@ -826,11 +793,11 @@ let%expect_test "byte enables with resizing" =
         read_a,
         write_b,
         data_b,
+        address_b,
         clock_b,
         write_a,
         data_a,
         clock_a,
-        address_b,
         address_a,
         qa,
         qb
@@ -841,40 +808,32 @@ let%expect_test "byte enables with resizing" =
         input read_a;
         input write_b;
         input [7:0] data_b;
+        input [4:0] address_b;
         input clock_b;
         input [1:0] write_a;
         input [15:0] data_a;
         input clock_a;
-        input [4:0] address_b;
         input [3:0] address_a;
         output [15:0] qa;
         output [7:0] qb;
 
-        /* signal declarations */
         wire _44;
         wire _43;
         wire _45;
-        wire [7:0] _42 = 8'b00000000;
-        wire [7:0] _41 = 8'b00000000;
+        wire [7:0] _42;
         wire [7:0] _40;
         reg [7:0] _46;
         wire _30;
         wire _29;
         wire _31;
-        wire [7:0] _28 = 8'b00000000;
-        wire [7:0] _27 = 8'b00000000;
         wire [7:0] _26;
         reg [7:0] _32;
-        wire _16 = 1'b0;
-        wire _15 = 1'b0;
+        wire _16;
         wire _14;
         reg _17;
         wire [7:0] _47;
         wire _57;
         wire _58;
-        wire [7:0] _56 = 8'b00000000;
-        wire [7:0] _55 = 8'b00000000;
-        wire _22 = 1'b0;
         wire _21;
         wire _23;
         wire _24;
@@ -885,24 +844,21 @@ let%expect_test "byte enables with resizing" =
         reg [7:0] _59;
         wire _51;
         wire _52;
-        wire [7:0] _50 = 8'b00000000;
-        wire [7:0] _49 = 8'b00000000;
-        wire _36 = 1'b1;
+        wire _36;
         wire _35;
         wire _37;
         wire _38;
+        wire [3:0] _18;
         wire _34;
         wire [7:0] _33;
-        wire [3:0] _18;
         reg [7:0] _39[0:15];
         wire [7:0] _48;
         reg [7:0] _53;
         wire [15:0] _60;
-
-        /* logic */
         assign _44 = ~ _38;
         assign _43 = read_b & _37;
         assign _45 = _43 & _44;
+        assign _42 = 8'b00000000;
         assign _40 = _39[_18];
         always @(posedge clock_b) begin
             if (_45)
@@ -916,6 +872,7 @@ let%expect_test "byte enables with resizing" =
             if (_31)
                 _32 <= _26;
         end
+        assign _16 = 1'b0;
         assign _14 = address_b[0:0];
         always @(posedge clock_b) begin
             if (clear_b)
@@ -928,7 +885,7 @@ let%expect_test "byte enables with resizing" =
         assign _57 = ~ _20;
         assign _58 = read_a & _57;
         assign _21 = address_b[0:0];
-        assign _23 = _21 == _22;
+        assign _23 = _21 == _16;
         assign _24 = write_b & _23;
         assign _20 = write_a[0:0];
         assign _19 = data_a[7:0];
@@ -947,12 +904,13 @@ let%expect_test "byte enables with resizing" =
         end
         assign _51 = ~ _34;
         assign _52 = read_a & _51;
+        assign _36 = 1'b1;
         assign _35 = address_b[0:0];
         assign _37 = _35 == _36;
         assign _38 = write_b & _37;
+        assign _18 = address_b[4:1];
         assign _34 = write_a[1:1];
         assign _33 = data_a[15:8];
-        assign _18 = address_b[4:1];
         always @(posedge clock_a) begin
             if (_34)
                 _39[address_a] <= _33;
@@ -968,10 +926,6 @@ let%expect_test "byte enables with resizing" =
         end
         assign _60 = { _53,
                        _59 };
-
-        /* aliases */
-
-        /* output assignments */
         assign qa = _60;
         assign qb = _47;
 

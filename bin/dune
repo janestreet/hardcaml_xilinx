@@ -1,3 +1,6 @@
-(executables (names xsim_modelling)
+(executables
+ (modes byte exe)
+ (names xsim_modelling)
  (libraries core core_unix.command_unix hardcaml hardcaml_xilinx_test)
- (preprocess (pps ppx_jane)))
+ (preprocess
+  (pps ppx_jane)))

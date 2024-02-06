@@ -58,43 +58,32 @@ let%expect_test "Rtl" =
         output nearly_empty;
         output [4:0] used;
 
-        /* signal declarations */
-        wire _31 = 1'b0;
-        wire [4:0] _17 = 5'b00011;
+        wire _31;
+        wire [4:0] _17;
         wire _29;
         wire _30;
         reg _33;
-        wire _38 = 1'b0;
-        wire _37 = 1'b0;
-        wire [4:0] _34 = 5'b01100;
+        wire [4:0] _34;
         wire _35;
         wire _36;
         reg _39;
-        wire [31:0] _65 = 32'b00000000000000000000000000000000;
-        wire [31:0] _64 = 32'b00000000000000000000000000000000;
-        wire [3:0] _43 = 4'b0000;
-        wire [3:0] _42 = 4'b0000;
-        wire [3:0] _40 = 4'b0001;
+        wire [31:0] _65;
+        wire [3:0] _43;
+        wire [3:0] _40;
         wire [3:0] WRITE_ADDRESS_NEXT;
         reg [3:0] _44;
         wire [3:0] WRITE_ADDRESS;
         (* RAM_STYLE="block" *)
         reg [31:0] _62[0:15];
-        wire vdd = 1'b1;
-        wire _55 = 1'b0;
-        wire [4:0] _53 = 5'b00000;
-        wire [4:0] _25 = 5'b00001;
+        wire vdd;
+        wire [4:0] _53;
+        wire [4:0] _25;
         wire [4:0] _26;
-        wire [4:0] _23 = 5'b00001;
         wire [4:0] _24;
         wire [4:0] _27;
-        wire [4:0] _46 = 5'b00000;
-        wire [4:0] _45 = 5'b00000;
         reg [4:0] _47;
         wire [4:0] _8;
-        wire _51 = 1'b0;
-        wire _50 = 1'b0;
-        wire [4:0] _48 = 5'b10000;
+        wire [4:0] _48;
         wire _49;
         reg _52;
         wire _9;
@@ -107,16 +96,13 @@ let%expect_test "Rtl" =
         wire _11;
         wire _18;
         wire RD_INT;
-        wire [3:0] _60 = 4'b0000;
-        wire [3:0] _59 = 4'b0000;
-        wire [3:0] _57 = 4'b0001;
         wire [3:0] READ_ADDRESS_NEXT;
         reg [3:0] _61;
         wire [3:0] READ_ADDRESS;
         wire [31:0] _63;
         reg [31:0] _66;
-
-        /* logic */
+        assign _31 = 1'b0;
+        assign _17 = 5'b00011;
         assign _29 = _17 < USED_NEXT;
         assign _30 = ~ _29;
         always @(posedge read_clock) begin
@@ -126,15 +112,19 @@ let%expect_test "Rtl" =
                 if (_22)
                     _33 <= _30;
         end
+        assign _34 = 5'b01100;
         assign _35 = USED_NEXT < _34;
         assign _36 = ~ _35;
         always @(posedge read_clock) begin
             if (clear)
-                _39 <= _38;
+                _39 <= _31;
             else
                 if (_22)
                     _39 <= _36;
         end
+        assign _65 = 32'b00000000000000000000000000000000;
+        assign _43 = 4'b0000;
+        assign _40 = 4'b0001;
         assign WRITE_ADDRESS_NEXT = WRITE_ADDRESS + _40;
         always @(posedge read_clock) begin
             if (clear)
@@ -148,21 +138,25 @@ let%expect_test "Rtl" =
             if (WR_INT)
                 _62[WRITE_ADDRESS] <= d;
         end
+        assign vdd = 1'b1;
+        assign _53 = 5'b00000;
+        assign _25 = 5'b00001;
         assign _26 = _8 - _25;
-        assign _24 = _8 + _23;
+        assign _24 = _8 + _25;
         assign _27 = RD_INT ? _26 : _24;
         always @(posedge read_clock) begin
             if (clear)
-                _47 <= _46;
+                _47 <= _53;
             else
                 if (_22)
                     _47 <= USED_NEXT;
         end
         assign _8 = _47;
+        assign _48 = 5'b10000;
         assign _49 = USED_NEXT == _48;
         always @(posedge read_clock) begin
             if (clear)
-                _52 <= _51;
+                _52 <= _31;
             else
                 if (_22)
                     _52 <= _49;
@@ -183,10 +177,10 @@ let%expect_test "Rtl" =
         assign _11 = _56;
         assign _18 = ~ _11;
         assign RD_INT = read & _18;
-        assign READ_ADDRESS_NEXT = READ_ADDRESS + _57;
+        assign READ_ADDRESS_NEXT = READ_ADDRESS + _40;
         always @(posedge read_clock) begin
             if (clear)
-                _61 <= _60;
+                _61 <= _43;
             else
                 if (RD_INT)
                     _61 <= READ_ADDRESS_NEXT;
@@ -197,10 +191,6 @@ let%expect_test "Rtl" =
             if (RD_INT)
                 _66 <= _63;
         end
-
-        /* aliases */
-
-        /* output assignments */
         assign q = _66;
         assign full = _9;
         assign empty = _11;
@@ -240,41 +230,39 @@ let%expect_test "Rtl" =
         output nearly_empty;
         output [4:0] used;
 
-        /* signal declarations */
         wire [4:0] _16;
         wire _17;
         wire _18;
         wire _19;
         wire _20;
-        wire gnd = 1'b0;
+        wire gnd;
         wire [55:0] _15;
         wire [31:0] _21;
-
-        /* logic */
         assign _16 = _15[6:2];
         assign _17 = _15[44:44];
         assign _18 = _15[1:1];
         assign _19 = _15[43:43];
         assign _20 = _15[0:0];
+        assign gnd = 1'b0;
         xpm_fifo_async
             #( .FIFO_MEMORY_TYPE("block"),
-              .FIFO_WRITE_DEPTH(16),
-              .RELATED_CLOCKS(0),
-              .WRITE_DATA_WIDTH(32),
-              .READ_MODE("std"),
-              .FIFO_READ_LATENCY(1),
-              .FULL_RESET_VALUE(0),
-              .USE_ADV_FEATURES("0707"),
-              .READ_DATA_WIDTH(32),
-              .CDC_SYNC_STAGES(2),
-              .WR_DATA_COUNT_WIDTH(5),
-              .PROG_FULL_THRESH(12),
-              .RD_DATA_COUNT_WIDTH(5),
-              .PROG_EMPTY_THRESH(3),
-              .DOUT_RESET_VALUE("0"),
-              .ECC_MODE("no_ecc"),
-              .SIM_ASSERT_CHK(0),
-              .WAKEUP_TIME(0) )
+               .FIFO_WRITE_DEPTH(16),
+               .RELATED_CLOCKS(0),
+               .WRITE_DATA_WIDTH(32),
+               .READ_MODE("std"),
+               .FIFO_READ_LATENCY(1),
+               .FULL_RESET_VALUE(0),
+               .USE_ADV_FEATURES("0707"),
+               .READ_DATA_WIDTH(32),
+               .CDC_SYNC_STAGES(2),
+               .WR_DATA_COUNT_WIDTH(5),
+               .PROG_FULL_THRESH(12),
+               .RD_DATA_COUNT_WIDTH(5),
+               .PROG_EMPTY_THRESH(3),
+               .DOUT_RESET_VALUE("0"),
+               .ECC_MODE("no_ecc"),
+               .SIM_ASSERT_CHK(0),
+               .WAKEUP_TIME(0) )
             the_xpm_fifo_async
             ( .sleep(gnd),
               .rst(clear),
@@ -303,10 +291,6 @@ let%expect_test "Rtl" =
               .prog_full(_15[1:1]),
               .full(_15[0:0]) );
         assign _21 = _15[42:11];
-
-        /* aliases */
-
-        /* output assignments */
         assign q = _21;
         assign full = _20;
         assign empty = _19;

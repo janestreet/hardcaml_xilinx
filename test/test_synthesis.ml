@@ -118,50 +118,53 @@ let%expect_test "verilog" =
         input [1:0] i2;
         output [1:0] o;
 
-        /* signal declarations */
         wire _11;
         wire _10;
         wire [1:0] _12;
         reg _13;
-        wire vdd = 1'b1;
-        wire gnd = 1'b0;
+        wire vdd;
+        wire gnd;
         wire _5;
         wire _4;
         wire [1:0] _6;
         reg _9;
         wire [1:0] _14;
-
-        /* logic */
         assign _11 = i1[0:0];
         assign _10 = i2[0:0];
         assign _12 = { _10,
                        _11 };
         always @* begin
             case (_12)
-            0: _13 <= gnd;
-            1: _13 <= vdd;
-            2: _13 <= vdd;
-            default: _13 <= gnd;
+            0:
+                _13 <= gnd;
+            1:
+                _13 <= vdd;
+            2:
+                _13 <= vdd;
+            default:
+                _13 <= gnd;
             endcase
         end
+        assign vdd = 1'b1;
+        assign gnd = 1'b0;
         assign _5 = i1[1:1];
         assign _4 = i2[1:1];
         assign _6 = { _4,
                       _5 };
         always @* begin
             case (_6)
-            0: _9 <= gnd;
-            1: _9 <= vdd;
-            2: _9 <= vdd;
-            default: _9 <= gnd;
+            0:
+                _9 <= gnd;
+            1:
+                _9 <= vdd;
+            2:
+                _9 <= vdd;
+            default:
+                _9 <= gnd;
             endcase
         end
         assign _14 = { _9,
                        _13 };
-
-        /* aliases */
-
-        /* output assignments */
         assign o = _14;
 
     endmodule |}];
@@ -181,7 +184,6 @@ let%expect_test "verilog" =
         input [1:0] i2;
         output [1:0] o;
 
-        /* signal declarations */
         wire _10;
         wire _7;
         wire _6;
@@ -197,8 +199,6 @@ let%expect_test "verilog" =
         wire _19;
         wire _4;
         wire [1:0] _20;
-
-        /* logic */
         assign _10 = _8[1:1];
         assign _7 = i1[0:0];
         assign _6 = i2[0:0];
@@ -227,10 +227,6 @@ let%expect_test "verilog" =
         assign _4 = _19;
         assign _20 = { _4,
                        _1 };
-
-        /* aliases */
-
-        /* output assignments */
         assign o = _20;
 
     endmodule |}]

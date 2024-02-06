@@ -130,7 +130,7 @@ let%expect_test "basic write then read, single cycle latency" =
     │                  ││                                                                  │
     │                  ││                                                                  │
     └──────────────────┘└──────────────────────────────────────────────────────────────────┘
-    77d862a70af8690f65b233f5989e8942 |}]
+    c0d208f19d24171eb01e097dc9f75478 |}]
 ;;
 
 let%expect_test "basic write then read, 2 cycle latency" =
@@ -189,7 +189,7 @@ let%expect_test "basic write then read, 2 cycle latency" =
     │qb                ││ 00000000                                       │00000064         │
     │                  ││────────────────────────────────────────────────┴───────────────  │
     └──────────────────┘└──────────────────────────────────────────────────────────────────┘
-    3bb5d8790813caa2b503ac550ebb97e2 |}]
+    cb14bf2c63e44399c712e0fb898cc6da |}]
 ;;
 
 let%expect_test "write and read same cycle, 2 cycle latency" =
@@ -250,7 +250,7 @@ let%expect_test "write and read same cycle, 2 cycle latency" =
     │qb                ││ 00000000               │00000064                                 │
     │                  ││────────────────────────┴───────────────────────                  │
     └──────────────────┘└──────────────────────────────────────────────────────────────────┘
-    d52c5114d280caacb2bfd5637fc514ba |}]
+    1c29616893d2ca469a8a5301f3e59de0 |}]
 ;;
 
 let%expect_test "byte write width" =
@@ -315,7 +315,7 @@ let%expect_test "byte write width" =
     │qb                ││ 00000000                     │AA1122DD                           │
     │                  ││──────────────────────────────┴─────────────────────────────      │
     └──────────────────┘└──────────────────────────────────────────────────────────────────┘
-    11a5518d67715e5bc3e1f177834e8d87 |}]
+    e7d23bedd7ad173110c58e043f661a3c |}]
 ;;
 
 type write =
@@ -409,7 +409,7 @@ let%expect_test "resize ram with byte write enables; read/write = 1/4" =
     │                  ││──────────────────────────────┴─────────┴─────────┴─────────┴─────│
     │                  ││                                                                  │
     └──────────────────┘└──────────────────────────────────────────────────────────────────┘
-    a8412a22e98af44fe969e93f76b22e5e |}]
+    586051185cc93f2a909088645d0519b3 |}]
 ;;
 
 let%expect_test "resize ram with byte write enables; read/write = 1/2" =
@@ -458,7 +458,7 @@ let%expect_test "resize ram with byte write enables; read/write = 1/2" =
     │qb                ││ 0000                         │22DD     │AA11                     │
     │                  ││──────────────────────────────┴─────────┴───────────────────      │
     └──────────────────┘└──────────────────────────────────────────────────────────────────┘
-    ed029c1998a08418efc1eb06f8a38d23 |}]
+    ebe4a270fb50d7b3d96f4e039bd16b68 |}]
 ;;
 
 let%expect_test "resize ram with byte write enables; read/write = 2" =
@@ -509,7 +509,7 @@ let%expect_test "resize ram with byte write enables; read/write = 2" =
     │qb                ││ 00000000                     │0000AA11 │00DDAA11 │22DDAA11       │
     │                  ││──────────────────────────────┴─────────┴─────────┴───────────────│
     └──────────────────┘└──────────────────────────────────────────────────────────────────┘
-    d50181b9b129f97748608d1eb77ef3a4 |}]
+    fcd4ccdb023964c7a33cc171be79aade |}]
 ;;
 
 let%expect_test "resize ram with byte write enables; read/write = 4" =
@@ -565,5 +565,5 @@ let%expect_test "resize ram with byte write enables; read/write = 4" =
     │                  ││──────────────────────────────┴───────────────────┴───────────────────┴─────────┴─────────────────│
     │                  ││                                                                                                  │
     └──────────────────┘└──────────────────────────────────────────────────────────────────────────────────────────────────┘
-    2e536dbb94c1fb693009ca79bed18e29 |}]
+    16cee7840350faf435d6d335676367ae |}]
 ;;
