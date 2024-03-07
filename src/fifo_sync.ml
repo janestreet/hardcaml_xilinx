@@ -108,6 +108,8 @@ module With_interface (X : Hardcaml.Interface.S) = struct
       { q : 'a X_with_valid.t [@rtlprefix "q$"]
       ; overflow : 'a
       ; underflow : 'a
+      ; full : 'a
+      ; nearly_full : 'a
       }
     [@@deriving hardcaml]
   end
@@ -170,7 +172,7 @@ module With_interface (X : Hardcaml.Interface.S) = struct
       sticky_error ( -- ) spec ~not_ready:fifo.empty ~valid:rd ~name:"underflow"
     in
     let q = { With_valid.valid = ~:(fifo.empty); value = X.Of_signal.unpack fifo.q } in
-    { O.q; overflow; underflow }
+    { O.q; overflow; underflow; full = fifo.full; nearly_full = fifo.nearly_full }
   ;;
 
   let hierarchical

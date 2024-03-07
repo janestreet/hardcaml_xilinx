@@ -8,7 +8,7 @@ open Hardcaml
     [Simulation] hardcaml multiport memories are used to model the Xilinx memory
     behaviour.
 
-    The interface to the RAM differs subtly from the core primitives - we use seperate
+    The interface to the RAM differs subtly from the core primitives - we use separate
     read and write enables, rather than a single enable and write signal. The mapping is
     as follows:
 
