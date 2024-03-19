@@ -167,7 +167,8 @@ let%expect_test "verilog" =
                        _13 };
         assign o = _14;
 
-    endmodule |}];
+    endmodule
+    |}];
   let module X = Make_xilinx_primitives (Unisim_combinational_primitives) (Lut4) in
   [ output "o" (X.x_xor (input "i1" 2) (input "i2" 2)) ]
   |> Circuit.create_exn ~name:"x"
@@ -229,5 +230,6 @@ let%expect_test "verilog" =
                        _1 };
         assign o = _20;
 
-    endmodule |}]
+    endmodule
+    |}]
 ;;

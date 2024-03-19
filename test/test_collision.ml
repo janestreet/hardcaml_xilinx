@@ -186,7 +186,8 @@ let%expect_test "address collision for basic RTL models" =
     │          ││────────────────────────┴───────    │
     │          ││                                    │
     └──────────┘└────────────────────────────────────┘
-    c19b13da5309446a73618c912a590a45 |}]
+    c19b13da5309446a73618c912a590a45
+    |}]
 ;;
 
 let%expect_test "address collision across ports for basic RTL models" =
@@ -263,7 +264,8 @@ let%expect_test "address collision across ports for basic RTL models" =
     │unc_b     ││ 0      │8      │9                  │
     │          ││────────┴───────┴───────────────    │
     └──────────┘└────────────────────────────────────┘
-    83c5b1f72713d638b0ecf6383bde1f6b |}]
+    83c5b1f72713d638b0ecf6383bde1f6b
+    |}]
 ;;
 
 (* This expect test models the hardcaml only part of the collision test performed with
@@ -379,5 +381,6 @@ let%expect_test "Vivado XSIM testbench model" =
     │unc_b             ││ 0      │8                                              │19         │
     │                  ││────────┴───────────────────────────────────────────────┴───────────│
     └──────────────────┘└────────────────────────────────────────────────────────────────────┘
-    42e5ca306eaadefbb74db282d94b9728 |}]
+    42e5ca306eaadefbb74db282d94b9728
+    |}]
 ;;

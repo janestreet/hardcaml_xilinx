@@ -145,7 +145,8 @@ let%expect_test "True_dual_port_ram" =
         assign qa = _22;
         assign qb = _21;
 
-    endmodule |}];
+    endmodule
+    |}];
   create (Blockram Read_before_write) Synthesis;
   [%expect
     {|
@@ -254,7 +255,8 @@ let%expect_test "True_dual_port_ram" =
         assign qa = _22;
         assign qb = _21;
 
-    endmodule |}];
+    endmodule
+    |}];
   create Ultraram Synthesis;
   [%expect
     {|
@@ -363,7 +365,8 @@ let%expect_test "True_dual_port_ram" =
         assign qa = _22;
         assign qb = _21;
 
-    endmodule |}];
+    endmodule
+    |}];
   (* address width b is wider than the implied address width from port a. *)
   let test_bad_address_width build_mode =
     create
@@ -383,7 +386,8 @@ let%expect_test "True_dual_port_ram" =
     ("[Signal.multiport_memory] width of write address is inconsistent"
      (port                1)
      (write_address_width 4)
-     (expected            3)) |}];
+     (expected            3))
+    |}];
   (* data width b does not result in an even number of words in the ram *)
   let test_uneven_sizes build_mode =
     create
@@ -400,14 +404,16 @@ let%expect_test "True_dual_port_ram" =
     ("[size] is the number of port A words in the RAM. It must be chosen so that there is an integer number of port B words in the RAM as well."
      (size_a  16)
      (width_a 4)
-     (width_b 9)) |}];
+     (width_b 9))
+    |}];
   require_does_raise [%here] (fun () -> test_uneven_sizes Simulation);
   [%expect
     {|
     ("[size] is the number of port A words in the RAM. It must be chosen so that there is an integer number of port B words in the RAM as well."
      (size_a  16)
      (width_a 4)
-     (width_b 9)) |}];
+     (width_b 9))
+    |}];
   (* non-power-of-2 scaling - works in synthesis but not simulation *)
   let test_non_pow2_scale build_mode =
     create
@@ -527,12 +533,14 @@ let%expect_test "True_dual_port_ram" =
         assign qa = _22;
         assign qb = _21;
 
-    endmodule |}];
+    endmodule
+    |}];
   require_does_raise [%here] (fun () -> test_non_pow2_scale Simulation);
   [%expect
     {|
     ("ratio between port widths must be a power of 2. (update the simulation model if non-power-of-2 scale is required)"
-     (scale 3)) |}]
+     (scale 3))
+    |}]
 ;;
 
 let%expect_test "Dual_port_ram" =
@@ -752,7 +760,8 @@ let%expect_test "byte enables" =
         assign qa = _48;
         assign qb = _35;
 
-    endmodule |}]
+    endmodule
+    |}]
 ;;
 
 let%expect_test "byte enables with resizing" =
@@ -929,5 +938,6 @@ let%expect_test "byte enables with resizing" =
         assign qa = _60;
         assign qb = _47;
 
-    endmodule |}]
+    endmodule
+    |}]
 ;;
