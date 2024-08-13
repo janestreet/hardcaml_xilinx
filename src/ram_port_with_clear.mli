@@ -1,4 +1,4 @@
-(** Statemachine for clearing a RAM via one of it's ports. *)
+(** State machine for clearing a RAM via one of it's ports. *)
 
 open! Base
 open! Hardcaml
@@ -21,7 +21,8 @@ type 'a t =
 [@@deriving hardcaml]
 
 val create
-  :  clear_to:Signal.t
+  :  scope:Scope.t
+  -> clear_to:Signal.t
   -> clear:Signal.t
   -> clock:Signal.t
   -> size:int

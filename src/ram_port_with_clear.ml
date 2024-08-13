@@ -14,7 +14,7 @@ module State = struct
   [@@deriving sexp_of, enumerate, compare]
 end
 
-let create ~clear_to ~clear ~clock ~size ~(port : _ Ram_port.t) =
+let create ~scope ~clear_to ~clear ~clock ~size ~(port : _ Ram_port.t) =
   let open Always in
   let open Signal in
   if width clear_to <> width port.data
@@ -22,7 +22,8 @@ let create ~clear_to ~clear ~clock ~size ~(port : _ Ram_port.t) =
   let enable = vdd in
   let spec = Reg_spec.create ~clock ~clear () in
   let sm = State_machine.create ~enable (module State) spec in
-  ignore (sm.current -- "state" : _);
+  let%hw state = sm.current in
+  ignore (state : _);
   let addr = Variable.reg ~enable spec ~width:(num_bits_to_represent (size - 1)) in
   let ram_port = Ram_port.map port ~f:(fun default -> Variable.wire ~default) in
   compile
@@ -38,7 +39,6 @@ let create ~clear_to ~clear ~clock ~size ~(port : _ Ram_port.t) =
         ; Done, []
         ]
     ];
-  { port = Ram_port.(map2 ram_port port_names ~f:(fun w n -> w.value -- ("int_" ^ n)))
-  ; clear_busy = sm.is Clear
-  }
+  let%hw.Ram_port.Of_signal port = Ram_port.Of_always.value ram_port in
+  { port; clear_busy = sm.is Clear }
 ;;

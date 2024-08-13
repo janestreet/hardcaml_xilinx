@@ -2,7 +2,7 @@
 open Base
 open Hardcaml
 open Signal
-module Test = Hardcaml_xilinx_test.Test_collision
+module Test_collision = Hardcaml_xilinx_test.Test_collision
 
 let command_tdpram =
   Command.basic
@@ -10,10 +10,10 @@ let command_tdpram =
     [%map_open.Command
       let () = return () in
       fun () ->
-        let rams = Test.create ~f:Test.compare_rams in
+        let rams = Test_collision.create ~f:Test_collision.compare_rams in
         Circuit.create_exn
           ~name:"xram_sim_model"
-          Test.O.(map2 port_names rams ~f:output |> to_list)
+          Test_collision.O.(map2 port_names rams ~f:output |> to_list)
         |> Rtl.print Verilog]
 ;;
 

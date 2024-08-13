@@ -319,7 +319,7 @@ let%expect_test "write port wider x4" =
 ;;
 
 let%expect_test "write port wider x8 - raises" =
-  Expect_test_helpers_base.require_does_raise [%here] (fun () -> test (-3));
+  Expect_test_helpers_base.require_does_raise (fun () -> test (-3));
   [%expect
     {|
     ("Cannot construct RAM with < 2 write entries"
@@ -436,7 +436,7 @@ let%expect_test "read port wider x4, read_latency=2" =
 ;;
 
 let%expect_test "read port wider x8 - raises" =
-  Expect_test_helpers_base.require_does_raise [%here] (fun () -> test 3);
+  Expect_test_helpers_base.require_does_raise (fun () -> test 3);
   [%expect
     {|
     ("Cannot construct RAM with < 2 read entries"

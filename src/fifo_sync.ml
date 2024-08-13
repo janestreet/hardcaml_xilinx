@@ -70,6 +70,12 @@ let create
          ~wr
          ~d)
   | Simulation ->
+    (* Create a new scope for the FIFO signals if both [scope] and [instance] are provided *)
+    let scope =
+      match scope, instance with
+      | Some scope, Some inst -> Some (Scope.sub_scope scope inst)
+      | _, _ -> scope
+    in
     Fifo.create
       ?scope
       ~overflow_check

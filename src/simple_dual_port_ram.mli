@@ -6,8 +6,10 @@ open Hardcaml
 (** Create a Xilinx compatible memory. Uses True_dual_port_ram with appropriate parameters
     for implementation. *)
 val create
-  :  ?read_latency:int (** Default is 1 *)
-  -> ?arch:Ram_arch.t (** Default is [Rtl] *)
+  :  ?address_collision_protection:Address_collision.Protection.t
+  -> ?address_collision_model:Address_collision.Model.t
+  -> ?read_latency:int (** Default (and minimum) is 1 *)
+  -> ?arch:Ram_arch.t (** Default is [Blockram No_change] *)
   -> ?byte_write_width:Byte_write_width.t (** Default is [Full] *)
   -> ?memory_optimization:bool
   -> ?cascade_height:Cascade_height.t

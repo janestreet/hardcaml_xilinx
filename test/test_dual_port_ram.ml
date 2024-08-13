@@ -377,10 +377,9 @@ let%expect_test "True_dual_port_ram" =
       (Blockram Read_before_write)
       build_mode
   in
-  require_does_raise [%here] ~hide_positions:true (fun () ->
-    test_bad_address_width Synthesis);
+  require_does_raise ~hide_positions:true (fun () -> test_bad_address_width Synthesis);
   [%expect {| "Assert_failure true_dual_port_ram.ml:LINE:COL" |}];
-  require_does_raise [%here] (fun () -> test_bad_address_width Simulation);
+  require_does_raise (fun () -> test_bad_address_width Simulation);
   [%expect
     {|
     ("[Signal.multiport_memory] width of write address is inconsistent"
@@ -398,7 +397,7 @@ let%expect_test "True_dual_port_ram" =
       (Blockram Read_before_write)
       build_mode
   in
-  require_does_raise [%here] (fun () -> test_uneven_sizes Synthesis);
+  require_does_raise (fun () -> test_uneven_sizes Synthesis);
   [%expect
     {|
     ("[size] is the number of port A words in the RAM. It must be chosen so that there is an integer number of port B words in the RAM as well."
@@ -406,7 +405,7 @@ let%expect_test "True_dual_port_ram" =
      (width_a 4)
      (width_b 9))
     |}];
-  require_does_raise [%here] (fun () -> test_uneven_sizes Simulation);
+  require_does_raise (fun () -> test_uneven_sizes Simulation);
   [%expect
     {|
     ("[size] is the number of port A words in the RAM. It must be chosen so that there is an integer number of port B words in the RAM as well."
@@ -425,7 +424,7 @@ let%expect_test "True_dual_port_ram" =
       (Blockram Read_before_write)
       build_mode
   in
-  require_does_not_raise [%here] (fun () -> test_non_pow2_scale Synthesis);
+  require_does_not_raise (fun () -> test_non_pow2_scale Synthesis);
   [%expect
     {|
     module true_dual_port_ram (
@@ -535,7 +534,7 @@ let%expect_test "True_dual_port_ram" =
 
     endmodule
     |}];
-  require_does_raise [%here] (fun () -> test_non_pow2_scale Simulation);
+  require_does_raise (fun () -> test_non_pow2_scale Simulation);
   [%expect
     {|
     ("ratio between port widths must be a power of 2. (update the simulation model if non-power-of-2 scale is required)"
@@ -569,13 +568,12 @@ let%expect_test "Dual_port_ram" =
     Circuit.create_exn ~name:"dual_port_ram" [ output "qa" qa; output "qb" qb ]
     |> Rtl.output Verilog ~output_mode:(To_buffer (Buffer.create 1024))
   in
-  require_does_not_raise [%here] (fun () -> create Distributed Synthesis);
-  require_does_not_raise [%here] (fun () -> create (Blockram No_change) Synthesis);
-  require_does_not_raise [%here] (fun () -> create Ultraram Synthesis);
-  require_does_not_raise [%here] (fun () -> create Distributed Simulation);
-  require_does_not_raise [%here] (fun () ->
-    create (Blockram Write_before_read) Simulation);
-  require_does_not_raise [%here] (fun () -> create Ultraram Simulation);
+  require_does_not_raise (fun () -> create Distributed Synthesis);
+  require_does_not_raise (fun () -> create (Blockram No_change) Synthesis);
+  require_does_not_raise (fun () -> create Ultraram Synthesis);
+  require_does_not_raise (fun () -> create Distributed Simulation);
+  require_does_not_raise (fun () -> create (Blockram Write_before_read) Simulation);
+  require_does_not_raise (fun () -> create Ultraram Simulation);
   [%expect {| |}]
 ;;
 
@@ -602,12 +600,12 @@ let%expect_test "Simple_dual_port_ram" =
     Circuit.create_exn ~name:"simple_dual_port_ram" [ output "q" q ]
     |> Rtl.output Verilog ~output_mode:(To_buffer (Buffer.create 1024))
   in
-  require_does_not_raise [%here] (fun () -> create Distributed Synthesis);
-  require_does_not_raise [%here] (fun () -> create (Blockram Read_before_write) Synthesis);
-  require_does_not_raise [%here] (fun () -> create Ultraram Synthesis);
-  require_does_not_raise [%here] (fun () -> create Distributed Simulation);
-  require_does_not_raise [%here] (fun () -> create (Blockram No_change) Simulation);
-  require_does_not_raise [%here] (fun () -> create Ultraram Simulation);
+  require_does_not_raise (fun () -> create Distributed Synthesis);
+  require_does_not_raise (fun () -> create (Blockram Read_before_write) Synthesis);
+  require_does_not_raise (fun () -> create Ultraram Synthesis);
+  require_does_not_raise (fun () -> create Distributed Simulation);
+  require_does_not_raise (fun () -> create (Blockram No_change) Simulation);
+  require_does_not_raise (fun () -> create Ultraram Simulation);
   [%expect {| |}]
 ;;
 

@@ -1,6 +1,7 @@
 (library
  (name hardcaml_xilinx_test)
  (libraries base expect_test_helpers_core.expect_test_helpers_base hardcaml
-   hardcaml_waveterm hardcaml_xilinx base_quickcheck)
+   hardcaml_waveterm hardcaml_xilinx base_quickcheck core re
+   splittable_random)
  (preprocess
   (pps ppx_jane ppx_hardcaml)))

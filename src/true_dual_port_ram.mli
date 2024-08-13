@@ -20,7 +20,9 @@ open Hardcaml
 
     The documentation explains what happens across ports on address collisions, and in
     some cases this leads to [X]s on the output of one port of the other. Hardcaml cannot
-    model this behaviour, so it is up to the designer to be 'very careful' in these cases.
+    express [X]s, so we build some custom logic to put "something unexpected" on the
+    output ports (see [Address_collision.Model.t]).
+
     Please see the table at the top of the implementation file for more information.
 
     Ultraram has it's own subtle behaviour on address collision and this is modelled in
@@ -30,17 +32,17 @@ open Hardcaml
 
     There is a verilog testbench in [test_hdl] which works with the [xsim_modelling]
     application to test the subtle address collision cases.
-
 *)
 val create
-  :  ?read_latency:int (** Default is 1 *)
+  :  ?address_collision_model:Address_collision.Model.t
+  -> ?read_latency:int (** Default is 1 *)
   -> ?arch:Ram_arch.t (** Default is [Block_ram No_change] *)
   -> ?byte_write_width:Byte_write_width.t (** Default is [Full] *)
   -> ?memory_optimization:bool
   -> ?cascade_height:Cascade_height.t
   -> ?clocking_mode:Clocking_mode.t
        (** By default, we make a best-guess effort to choose the correct clocking model - if
-      the two clocks have the same [Uid.t], we pick [Common_clock]; otherwise, we pick 
+      the two clocks have the same [Uid.t], we pick [Common_clock]; otherwise, we pick
       [Independent_clock] *)
   -> ?simulation_name:string
        (** In simulation, set the name of the underlying [multiport_memory] node. *)

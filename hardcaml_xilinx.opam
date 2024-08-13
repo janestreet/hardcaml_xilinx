@@ -12,11 +12,13 @@ build: [
 depends: [
   "ocaml" {>= "5.1.0"}
   "base"
+  "core"
   "hardcaml"
+  "hardcaml_circuits"
   "n_ary"
   "ppx_hardcaml"
   "ppx_jane"
-  "dune"         {>= "3.11.0"}
+  "dune"              {>= "3.11.0"}
 ]
 available: arch != "arm32" & arch != "x86_32"
 synopsis: "Hardcaml wrappers for Xilinx memory primitives"

@@ -58,9 +58,9 @@ module With_interface (X : Hardcaml.Interface.S) : sig
     type 'a t =
       { q : 'a X_with_valid.t
       ; overflow : 'a
-          (** sticky error flag indicating whether this fifo has overflowed. *)
+      (** sticky error flag indicating whether this fifo has overflowed. *)
       ; underflow : 'a
-          (** sticky error flag indicating whether this fifo has underflowed. *)
+      (** sticky error flag indicating whether this fifo has underflowed. *)
       ; full : 'a
       ; nearly_full : 'a
       }

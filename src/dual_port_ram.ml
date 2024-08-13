@@ -2,6 +2,7 @@ open! Base
 open! Hardcaml
 
 let create
+  ?address_collision_model
   ?read_latency
   ?arch
   ?byte_write_width
@@ -17,6 +18,7 @@ let create
   ~port_b
   =
   True_dual_port_ram.create
+    ?address_collision_model
     ?read_latency
     ?arch
     ?byte_write_width

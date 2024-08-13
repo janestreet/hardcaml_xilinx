@@ -12,6 +12,7 @@ let create_circuit
   ~address_bits
   ~data_bits
   =
+  let scope = Scope.create ~flatten_design:true () in
   let port_sizes =
     let write_enable =
       match byte_write_width with
@@ -25,7 +26,7 @@ let create_circuit
   let clear_to = Signal.input "clear_to" data_bits in
   let size = 1 lsl address_bits in
   let port_with_clear port =
-    Ram_port_with_clear.create ~clear_to ~clear ~clock:Signal.vdd ~size ~port
+    Ram_port_with_clear.create ~scope ~clear_to ~clear ~clock:Signal.vdd ~size ~port
   in
   let port_a =
     port_with_clear
@@ -166,24 +167,24 @@ let%expect_test "clear followed by basic write then read, single cycle latency, 
     │qb                ││ .│0000BEEF               │00.│0000BEEF   │00000000            │
     │                  ││──┴───────────────────────┴───┴───────────┴─────────────       │
     │                  ││────┬─┬─┬─┬─┬─┬─┬─┬─┬─────────────────┬─┬─┬─┬─┬─┬─┬─┬─┬─       │
-    │int_address       ││ 0  │1│2│3│4│5│6│7│0│2                │0│1│2│3│4│5│6│7│2       │
+    │port$address      ││ 0  │1│2│3│4│5│6│7│0│2                │0│1│2│3│4│5│6│7│2       │
     │                  ││────┴─┴─┴─┴─┴─┴─┴─┴─┴─────────────────┴─┴─┴─┴─┴─┴─┴─┴─┴─       │
     │                  ││────┬─┬─┬─┬─┬─┬─┬─┬─────┬───┬─────────┬─┬─┬─┬─┬─┬─┬─┬─┬─       │
-    │int_address_0     ││ 0  │1│2│3│4│5│6│7│0    │2  │1        │0│1│2│3│4│5│6│7│1       │
+    │port$address_0    ││ 0  │1│2│3│4│5│6│7│0    │2  │1        │0│1│2│3│4│5│6│7│1       │
     │                  ││────┴─┴─┴─┴─┴─┴─┴─┴─────┴───┴─────────┴─┴─┴─┴─┴─┴─┴─┴─┴─       │
     │                  ││──────────────────┬─┬─────────────────┬───────────────┬─       │
-    │int_data          ││ 0000BEEF         │.│00000064         │00000000       │.       │
+    │port$data         ││ 0000BEEF         │.│00000064         │00000000       │.       │
     │                  ││──────────────────┴─┴─────────────────┴───────────────┴─       │
     │                  ││──────────────────┬─────────────────────────────────────       │
-    │int_data_0        ││ 0000BEEF         │00000000                                    │
+    │port$data_0       ││ 0000BEEF         │00000000                                    │
     │                  ││──────────────────┴─────────────────────────────────────       │
-    │int_read_enable   ││                                                               │
+    │port$read_enable  ││                                                               │
     │                  ││────────────────────────────────────────────────────────       │
-    │int_read_enable_0 ││                        ┌─┐ ┌─┐                                │
+    │port$read_enable_0││                        ┌─┐ ┌─┐                                │
     │                  ││────────────────────────┘ └─┘ └─────────────────────────       │
-    │int_write_enable  ││──────────────────┐ ┌─┐               ┌───────────────┐        │
+    │port$write_enable ││──────────────────┐ ┌─┐               ┌───────────────┐        │
     │                  ││                  └─┘ └───────────────┘               └─       │
-    │int_write_enable_0││──────────────────┐                   ┌───────────────┐        │
+    │port$write_enable_││──────────────────┐                   ┌───────────────┐        │
     │                  ││                  └───────────────────┘               └─       │
     │                  ││──────────────────┬───────────────────┬───────────────┬─       │
     │state             ││ Clear            │Done               │Clear          │.       │

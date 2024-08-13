@@ -121,16 +121,7 @@ let create_xpm
       | Some arg_cascade_height -> Cascade_height.to_xpm_args arg_cascade_height
     ;;
 
-    let clocking_mode =
-      Option.value
-        arg_clocking_mode
-        ~default:
-          (if Uid.compare (Signal.uid clock_a) (Signal.uid clock_b) = 0
-           then Clocking_mode.Common_clock
-           else Clocking_mode.Independent_clock)
-      |> Clocking_mode.to_xpm_args
-    ;;
-
+    let clocking_mode = Clocking_mode.to_xpm_args arg_clocking_mode
     let write_data_width_a = width_a
     let write_data_width_b = width_b
     let byte_write_width_a = byte_write_width port_a
@@ -263,8 +254,66 @@ let create_base_rtl_ram
   Array.map2_exn f_q q ~f:(fun f q -> f q)
 ;;
 
-let create_rtl'
+(* Address collisions only occur for [Blockram (No_change|Write_before_read)]. We also
+   dont attempt to model anything if we are not using common clocks. This is fine for
+   cyclesim as it's what it supports. For the event driven simulator, I dont think you can
+   model this at the RTL level anyway - look at the Xilinx Unisim BRAM implementations -
+   they are behavioural. *)
+let resolve_address_collision_model
+  ~(clocking_mode : Clocking_mode.t)
+  ~(arch : Ram_arch.t)
+  ~(address_collision_model : Address_collision.Model.t)
+  =
+  match clocking_mode with
+  | Independent_clock -> Address_collision.Model.None__there_be_dragons
+  | Common_clock ->
+    (match arch with
+     | Blockram (No_change | Write_before_read) -> address_collision_model
+     | Blockram Read_before_write | Distributed | Ultraram -> None__there_be_dragons)
+;;
+
+let model_common_clock_address_collisions
+  ~address_collision_model
+  ~clocking_mode
+  ~arch
+  ~clock
+  ~read_latency
+  ~(port_a : _ Ram_port.t)
+  ~(port_b : _ Ram_port.t)
+  ~qa
+  ~qb
+  =
+  let address_collision_model =
+    resolve_address_collision_model ~clocking_mode ~arch ~address_collision_model
+  in
+  let spec = Reg_spec.create ~clock () in
+  let pipe = pipeline spec ~n:read_latency in
+  let address_collision = port_a.address ==: port_b.address in
+  let address_collision_reg = pipe address_collision in
+  let port_a_reg = Ram_port.map port_a ~f:pipe in
+  let port_b_reg = Ram_port.map port_b ~f:pipe in
+  let address_collision_a =
+    address_collision_reg &: port_b_reg.write_enable &: port_a_reg.read_enable
+  in
+  let address_collision_b =
+    address_collision_reg &: port_a_reg.write_enable &: port_b_reg.read_enable
+  in
+  ( Address_collision.Model.q
+      address_collision_model
+      spec
+      ~address_collision:address_collision_a
+      qa
+  , Address_collision.Model.q
+      address_collision_model
+      spec
+      ~address_collision:address_collision_b
+      qb )
+;;
+
+let create_rtl_with_collision_model
+  ~address_collision_model
   ~simulation_name
+  ~clocking_mode
   ~read_latency
   ~arch
   ~clock_a
@@ -279,18 +328,30 @@ let create_rtl'
   let q =
     create_base_rtl_ram ~simulation_name ~arch ~clock_a ~clock_b ~size ~port_a ~port_b
   in
-  ( output_pipe
-      ~clock:clock_a
-      ~clear:clear_a
-      ~latency:(read_latency - 1)
-      ~enable:port_a.read_enable
-      q.(0)
-  , output_pipe
-      ~clock:clock_b
-      ~clear:clear_b
-      ~latency:(read_latency - 1)
-      ~enable:port_b.read_enable
-      q.(1) )
+  let qa, qb =
+    ( output_pipe
+        ~clock:clock_a
+        ~clear:clear_a
+        ~latency:(read_latency - 1)
+        ~enable:port_a.read_enable
+        q.(0)
+    , output_pipe
+        ~clock:clock_b
+        ~clear:clear_b
+        ~latency:(read_latency - 1)
+        ~enable:port_b.read_enable
+        q.(1) )
+  in
+  model_common_clock_address_collisions
+    ~address_collision_model
+    ~clocking_mode
+    ~arch
+    ~clock:clock_a
+    ~read_latency
+    ~port_a
+    ~port_b
+    ~qa
+    ~qb
 ;;
 
 let raise_port_widths_not_exact_multiple max_width min_width =
@@ -326,6 +387,8 @@ let raise_port_width_not_divisible_by_byte_size () =
 
 (* Instantiate the core rtl ram multiple times so that it can support byte enables.*)
 let create_rtl
+  ~address_collision_model
+  ~clocking_mode
   ~simulation_name
   ~read_latency
   ~arch
@@ -383,17 +446,18 @@ let create_rtl
           ports, None)
         else (
           assert (width port.data = min_width);
-          let read_select = sel_bottom port.address log_scale in
-          let address = drop_bottom port.address log_scale in
+          let read_select = sel_bottom port.address ~width:log_scale in
+          let address = drop_bottom port.address ~width:log_scale in
           let ports =
             List.init (1 lsl log_scale) ~f:(fun word ->
               let port =
-                let enable = sel_bottom port.address log_scale ==:. word in
+                let enable = sel_bottom port.address ~width:log_scale ==:. word in
                 { port with
                   address
                 ; write_enable =
-                    port.write_enable &: repeat enable (width port.write_enable)
-                ; read_enable = port.read_enable &: repeat enable (width port.read_enable)
+                    port.write_enable &: repeat enable ~count:(width port.write_enable)
+                ; read_enable =
+                    port.read_enable &: repeat enable ~count:(width port.read_enable)
                 }
               in
               split_to_underlying_rams port)
@@ -422,7 +486,9 @@ let create_rtl
   let min_size = Int.min size_a size_b in
   let qs =
     List.map2_exn port_a_split port_b_split ~f:(fun port_a port_b ->
-      create_rtl'
+      create_rtl_with_collision_model
+        ~address_collision_model
+        ~clocking_mode
         ~simulation_name
         ~read_latency
         ~arch
@@ -451,6 +517,7 @@ let create_rtl
 ;;
 
 let create
+  ?(address_collision_model = Address_collision.Model.None__there_be_dragons)
   ?(read_latency = 1)
   ?(arch = Ram_arch.Blockram No_change)
   ?(byte_write_width = Byte_write_width.Full)
@@ -460,9 +527,38 @@ let create
   ?simulation_name
   ~(build_mode : Build_mode.t)
   ()
+  ~clock_a
+  ~clock_b
+  ~clear_a
+  ~clear_b
+  ~size
+  ~port_a
+  ~port_b
   =
+  let clocking_mode =
+    Option.value
+      clocking_mode
+      ~default:
+        (if Uid.equal (Signal.uid clock_a) (Signal.uid clock_b)
+         then Clocking_mode.Common_clock
+         else Clocking_mode.Independent_clock)
+  in
   match build_mode with
-  | Simulation -> create_rtl ~simulation_name ~read_latency ~arch ~byte_write_width
+  | Simulation ->
+    create_rtl
+      ~address_collision_model
+      ~clocking_mode
+      ~simulation_name
+      ~read_latency
+      ~arch
+      ~byte_write_width
+      ~clock_a
+      ~clock_b
+      ~clear_a
+      ~clear_b
+      ~size
+      ~port_a
+      ~port_b
   | Synthesis ->
     create_xpm
       ~read_latency
@@ -471,4 +567,11 @@ let create
       ~cascade_height
       ~memory_optimization
       ~clocking_mode
+      ~clock_a
+      ~clock_b
+      ~clear_a
+      ~clear_b
+      ~size
+      ~port_a
+      ~port_b
 ;;

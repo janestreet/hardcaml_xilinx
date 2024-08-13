@@ -289,7 +289,7 @@ struct
 
   let x_map f l =
     let w = List.hd_exn l |> width in
-    let lut n = x_lut f (List.map l ~f:(fun s -> select s n n) |> concat_lsb) in
+    let lut n = x_lut f (List.map l ~f:(fun s -> s.:[n, n]) |> concat_lsb) in
     let rec build n = if n = w then [] else lut n :: build (n + 1) in
     concat_lsb (build 0)
   ;;
@@ -309,11 +309,11 @@ struct
     let n = min max_lut (width a) in
     let op' = reduce_inputs op n in
     let op' = if inv then Lut_equation.( ~: ) op' else op' in
-    let lut = x_lut op' (select a (n - 1) 0) in
+    let lut = x_lut op' a.:[n - 1, 0] in
     let carry_out = muxcy carry_in mux_din lut in
     if n = width a
     then carry_out
-    else x_reduce_carry inv op mux_din carry_out (select a (width a - 1) n)
+    else x_reduce_carry inv op mux_din carry_out a.:[width a - 1, n]
   ;;
 
   let x_and_reduce a = x_reduce_carry false Lut_equation.( &: ) gnd vdd a
@@ -323,8 +323,8 @@ struct
     let rec level a =
       let n = min max_lut (width a) in
       let op' = reduce_inputs op n in
-      let lut = x_lut op' (select a (n - 1) 0) in
-      if n = width a then lut else level (select a (width a - 1) n) @: lut
+      let lut = x_lut op' a.:[n - 1, 0] in
+      if n = width a then lut else level a.:[width a - 1, n] @: lut
     in
     if width a = 1 then a else x_reduce_tree op (level a)
   ;;
@@ -399,8 +399,8 @@ struct
       if width a <= size
       then [ eq_lut a b ]
       else
-        eq_lut (select a (size - 1) 0) (select b (size - 1) 0)
-        :: mk (select a (width a - 1) size) (select b (width b - 1) size)
+        eq_lut a.:[size - 1, 0] b.:[size - 1, 0]
+        :: mk a.:[width a - 1, size] b.:[width b - 1, size]
     in
     let c = mk a b in
     List.fold c ~init:Comb.vdd ~f:(fun cin c -> muxcy cin Comb.gnd c)
@@ -492,8 +492,8 @@ struct
           let a, b = split (1 lsl l) d in
           x_mux_n n muxfn s a def :: build2 s b
       in
-      let d = build2 (select s (l - 1) 0) d in
-      if l = width s then List.hd_exn d else build (select s (width s - 1) l) d
+      let d = build2 s.:[l - 1, 0] d in
+      if l = width s then List.hd_exn d else build s.:[width s - 1, l] d
     in
     build s d
   ;;
@@ -504,7 +504,7 @@ struct
       if i = w
       then []
       else (
-        let d = List.map d ~f:(fun s -> bit s i) in
+        let d = List.map d ~f:(fun s -> s.:(i)) in
         x_mux_bit s d :: mux_bits (i + 1))
     in
     mux_bits 0 |> List.rev |> concat_msb
@@ -530,20 +530,19 @@ struct
         s :: build a0t a1t b0 b1 c
       | _ -> failwith "x_mul_2"
     in
-    build a0 a1 (bit b 0) (bit b 1) gnd |> concat_lsb
+    build a0 a1 b.:(0) b.:(1) gnd |> concat_lsb
   ;;
 
   let x_mul_1 ~ex a b =
     let a = concat_msb [ ex a; ex a; a ] in
-    x_and a (repeat b (width a))
+    x_and a (repeat b ~count:(width a))
   ;;
 
   let rec build_products ~ex i a b =
     match width b with
     | 1 -> [ i, x_mul_1 ~ex a b ]
-    | 2 -> [ i, x_mul_2 ~ex a (select b 1 0) ]
-    | _ ->
-      (i, x_mul_2 ~ex a (select b 1 0)) :: build_products ~ex (i + 2) a (msbs (msbs b))
+    | 2 -> [ i, x_mul_2 ~ex a b.:[1, 0] ]
+    | _ -> (i, x_mul_2 ~ex a b.:[1, 0]) :: build_products ~ex (i + 2) a (msbs (msbs b))
   ;;
 
   (* multiplier *)
@@ -554,8 +553,8 @@ struct
       let width = 1 + max (width a) (width b) in
       let a, b =
         if sign
-        then sresize a width, sresize b width
-        else uresize a width, uresize b width
+        then sresize a ~width, sresize b ~width
+        else uresize a ~width, uresize b ~width
       in
       let _, sum = x_add_carry Lut_equation.(i0 ^: i1) gnd a b in
       sum
@@ -571,7 +570,7 @@ struct
       in
       Bits.tree ~arity:2 ~f:(Bits.reduce ~f:( +: )) products
     in
-    select (snd (adder_tree (build_products ~ex 0 a b))) (out_width - 1) 0
+    (snd (adder_tree (build_products ~ex 0 a b))).:[out_width - 1, 0]
   ;;
 
   let x_mulu a b = x_mul false a b

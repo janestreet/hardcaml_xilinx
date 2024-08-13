@@ -102,7 +102,7 @@ let instantiate_underlying_memory
   let get_write_segment write_data =
     let pos = ref 0 in
     fun width ->
-      let ret = Signal.select write_data (!pos + width - 1) !pos in
+      let ret = write_data.Signal.:[!pos + width - 1, !pos] in
       pos := !pos + width;
       ret
   in
@@ -227,8 +227,8 @@ module Read_port_1d = struct
   end
 
   module Specialize_with_config (The_config : Config.S) = Specialize (struct
-    let address_width = Config.vertical_index_width The_config.t
-  end)
+      let address_width = Config.vertical_index_width The_config.t
+    end)
 end
 
 module Read_port_2d = struct
@@ -477,17 +477,17 @@ module Component (M : Hardcaml.Interface.S) (The_config : Config.S) = struct
     List.init config.horizontal_dimension ~f:(fun i ->
       let high = ((i + 1) * num_bits_per_entry) - 1 in
       let low = i * num_bits_per_entry in
-      Signal.select read_data high low)
+      read_data.Signal.:[high, low])
     |> (function
-         | [ hd ] -> hd
-         | cases ->
-           let select_horizontal =
-             Signal.pipeline
-               ~n:config.underlying_ram_read_latency
-               spec_no_clear
-               horizontal_index
-           in
-           Signal.mux select_horizontal cases)
+          | [ hd ] -> hd
+          | cases ->
+            let select_horizontal =
+              Signal.pipeline
+                ~n:config.underlying_ram_read_latency
+                spec_no_clear
+                horizontal_index
+            in
+            Signal.mux select_horizontal cases)
     |> (fun x ->
          if config.combinational_output
          then x

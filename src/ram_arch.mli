@@ -10,7 +10,7 @@ open! Hardcaml
 
 type t =
   | Distributed
-      (** XPM macro - distributed LUT RAM.  Collision mode is Read_before_write. *)
+  (** XPM macro - distributed LUT RAM.  Collision mode is Read_before_write. *)
   | Blockram of Collision_mode.t (** XPM macro - RAMB36E2 *)
   | Ultraram (** XPM macro - UltraRAM. Collision_mode is No_change. *)
 [@@deriving sexp_of]
