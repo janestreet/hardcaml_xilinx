@@ -93,17 +93,11 @@ module Hardcaml_sequential_primitives = struct
   open Signal
 
   let fdce c ce clr d =
-    reg
-      (Reg_spec.override (Reg_spec.create () ~clock:c) ~reset:clr ~reset_to:gnd)
-      ~enable:ce
-      d
+    reg (Reg_spec.create () ~clock:c ~reset:clr) ~reset_to:gnd ~enable:ce d
   ;;
 
   let fdpe c ce pre d =
-    reg
-      (Reg_spec.override (Reg_spec.create () ~clock:c) ~reset:pre ~reset_to:vdd)
-      ~enable:ce
-      d
+    reg (Reg_spec.create () ~clock:c ~reset:pre) ~reset_to:vdd ~enable:ce d
   ;;
 
   let ram1s a d clk we =
@@ -612,40 +606,31 @@ module Make_sequential (Synth : Xilinx_primitives with type t = Signal.t) = stru
   module Comb = Comb.Make (Comb_primitives)
   open Comb
 
-  let reg (reg_spec : Reg_spec.t) ~enable d =
+  let reg (reg_spec : Signal.Type.register) ~enable d =
     let reset_value i =
-      if is_empty reg_spec.reg_reset_value
-      then false
-      else is_vdd reg_spec.reg_reset_value.:[i, i]
+      if is_empty reg_spec.reset_to then false else is_vdd reg_spec.reset_to.:[i, i]
     in
     let reset =
-      if is_empty reg_spec.reg_reset
+      if is_empty reg_spec.spec.reset
       then gnd
       else (
-        match reg_spec.reg_reset_edge with
-        | Falling -> ~:(reg_spec.reg_reset)
-        | Rising -> reg_spec.reg_reset)
+        match reg_spec.spec.reset_edge with
+        | Falling -> ~:(reg_spec.spec.reset)
+        | Rising -> reg_spec.spec.reset)
     in
-    let clear =
-      if is_empty reg_spec.reg_clear
-      then gnd
-      else (
-        match reg_spec.reg_clear_level with
-        | Low -> ~:(reg_spec.reg_clear)
-        | High -> reg_spec.reg_clear)
-    in
+    let clear = if is_empty reg_spec.spec.clear then gnd else reg_spec.spec.clear in
     let clock =
-      match reg_spec.reg_clock_edge with
-      | Falling -> ~:(reg_spec.reg_clock)
-      | Rising -> reg_spec.reg_clock
+      match reg_spec.spec.clock_edge with
+      | Falling -> ~:(reg_spec.spec.clock)
+      | Rising -> reg_spec.spec.clock
     in
     let enable = if is_empty enable then vdd else enable in
     let enable, d =
-      if is_empty reg_spec.reg_clear
+      if is_empty reg_spec.spec.clear
       then enable, d
-      else if is_empty reg_spec.reg_clear_value
+      else if is_empty reg_spec.clear_to
       then enable |: clear, mux2 clear (zero (width d)) d
-      else enable |: clear, mux2 clear reg_spec.reg_clear_value d
+      else enable |: clear, mux2 clear reg_spec.clear_to d
     in
     List.mapi (bits_lsb d) ~f:(fun i d ->
       if reset_value i

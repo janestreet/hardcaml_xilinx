@@ -41,9 +41,9 @@ val create
   -> ?memory_optimization:bool
   -> ?cascade_height:Cascade_height.t
   -> ?clocking_mode:Clocking_mode.t
-       (** By default, we make a best-guess effort to choose the correct clocking model - if
-      the two clocks have the same [Uid.t], we pick [Common_clock]; otherwise, we pick
-      [Independent_clock] *)
+       (** By default, we make a best-guess effort to choose the correct clocking model -
+           if the two clocks have the same [Uid.t], we pick [Common_clock]; otherwise, we
+           pick [Independent_clock] *)
   -> ?simulation_name:string
        (** In simulation, set the name of the underlying [multiport_memory] node. *)
   -> build_mode:Build_mode.t

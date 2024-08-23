@@ -12,7 +12,6 @@ build: [
 depends: [
   "ocaml" {>= "5.1.0"}
   "base"
-  "core"
   "hardcaml"
   "hardcaml_circuits"
   "n_ary"
