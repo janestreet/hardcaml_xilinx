@@ -59,147 +59,147 @@ let%expect_test "Rtl" =
         output [4:0] used;
 
         wire vdd;
-        wire _32;
         wire [4:0] _17;
         wire _30;
         wire _31;
-        reg _34;
-        wire [4:0] _35;
-        wire _36;
+        reg nearly_empty_0;
         wire _37;
-        reg _40;
-        wire [31:0] _68;
-        wire [3:0] _44;
+        wire [4:0] _34;
+        wire _35;
+        wire _36;
+        reg nearly_full_0;
         wire [3:0] _41;
+        wire [3:0] _39;
         wire [3:0] WRITE_ADDRESS_NEXT;
-        reg [3:0] _45;
-        wire [3:0] WRITE_ADDRESS;
+        (* extract_reset="FALSE" *)
+        reg [3:0] WRITE_ADDRESS;
+        wire [3:0] _7;
         (* RAM_STYLE="block" *)
-        reg [31:0] _65[0:15];
-        wire [4:0] _54;
+        reg [31:0] _58[0:15];
+        wire [4:0] _49;
         wire [4:0] _26;
         wire [4:0] _27;
         wire [4:0] _25;
         wire [4:0] _28;
-        reg [4:0] _48;
+        reg [4:0] USED;
         wire [4:0] _8;
-        wire [4:0] _49;
-        wire _50;
-        reg _53;
+        wire [4:0] _45;
+        wire _46;
+        reg full_0;
         wire _9;
         wire _21;
         wire WR_INT;
         wire _23;
         wire [4:0] USED_NEXT;
-        wire _55;
-        wire _56;
-        reg _59;
+        wire _50;
+        wire _51;
+        reg not_empty;
         wire _11;
         wire _18;
         wire _19;
         wire RD_INT;
         wire [3:0] READ_ADDRESS_NEXT;
-        reg [3:0] _64;
-        wire [3:0] READ_ADDRESS;
-        wire [31:0] _66;
-        reg [31:0] _69;
+        (* extract_reset="FALSE" *)
+        reg [3:0] READ_ADDRESS;
+        wire [3:0] _15;
+        wire [31:0] _59;
+        reg [31:0] _60;
         assign vdd = 1'b1;
-        assign _32 = 1'b0;
         assign _17 = 5'b00011;
         assign _30 = _17 < USED_NEXT;
         assign _31 = ~ _30;
         always @(posedge read_clock) begin
             if (clear)
-                _34 <= vdd;
+                nearly_empty_0 <= vdd;
             else
                 if (_23)
-                    _34 <= _31;
+                    nearly_empty_0 <= _31;
         end
-        assign _35 = 5'b01100;
-        assign _36 = USED_NEXT < _35;
-        assign _37 = ~ _36;
+        assign _37 = 1'b0;
+        assign _34 = 5'b01100;
+        assign _35 = USED_NEXT < _34;
+        assign _36 = ~ _35;
         always @(posedge read_clock) begin
             if (clear)
-                _40 <= _32;
+                nearly_full_0 <= _37;
             else
                 if (_23)
-                    _40 <= _37;
+                    nearly_full_0 <= _36;
         end
-        assign _68 = 32'b00000000000000000000000000000000;
-        assign _44 = 4'b0000;
-        assign _41 = 4'b0001;
-        assign WRITE_ADDRESS_NEXT = WRITE_ADDRESS + _41;
+        assign _41 = 4'b0000;
+        assign _39 = 4'b0001;
+        assign WRITE_ADDRESS_NEXT = _7 + _39;
         always @(posedge read_clock) begin
             if (clear)
-                _45 <= _44;
+                WRITE_ADDRESS <= _41;
             else
                 if (WR_INT)
-                    _45 <= WRITE_ADDRESS_NEXT;
+                    WRITE_ADDRESS <= WRITE_ADDRESS_NEXT;
         end
-        assign WRITE_ADDRESS = _45;
+        assign _7 = WRITE_ADDRESS;
         always @(posedge read_clock) begin
             if (WR_INT)
-                _65[WRITE_ADDRESS] <= d;
+                _58[_7] <= d;
         end
-        assign _54 = 5'b00000;
+        assign _49 = 5'b00000;
         assign _26 = 5'b00001;
         assign _27 = _8 - _26;
         assign _25 = _8 + _26;
         assign _28 = RD_INT ? _27 : _25;
         always @(posedge read_clock) begin
             if (clear)
-                _48 <= _54;
+                USED <= _49;
             else
                 if (_23)
-                    _48 <= USED_NEXT;
+                    USED <= USED_NEXT;
         end
-        assign _8 = _48;
-        assign _49 = 5'b10000;
-        assign _50 = USED_NEXT == _49;
+        assign _8 = USED;
+        assign _45 = 5'b10000;
+        assign _46 = USED_NEXT == _45;
         always @(posedge read_clock) begin
             if (clear)
-                _53 <= _32;
+                full_0 <= _37;
             else
                 if (_23)
-                    _53 <= _50;
+                    full_0 <= _46;
         end
-        assign _9 = _53;
+        assign _9 = full_0;
         assign _21 = ~ _9;
         assign WR_INT = write & _21;
         assign _23 = RD_INT ^ WR_INT;
         assign USED_NEXT = _23 ? _28 : _8;
-        assign _55 = USED_NEXT == _54;
-        assign _56 = ~ _55;
+        assign _50 = USED_NEXT == _49;
+        assign _51 = ~ _50;
         always @(posedge read_clock) begin
             if (clear)
-                _59 <= _32;
+                not_empty <= _37;
             else
                 if (_23)
-                    _59 <= _56;
+                    not_empty <= _51;
         end
-        assign _11 = _59;
+        assign _11 = not_empty;
         assign _18 = ~ _11;
         assign _19 = ~ _18;
         assign RD_INT = read & _19;
-        assign READ_ADDRESS_NEXT = READ_ADDRESS + _41;
+        assign READ_ADDRESS_NEXT = _15 + _39;
         always @(posedge read_clock) begin
             if (clear)
-                _64 <= _44;
+                READ_ADDRESS <= _41;
             else
                 if (RD_INT)
-                    _64 <= READ_ADDRESS_NEXT;
+                    READ_ADDRESS <= READ_ADDRESS_NEXT;
         end
-        assign READ_ADDRESS = _64;
-        assign _66 = _65[READ_ADDRESS];
+        assign _15 = READ_ADDRESS;
+        assign _59 = _58[_15];
         always @(posedge read_clock) begin
             if (RD_INT)
-                _69 <= _66;
+                _60 <= _59;
         end
-        assign q = _69;
+        assign q = _60;
         assign full = _9;
         assign empty = _18;
-        assign nearly_full = _40;
-        assign nearly_empty = _34;
+        assign nearly_full = nearly_full_0;
+        assign nearly_empty = nearly_empty_0;
         assign used = _8;
 
     endmodule

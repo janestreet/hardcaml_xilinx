@@ -117,6 +117,13 @@ module type Synthesis = sig
     Comb.Primitives with type t = Synth.t
 
   module Make_sequential (Synth : Xilinx_primitives with type t = Signal.t) : sig
-    val reg : Reg_spec.t -> enable:Signal.t -> Signal.t -> Signal.t
+    val reg
+      :  ?enable:Signal.t
+      -> ?reset_to:Signal.t
+      -> ?clear:Signal.t
+      -> ?clear_to:Signal.t
+      -> Reg_spec.t
+      -> Signal.t
+      -> Signal.t
   end
 end

@@ -1,6 +1,6 @@
 (library
  (name hardcaml_xilinx)
  (public_name hardcaml_xilinx)
- (libraries base core hardcaml hardcaml_circuits n_ary)
+ (libraries base hardcaml hardcaml_circuits n_ary)
  (preprocess
   (pps ppx_jane ppx_hardcaml)))
