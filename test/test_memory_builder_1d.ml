@@ -82,118 +82,114 @@ module Make (The_config : Memory_builder.Config.S) = struct
   ;;
 end
 
-let%test_module "a single ultraram" =
-  (module struct
-    let memory_config =
-      Memory_builder.Config.create_simple_1d_config
-        ~how_to_instantiate_ram:(Xpm Ultraram)
-        ~depth:256
-        ~num_bits_per_entry:Data.num_bits
-        ~ram_read_latency:1
-        ~simulation_name:None
-    ;;
+module%test [@name "a single ultraram"] _ = struct
+  let memory_config =
+    Memory_builder.Config.create_simple_1d_config
+      ~how_to_instantiate_ram:(Xpm Ultraram)
+      ~depth:256
+      ~num_bits_per_entry:Data.num_bits
+      ~ram_read_latency:1
+      ~simulation_name:None
+  ;;
 
-    include Make ((val Memory_builder.Config.as_module memory_config))
+  include Make ((val Memory_builder.Config.as_module memory_config))
 
-    let%expect_test "" =
-      test ();
-      [%expect
-        {|
-        ┌Signals────────┐┌Waves──────────────────────────────────────────────┐
-        │clock          ││┌───┐   ┌───┐   ┌───┐   ┌───┐   ┌───┐   ┌───┐   ┌──│
-        │               ││    └───┘   └───┘   └───┘   └───┘   └───┘   └───┘  │
-        │               ││────────┬───────────────                           │
-        │rd_address     ││ 00     │FF                                        │
-        │               ││────────┴───────────────                           │
-        │rd_enable      ││        ┌───────┐                                  │
-        │               ││────────┘       └───────                           │
-        │               ││────────────────────────                           │
-        │wr_address     ││ FF                                                │
-        │               ││────────────────────────                           │
-        │               ││────────────────────────                           │
-        │wr_bar         ││ BB                                                │
-        │               ││────────────────────────                           │
-        │wr_enable      ││────────┐                                          │
-        │               ││        └───────────────                           │
-        │               ││────────────────────────                           │
-        │wr_foo         ││ AA                                                │
-        │               ││────────────────────────                           │
-        │               ││────────────────┬───────                           │
-        │rd_bar         ││ 00             │BB                                │
-        │               ││────────────────┴───────                           │
-        │               ││────────────────┬───────                           │
-        │rd_foo         ││ 00             │AA                                │
-        │               ││────────────────┴───────                           │
-        │               ││                                                   │
-        │               ││                                                   │
-        └───────────────┘└───────────────────────────────────────────────────┘
-        |}]
-    ;;
-  end)
-;;
+  let%expect_test "" =
+    test ();
+    [%expect
+      {|
+      ┌Signals────────┐┌Waves──────────────────────────────────────────────┐
+      │clock          ││┌───┐   ┌───┐   ┌───┐   ┌───┐   ┌───┐   ┌───┐   ┌──│
+      │               ││    └───┘   └───┘   └───┘   └───┘   └───┘   └───┘  │
+      │               ││────────┬───────────────                           │
+      │rd_address     ││ 00     │FF                                        │
+      │               ││────────┴───────────────                           │
+      │rd_enable      ││        ┌───────┐                                  │
+      │               ││────────┘       └───────                           │
+      │               ││────────────────────────                           │
+      │wr_address     ││ FF                                                │
+      │               ││────────────────────────                           │
+      │               ││────────────────────────                           │
+      │wr_bar         ││ BB                                                │
+      │               ││────────────────────────                           │
+      │wr_enable      ││────────┐                                          │
+      │               ││        └───────────────                           │
+      │               ││────────────────────────                           │
+      │wr_foo         ││ AA                                                │
+      │               ││────────────────────────                           │
+      │               ││────────────────┬───────                           │
+      │rd_bar         ││ 00             │BB                                │
+      │               ││────────────────┴───────                           │
+      │               ││────────────────┬───────                           │
+      │rd_foo         ││ 00             │AA                                │
+      │               ││────────────────┴───────                           │
+      │               ││                                                   │
+      │               ││                                                   │
+      └───────────────┘└───────────────────────────────────────────────────┘
+      |}]
+  ;;
+end
 
-let%test_module "3 single ultraram" =
-  (module struct
-    let memory_config =
-      { Memory_builder.Config.underlying_memories =
-          [ { data_width = 7
-            ; how_to_instantiate_ram = Xpm Ultraram
-            ; cascade_height = Specified 1
-            ; simulation_name = None
-            }
-          ; { data_width = 7
-            ; how_to_instantiate_ram = Xpm Ultraram
-            ; cascade_height = Specified 1
-            ; simulation_name = None
-            }
-          ; { data_width = 2
-            ; how_to_instantiate_ram = Xpm Ultraram
-            ; cascade_height = Specified 1
-            ; simulation_name = None
-            }
-          ]
-      ; underlying_ram_read_latency = 1
-      ; vertical_dimension = 256
-      ; horizontal_dimension = 1
-      ; combinational_output = true
-      }
-    ;;
+module%test [@name "3 single ultraram"] _ = struct
+  let memory_config =
+    { Memory_builder.Config.underlying_memories =
+        [ { data_width = 7
+          ; how_to_instantiate_ram = Xpm Ultraram
+          ; cascade_height = Specified 1
+          ; simulation_name = None
+          }
+        ; { data_width = 7
+          ; how_to_instantiate_ram = Xpm Ultraram
+          ; cascade_height = Specified 1
+          ; simulation_name = None
+          }
+        ; { data_width = 2
+          ; how_to_instantiate_ram = Xpm Ultraram
+          ; cascade_height = Specified 1
+          ; simulation_name = None
+          }
+        ]
+    ; underlying_ram_read_latency = 1
+    ; vertical_dimension = 256
+    ; horizontal_dimension = 1
+    ; combinational_output = true
+    }
+  ;;
 
-    include Make ((val Memory_builder.Config.as_module memory_config))
+  include Make ((val Memory_builder.Config.as_module memory_config))
 
-    let%expect_test "" =
-      test ();
-      [%expect
-        {|
-        ┌Signals────────┐┌Waves──────────────────────────────────────────────┐
-        │clock          ││┌───┐   ┌───┐   ┌───┐   ┌───┐   ┌───┐   ┌───┐   ┌──│
-        │               ││    └───┘   └───┘   └───┘   └───┘   └───┘   └───┘  │
-        │               ││────────┬───────────────                           │
-        │rd_address     ││ 00     │FF                                        │
-        │               ││────────┴───────────────                           │
-        │rd_enable      ││        ┌───────┐                                  │
-        │               ││────────┘       └───────                           │
-        │               ││────────────────────────                           │
-        │wr_address     ││ FF                                                │
-        │               ││────────────────────────                           │
-        │               ││────────────────────────                           │
-        │wr_bar         ││ BB                                                │
-        │               ││────────────────────────                           │
-        │wr_enable      ││────────┐                                          │
-        │               ││        └───────────────                           │
-        │               ││────────────────────────                           │
-        │wr_foo         ││ AA                                                │
-        │               ││────────────────────────                           │
-        │               ││────────────────┬───────                           │
-        │rd_bar         ││ 00             │BB                                │
-        │               ││────────────────┴───────                           │
-        │               ││────────────────┬───────                           │
-        │rd_foo         ││ 00             │AA                                │
-        │               ││────────────────┴───────                           │
-        │               ││                                                   │
-        │               ││                                                   │
-        └───────────────┘└───────────────────────────────────────────────────┘
-        |}]
-    ;;
-  end)
-;;
+  let%expect_test "" =
+    test ();
+    [%expect
+      {|
+      ┌Signals────────┐┌Waves──────────────────────────────────────────────┐
+      │clock          ││┌───┐   ┌───┐   ┌───┐   ┌───┐   ┌───┐   ┌───┐   ┌──│
+      │               ││    └───┘   └───┘   └───┘   └───┘   └───┘   └───┘  │
+      │               ││────────┬───────────────                           │
+      │rd_address     ││ 00     │FF                                        │
+      │               ││────────┴───────────────                           │
+      │rd_enable      ││        ┌───────┐                                  │
+      │               ││────────┘       └───────                           │
+      │               ││────────────────────────                           │
+      │wr_address     ││ FF                                                │
+      │               ││────────────────────────                           │
+      │               ││────────────────────────                           │
+      │wr_bar         ││ BB                                                │
+      │               ││────────────────────────                           │
+      │wr_enable      ││────────┐                                          │
+      │               ││        └───────────────                           │
+      │               ││────────────────────────                           │
+      │wr_foo         ││ AA                                                │
+      │               ││────────────────────────                           │
+      │               ││────────────────┬───────                           │
+      │rd_bar         ││ 00             │BB                                │
+      │               ││────────────────┴───────                           │
+      │               ││────────────────┬───────                           │
+      │rd_foo         ││ 00             │AA                                │
+      │               ││────────────────┴───────                           │
+      │               ││                                                   │
+      │               ││                                                   │
+      └───────────────┘└───────────────────────────────────────────────────┘
+      |}]
+  ;;
+end

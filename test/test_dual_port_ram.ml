@@ -72,14 +72,14 @@ let%expect_test "True_dual_port_ram" =
         output [7:0] qa;
         output [7:0] qb;
 
-        wire [7:0] _21;
+        wire [7:0] _20;
         wire _18;
         wire vdd;
         wire _16;
         wire gnd;
-        wire [19:0] _20;
-        wire [7:0] _22;
-        assign _21 = _20[17:10];
+        wire [19:0] _19;
+        wire [7:0] _21;
+        assign _20 = _19[17:10];
         assign _18 = write_b | read_b;
         assign vdd = 1'b1;
         assign _16 = write_a | read_a;
@@ -135,15 +135,15 @@ let%expect_test "True_dual_port_ram" =
               .dinb(data_b),
               .injectsbiterrb(gnd),
               .injectdbiterrb(gnd),
-              .dbiterrb(_20[19:19]),
-              .sbiterrb(_20[18:18]),
-              .doutb(_20[17:10]),
-              .dbiterra(_20[9:9]),
-              .sbiterra(_20[8:8]),
-              .douta(_20[7:0]) );
-        assign _22 = _20[7:0];
-        assign qa = _22;
-        assign qb = _21;
+              .dbiterrb(_19[19:19]),
+              .sbiterrb(_19[18:18]),
+              .doutb(_19[17:10]),
+              .dbiterra(_19[9:9]),
+              .sbiterra(_19[8:8]),
+              .douta(_19[7:0]) );
+        assign _21 = _19[7:0];
+        assign qa = _21;
+        assign qb = _20;
 
     endmodule
     |}];
@@ -182,14 +182,14 @@ let%expect_test "True_dual_port_ram" =
         output [7:0] qa;
         output [7:0] qb;
 
-        wire [7:0] _21;
+        wire [7:0] _20;
         wire _18;
         wire vdd;
         wire _16;
         wire gnd;
-        wire [19:0] _20;
-        wire [7:0] _22;
-        assign _21 = _20[17:10];
+        wire [19:0] _19;
+        wire [7:0] _21;
+        assign _20 = _19[17:10];
         assign _18 = write_b | read_b;
         assign vdd = 1'b1;
         assign _16 = write_a | read_a;
@@ -245,15 +245,15 @@ let%expect_test "True_dual_port_ram" =
               .dinb(data_b),
               .injectsbiterrb(gnd),
               .injectdbiterrb(gnd),
-              .dbiterrb(_20[19:19]),
-              .sbiterrb(_20[18:18]),
-              .doutb(_20[17:10]),
-              .dbiterra(_20[9:9]),
-              .sbiterra(_20[8:8]),
-              .douta(_20[7:0]) );
-        assign _22 = _20[7:0];
-        assign qa = _22;
-        assign qb = _21;
+              .dbiterrb(_19[19:19]),
+              .sbiterrb(_19[18:18]),
+              .doutb(_19[17:10]),
+              .dbiterra(_19[9:9]),
+              .sbiterra(_19[8:8]),
+              .douta(_19[7:0]) );
+        assign _21 = _19[7:0];
+        assign qa = _21;
+        assign qb = _20;
 
     endmodule
     |}];
@@ -292,14 +292,14 @@ let%expect_test "True_dual_port_ram" =
         output [7:0] qa;
         output [7:0] qb;
 
-        wire [7:0] _21;
+        wire [7:0] _20;
         wire _18;
         wire vdd;
         wire _16;
         wire gnd;
-        wire [19:0] _20;
-        wire [7:0] _22;
-        assign _21 = _20[17:10];
+        wire [19:0] _19;
+        wire [7:0] _21;
+        assign _20 = _19[17:10];
         assign _18 = write_b | read_b;
         assign vdd = 1'b1;
         assign _16 = write_a | read_a;
@@ -355,15 +355,15 @@ let%expect_test "True_dual_port_ram" =
               .dinb(data_b),
               .injectsbiterrb(gnd),
               .injectdbiterrb(gnd),
-              .dbiterrb(_20[19:19]),
-              .sbiterrb(_20[18:18]),
-              .doutb(_20[17:10]),
-              .dbiterra(_20[9:9]),
-              .sbiterra(_20[8:8]),
-              .douta(_20[7:0]) );
-        assign _22 = _20[7:0];
-        assign qa = _22;
-        assign qb = _21;
+              .dbiterrb(_19[19:19]),
+              .sbiterrb(_19[18:18]),
+              .doutb(_19[17:10]),
+              .dbiterra(_19[9:9]),
+              .sbiterra(_19[8:8]),
+              .douta(_19[7:0]) );
+        assign _21 = _19[7:0];
+        assign qa = _21;
+        assign qb = _20;
 
     endmodule
     |}];
@@ -459,14 +459,14 @@ let%expect_test "True_dual_port_ram" =
         output [3:0] qa;
         output [11:0] qb;
 
-        wire [11:0] _21;
+        wire [11:0] _20;
         wire _18;
         wire vdd;
         wire _16;
         wire gnd;
-        wire [19:0] _20;
-        wire [3:0] _22;
-        assign _21 = _20[17:6];
+        wire [19:0] _19;
+        wire [3:0] _21;
+        assign _20 = _19[17:6];
         assign _18 = write_b | read_b;
         assign vdd = 1'b1;
         assign _16 = write_a | read_a;
@@ -522,15 +522,15 @@ let%expect_test "True_dual_port_ram" =
               .dinb(data_b),
               .injectsbiterrb(gnd),
               .injectdbiterrb(gnd),
-              .dbiterrb(_20[19:19]),
-              .sbiterrb(_20[18:18]),
-              .doutb(_20[17:6]),
-              .dbiterra(_20[5:5]),
-              .sbiterra(_20[4:4]),
-              .douta(_20[3:0]) );
-        assign _22 = _20[3:0];
-        assign qa = _22;
-        assign qb = _21;
+              .dbiterrb(_19[19:19]),
+              .sbiterrb(_19[18:18]),
+              .doutb(_19[17:6]),
+              .dbiterra(_19[5:5]),
+              .sbiterra(_19[4:4]),
+              .douta(_19[3:0]) );
+        assign _21 = _19[3:0];
+        assign qa = _21;
+        assign qb = _20;
 
     endmodule
     |}];
