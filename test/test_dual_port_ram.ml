@@ -72,14 +72,14 @@ let%expect_test "True_dual_port_ram" =
         output [7:0] qa;
         output [7:0] qb;
 
-        wire [7:0] _21;
+        wire [7:0] _20;
         wire _18;
         wire vdd;
         wire _16;
         wire gnd;
-        wire [19:0] _20;
-        wire [7:0] _22;
-        assign _21 = _20[17:10];
+        wire [19:0] _19;
+        wire [7:0] _21;
+        assign _20 = _19[17:10];
         assign _18 = write_b | read_b;
         assign vdd = 1'b1;
         assign _16 = write_a | read_a;
@@ -135,15 +135,15 @@ let%expect_test "True_dual_port_ram" =
               .dinb(data_b),
               .injectsbiterrb(gnd),
               .injectdbiterrb(gnd),
-              .dbiterrb(_20[19:19]),
-              .sbiterrb(_20[18:18]),
-              .doutb(_20[17:10]),
-              .dbiterra(_20[9:9]),
-              .sbiterra(_20[8:8]),
-              .douta(_20[7:0]) );
-        assign _22 = _20[7:0];
-        assign qa = _22;
-        assign qb = _21;
+              .dbiterrb(_19[19:19]),
+              .sbiterrb(_19[18:18]),
+              .doutb(_19[17:10]),
+              .dbiterra(_19[9:9]),
+              .sbiterra(_19[8:8]),
+              .douta(_19[7:0]) );
+        assign _21 = _19[7:0];
+        assign qa = _21;
+        assign qb = _20;
 
     endmodule
     |}];
@@ -182,14 +182,14 @@ let%expect_test "True_dual_port_ram" =
         output [7:0] qa;
         output [7:0] qb;
 
-        wire [7:0] _21;
+        wire [7:0] _20;
         wire _18;
         wire vdd;
         wire _16;
         wire gnd;
-        wire [19:0] _20;
-        wire [7:0] _22;
-        assign _21 = _20[17:10];
+        wire [19:0] _19;
+        wire [7:0] _21;
+        assign _20 = _19[17:10];
         assign _18 = write_b | read_b;
         assign vdd = 1'b1;
         assign _16 = write_a | read_a;
@@ -245,15 +245,15 @@ let%expect_test "True_dual_port_ram" =
               .dinb(data_b),
               .injectsbiterrb(gnd),
               .injectdbiterrb(gnd),
-              .dbiterrb(_20[19:19]),
-              .sbiterrb(_20[18:18]),
-              .doutb(_20[17:10]),
-              .dbiterra(_20[9:9]),
-              .sbiterra(_20[8:8]),
-              .douta(_20[7:0]) );
-        assign _22 = _20[7:0];
-        assign qa = _22;
-        assign qb = _21;
+              .dbiterrb(_19[19:19]),
+              .sbiterrb(_19[18:18]),
+              .doutb(_19[17:10]),
+              .dbiterra(_19[9:9]),
+              .sbiterra(_19[8:8]),
+              .douta(_19[7:0]) );
+        assign _21 = _19[7:0];
+        assign qa = _21;
+        assign qb = _20;
 
     endmodule
     |}];
@@ -292,14 +292,14 @@ let%expect_test "True_dual_port_ram" =
         output [7:0] qa;
         output [7:0] qb;
 
-        wire [7:0] _21;
+        wire [7:0] _20;
         wire _18;
         wire vdd;
         wire _16;
         wire gnd;
-        wire [19:0] _20;
-        wire [7:0] _22;
-        assign _21 = _20[17:10];
+        wire [19:0] _19;
+        wire [7:0] _21;
+        assign _20 = _19[17:10];
         assign _18 = write_b | read_b;
         assign vdd = 1'b1;
         assign _16 = write_a | read_a;
@@ -355,15 +355,15 @@ let%expect_test "True_dual_port_ram" =
               .dinb(data_b),
               .injectsbiterrb(gnd),
               .injectdbiterrb(gnd),
-              .dbiterrb(_20[19:19]),
-              .sbiterrb(_20[18:18]),
-              .doutb(_20[17:10]),
-              .dbiterra(_20[9:9]),
-              .sbiterra(_20[8:8]),
-              .douta(_20[7:0]) );
-        assign _22 = _20[7:0];
-        assign qa = _22;
-        assign qb = _21;
+              .dbiterrb(_19[19:19]),
+              .sbiterrb(_19[18:18]),
+              .doutb(_19[17:10]),
+              .dbiterra(_19[9:9]),
+              .sbiterra(_19[8:8]),
+              .douta(_19[7:0]) );
+        assign _21 = _19[7:0];
+        assign qa = _21;
+        assign qb = _20;
 
     endmodule
     |}];
@@ -459,14 +459,14 @@ let%expect_test "True_dual_port_ram" =
         output [3:0] qa;
         output [11:0] qb;
 
-        wire [11:0] _21;
+        wire [11:0] _20;
         wire _18;
         wire vdd;
         wire _16;
         wire gnd;
-        wire [19:0] _20;
-        wire [3:0] _22;
-        assign _21 = _20[17:6];
+        wire [19:0] _19;
+        wire [3:0] _21;
+        assign _20 = _19[17:6];
         assign _18 = write_b | read_b;
         assign vdd = 1'b1;
         assign _16 = write_a | read_a;
@@ -522,15 +522,15 @@ let%expect_test "True_dual_port_ram" =
               .dinb(data_b),
               .injectsbiterrb(gnd),
               .injectdbiterrb(gnd),
-              .dbiterrb(_20[19:19]),
-              .sbiterrb(_20[18:18]),
-              .doutb(_20[17:6]),
-              .dbiterra(_20[5:5]),
-              .sbiterra(_20[4:4]),
-              .douta(_20[3:0]) );
-        assign _22 = _20[3:0];
-        assign qa = _22;
-        assign qb = _21;
+              .dbiterrb(_19[19:19]),
+              .sbiterrb(_19[18:18]),
+              .doutb(_19[17:6]),
+              .dbiterra(_19[5:5]),
+              .sbiterra(_19[4:4]),
+              .douta(_19[3:0]) );
+        assign _21 = _19[3:0];
+        assign qa = _21;
+        assign qb = _20;
 
     endmodule
     |}];
@@ -669,73 +669,71 @@ let%expect_test "byte enables" =
         output [15:0] qa;
         output [15:0] qb;
 
-        wire _32;
-        wire _33;
-        wire [7:0] _31;
-        wire [7:0] _29;
-        reg [7:0] _34;
-        wire _21;
-        wire _22;
+        wire _28;
+        wire _29;
+        wire [7:0] _27;
+        reg [7:0] _30;
+        wire _19;
+        wire _20;
         wire [7:0] _18;
-        reg [7:0] _23;
-        wire [15:0] _35;
-        wire _45;
-        wire _46;
-        wire _27;
-        wire [7:0] _26;
+        reg [7:0] _21;
+        wire [15:0] _31;
+        wire _37;
+        wire _38;
         wire _25;
         wire [7:0] _24;
-        reg [7:0] _28[0:15];
-        wire [7:0] _42;
-        reg [7:0] _47;
-        wire _39;
-        wire _40;
+        wire _23;
+        wire [7:0] _22;
+        reg [7:0] _26[0:15];
+        wire [7:0] _36;
+        reg [7:0] _39;
+        wire _33;
+        wire _34;
         wire _16;
         wire [7:0] _15;
         wire _14;
         wire [7:0] _13;
         reg [7:0] _17[0:15];
-        wire [7:0] _36;
-        reg [7:0] _41;
-        wire [15:0] _48;
-        assign _32 = ~ _27;
-        assign _33 = read_b & _32;
-        assign _31 = 8'b00000000;
-        assign _29 = _28[address_b];
+        wire [7:0] _32;
+        reg [7:0] _35;
+        wire [15:0] _40;
+        assign _28 = ~ _25;
+        assign _29 = read_b & _28;
+        assign _27 = _26[address_b];
         always @(posedge clock_b) begin
-            if (_33)
-                _34 <= _29;
+            if (_29)
+                _30 <= _27;
         end
-        assign _21 = ~ _16;
-        assign _22 = read_b & _21;
+        assign _19 = ~ _16;
+        assign _20 = read_b & _19;
         assign _18 = _17[address_b];
         always @(posedge clock_b) begin
-            if (_22)
-                _23 <= _18;
+            if (_20)
+                _21 <= _18;
         end
-        assign _35 = { _23,
-                       _34 };
-        assign _45 = ~ _25;
-        assign _46 = read_a & _45;
-        assign _27 = write_b[0:0];
-        assign _26 = data_b[7:0];
-        assign _25 = write_a[0:0];
-        assign _24 = data_a[7:0];
+        assign _31 = { _21,
+                       _30 };
+        assign _37 = ~ _23;
+        assign _38 = read_a & _37;
+        assign _25 = write_b[0:0];
+        assign _24 = data_b[7:0];
+        assign _23 = write_a[0:0];
+        assign _22 = data_a[7:0];
         always @(posedge clock_a) begin
-            if (_25)
-                _28[address_a] <= _24;
+            if (_23)
+                _26[address_a] <= _22;
         end
         always @(posedge clock_b) begin
-            if (_27)
-                _28[address_b] <= _26;
+            if (_25)
+                _26[address_b] <= _24;
         end
-        assign _42 = _28[address_a];
+        assign _36 = _26[address_a];
         always @(posedge clock_a) begin
-            if (_46)
-                _47 <= _42;
+            if (_38)
+                _39 <= _36;
         end
-        assign _39 = ~ _14;
-        assign _40 = read_a & _39;
+        assign _33 = ~ _14;
+        assign _34 = read_a & _33;
         assign _16 = write_b[1:1];
         assign _15 = data_b[15:8];
         assign _14 = write_a[1:1];
@@ -748,15 +746,15 @@ let%expect_test "byte enables" =
             if (_16)
                 _17[address_b] <= _15;
         end
-        assign _36 = _17[address_a];
+        assign _32 = _17[address_a];
         always @(posedge clock_a) begin
-            if (_40)
-                _41 <= _36;
+            if (_34)
+                _35 <= _32;
         end
-        assign _48 = { _41,
-                       _47 };
-        assign qa = _48;
-        assign qb = _35;
+        assign _40 = { _35,
+                       _39 };
+        assign qa = _40;
+        assign qb = _31;
 
     endmodule
     |}]
@@ -824,117 +822,115 @@ let%expect_test "byte enables with resizing" =
         output [15:0] qa;
         output [7:0] qb;
 
-        wire _44;
-        wire _43;
-        wire _45;
-        wire [7:0] _42;
-        wire [7:0] _40;
-        reg [7:0] _46;
-        wire _30;
-        wire _29;
-        wire _31;
-        wire [7:0] _26;
-        reg [7:0] _32;
-        wire _16;
-        wire _14;
-        reg _17;
-        wire [7:0] _47;
-        wire _57;
-        wire _58;
-        wire _21;
-        wire _23;
-        wire _24;
-        wire _20;
-        wire [7:0] _19;
-        reg [7:0] _25[0:15];
-        wire [7:0] _54;
-        reg [7:0] _59;
-        wire _51;
-        wire _52;
-        wire _36;
-        wire _35;
-        wire _37;
+        wire _39;
         wire _38;
-        wire [3:0] _18;
+        wire _40;
+        wire [7:0] _37;
+        reg [7:0] _41;
+        wire _27;
+        wire _26;
+        wire _28;
+        wire [7:0] _25;
+        reg [7:0] _29;
+        wire _15;
+        wire _14;
+        reg _16;
+        wire [7:0] _42;
+        wire _48;
+        wire _49;
+        wire _20;
+        wire _22;
+        wire _23;
+        wire _19;
+        wire [7:0] _18;
+        reg [7:0] _24[0:15];
+        wire [7:0] _47;
+        reg [7:0] _50;
+        wire _44;
+        wire _45;
+        wire _33;
+        wire _32;
         wire _34;
-        wire [7:0] _33;
-        reg [7:0] _39[0:15];
-        wire [7:0] _48;
-        reg [7:0] _53;
-        wire [15:0] _60;
-        assign _44 = ~ _38;
-        assign _43 = read_b & _37;
-        assign _45 = _43 & _44;
-        assign _42 = 8'b00000000;
-        assign _40 = _39[_18];
+        wire _35;
+        wire [3:0] _17;
+        wire _31;
+        wire [7:0] _30;
+        reg [7:0] _36[0:15];
+        wire [7:0] _43;
+        reg [7:0] _46;
+        wire [15:0] _51;
+        assign _39 = ~ _35;
+        assign _38 = read_b & _34;
+        assign _40 = _38 & _39;
+        assign _37 = _36[_17];
         always @(posedge clock_b) begin
-            if (_45)
-                _46 <= _40;
+            if (_40)
+                _41 <= _37;
         end
-        assign _30 = ~ _24;
-        assign _29 = read_b & _23;
-        assign _31 = _29 & _30;
-        assign _26 = _25[_18];
+        assign _27 = ~ _23;
+        assign _26 = read_b & _22;
+        assign _28 = _26 & _27;
+        assign _25 = _24[_17];
         always @(posedge clock_b) begin
-            if (_31)
-                _32 <= _26;
+            if (_28)
+                _29 <= _25;
         end
-        assign _16 = 1'b0;
+        assign _15 = 1'b0;
         assign _14 = address_b[0:0];
         always @(posedge clock_b) begin
             if (clear_b)
-                _17 <= _16;
+                _16 <= _15;
             else
                 if (read_b)
-                    _17 <= _14;
+                    _16 <= _14;
         end
-        assign _47 = _17 ? _46 : _32;
-        assign _57 = ~ _20;
-        assign _58 = read_a & _57;
-        assign _21 = address_b[0:0];
-        assign _23 = _21 == _16;
-        assign _24 = write_b & _23;
-        assign _20 = write_a[0:0];
-        assign _19 = data_a[7:0];
+        assign _42 = _16 ? _41 : _29;
+        assign _48 = ~ _19;
+        assign _49 = read_a & _48;
+        assign _20 = address_b[0:0];
+        assign _22 = _20 == _15;
+        assign _23 = write_b & _22;
+        assign _19 = write_a[0:0];
+        assign _18 = data_a[7:0];
         always @(posedge clock_a) begin
-            if (_20)
-                _25[address_a] <= _19;
+            if (_19)
+                _24[address_a] <= _18;
         end
         always @(posedge clock_b) begin
-            if (_24)
-                _25[_18] <= data_b;
+            if (_23)
+                _24[_17] <= data_b;
         end
-        assign _54 = _25[address_a];
+        assign _47 = _24[address_a];
         always @(posedge clock_a) begin
-            if (_58)
-                _59 <= _54;
+            if (_49)
+                _50 <= _47;
         end
-        assign _51 = ~ _34;
-        assign _52 = read_a & _51;
-        assign _36 = 1'b1;
-        assign _35 = address_b[0:0];
-        assign _37 = _35 == _36;
-        assign _38 = write_b & _37;
-        assign _18 = address_b[4:1];
-        assign _34 = write_a[1:1];
-        assign _33 = data_a[15:8];
+        assign _44 = ~ _31;
+        assign _45 = read_a & _44;
+        assign _33 = 1'b1;
+        assign _32 = address_b[0:0];
+        assign _34 = _32 == _33;
+        assign _35 = write_b & _34;
+        assign _17 = address_b[4:1];
+        assign _31 = write_a[1:1];
+        assign _30 = data_a[15:8];
         always @(posedge clock_a) begin
-            if (_34)
-                _39[address_a] <= _33;
+            if (_31)
+                _36[address_a] <= _30;
         end
         always @(posedge clock_b) begin
-            if (_38)
-                _39[_18] <= data_b;
+            if (_35)
+                _36[_17] <= data_b;
         end
-        assign _48 = _39[address_a];
+        assign _43 = _36[address_a];
         always @(posedge clock_a) begin
-            if (_52)
-                _53 <= _48;
+            if (_45)
+                _46 <= _43;
         end
-        assign _60 = { _53,
-                       _59 };
-        assign qa = _60;
-        assign qb = _47;
+        assign _51 = { _46,
+                       _50 };
+        assign qa = _51;
+        assign qb = _42;
 
     endmodule
     |}]

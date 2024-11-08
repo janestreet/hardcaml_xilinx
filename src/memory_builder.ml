@@ -121,6 +121,7 @@ let instantiate_underlying_memory
       | Xpm arch ->
         Dual_port_ram.create
           ?simulation_name
+          ~address_collision_model:Counter
           ~clock
           ~clear
           ~arch
