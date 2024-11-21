@@ -221,7 +221,7 @@ let%expect_test "verilog" =
         assign _15 = _14[0:0];
         LUT2
             #( .INIT("0110") )
-            the_LUT2_0
+            the_LUT2_1
             ( .I0(_15),
               .I1(_16),
               .O(_17) );
