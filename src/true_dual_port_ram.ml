@@ -215,8 +215,9 @@ let create_base_rtl_ram
   let reg clock enable = reg (Reg_spec.create ~clock ()) ~enable in
   let read_enable (port : _ Ram_port.t) =
     match collision_mode arch with
-    | No_change -> port.read_enable &: ~:(port.write_enable)
-    | Read_before_write | Write_before_read -> port.read_enable |: port.write_enable
+    | No_change -> port.read_enable &: (port.write_enable ==:. 0)
+    | Read_before_write | Write_before_read ->
+      port.read_enable |: (port.write_enable <>:. 0)
   in
   let reg_a = reg clock_a (read_enable port_a) in
   let reg_b = reg clock_b (read_enable port_b) in
@@ -228,7 +229,8 @@ let create_base_rtl_ram
     | Blockram Write_before_read -> [| reg_a; reg_b |], [| Fn.id; Fn.id |]
   in
   let q =
-    Signal.multiport_memory
+    multiport_memory
+      ~enable_modelling_features:true
       size
       ?name:simulation_name
       ~write_ports:
@@ -288,15 +290,22 @@ let model_common_clock_address_collisions
   in
   let spec = Reg_spec.create ~clock () in
   let pipe = pipeline spec ~n:read_latency in
-  let address_collision = port_a.address ==: port_b.address in
+  let address_collision =
+    let compare_top a b =
+      let wa, wb = width a, width b in
+      let width = Int.min wa wb in
+      sel_top ~width a ==: sel_top b ~width
+    in
+    compare_top port_a.address port_b.address
+  in
   let address_collision_reg = pipe address_collision in
   let port_a_reg = Ram_port.map port_a ~f:pipe in
   let port_b_reg = Ram_port.map port_b ~f:pipe in
   let address_collision_a =
-    address_collision_reg &: port_b_reg.write_enable &: port_a_reg.read_enable
+    address_collision_reg &: (port_b_reg.write_enable <>:. 0) &: port_a_reg.read_enable
   in
   let address_collision_b =
-    address_collision_reg &: port_a_reg.write_enable &: port_b_reg.read_enable
+    address_collision_reg &: (port_a_reg.write_enable <>:. 0) &: port_b_reg.read_enable
   in
   ( Address_collision.Model.q
       address_collision_model
@@ -371,27 +380,25 @@ let raise_ratio_between_port_widths_not_power_of_2 scale =
         (scale : int)]
 ;;
 
-let raise_9bit_enables_not_supported_with_resizing () =
+let raise_port_width_not_divisible_by_byte_size ~width_a ~width_b ~byte_write_width =
   raise_s
     [%message
-      "9-bit byte enables not supported when port resizing is used (update the \
-       simulation model if this is required)"]
+      "port widths must be divisible by the byte length if using byte enables."
+        (width_a : int)
+        (width_b : int)
+        (byte_write_width : Byte_write_width.t)]
 ;;
 
-let raise_port_width_not_divisible_by_byte_size () =
-  raise_s
-    [%message
-      "port widths must be divisible by the byte length if using byte enables (update \
-       the simulation model if something else is required)."]
+let raise_invalid_read_latency read_latency =
+  raise_s [%message "Read latency must be greater than 0" (read_latency : int)]
 ;;
 
-(* Instantiate the core rtl ram multiple times so that it can support byte enables.*)
 let create_rtl
   ~address_collision_model
   ~clocking_mode
   ~simulation_name
   ~read_latency
-  ~arch
+  ~(arch : Ram_arch.t)
   ~clock_a
   ~clock_b
   ~clear_a
@@ -404,116 +411,40 @@ let create_rtl
   let { Size_calculations.size_a; size_b; width_a; width_b } =
     Size_calculations.create ~size ~port_a ~port_b
   in
-  let (port_a_split, read_select_a), (port_b_split, read_select_b) =
-    if width_a <> width_b
-    then (
-      (* Check support for byte enable width and port resizing mode. *)
-      let min_width = Int.min width_a width_b in
-      let max_width = Int.max width_a width_b in
-      if max_width % min_width <> 0
-      then raise_port_widths_not_exact_multiple max_width min_width;
-      let scale = max_width / min_width in
-      if not (Int.is_pow2 scale) then raise_ratio_between_port_widths_not_power_of_2 scale;
-      let underlying_ram_width =
-        match byte_write_width with
-        | B9 -> raise_9bit_enables_not_supported_with_resizing ()
-        | B8 ->
-          if not (max_width % 8 = 0 && min_width % 8 = 0)
-          then raise_port_width_not_divisible_by_byte_size ();
-          8
-        | Full -> min_width
-      in
-      let log_scale = Int.ceil_log2 scale in
-      let split_to_underlying_rams (port : _ Ram_port.t) =
-        let split_data = split_lsb ~part_width:underlying_ram_width port.data in
-        let split_enables e =
-          match byte_write_width with
-          | B8 | B9 -> bits_lsb e
-          | Full -> List.map split_data ~f:(Fn.const e)
-        in
-        N_ary.List3.map_exn
-          split_data
-          (List.map split_data ~f:(Fn.const port.read_enable))
-          (* read enable is always single bit *)
-          (split_enables port.write_enable)
-          ~f:(fun data read_enable write_enable ->
-            { port with data; read_enable; write_enable })
-      in
-      let map_port (port : _ Ram_port.t) =
-        if width port.data = max_width
-        then (
-          let ports = split_to_underlying_rams port in
-          ports, None)
-        else (
-          assert (width port.data = min_width);
-          let read_select = sel_bottom port.address ~width:log_scale in
-          let address = drop_bottom port.address ~width:log_scale in
-          let ports =
-            List.init (1 lsl log_scale) ~f:(fun word ->
-              let port =
-                let enable = sel_bottom port.address ~width:log_scale ==:. word in
-                { port with
-                  address
-                ; write_enable =
-                    port.write_enable &: repeat enable ~count:(width port.write_enable)
-                ; read_enable =
-                    port.read_enable &: repeat enable ~count:(width port.read_enable)
-                }
-              in
-              split_to_underlying_rams port)
-            |> List.concat
-          in
-          ports, Some (read_select, port.read_enable, min_width / underlying_ram_width))
-      in
-      map_port port_a, map_port port_b)
-    else (
-      let split_port (port : _ Ram_port.t) =
-        let split_port byte_width =
-          let data = split_lsb ~part_width:byte_width port.data in
-          let write_enable = bits_lsb port.write_enable in
-          List.map2_exn data write_enable ~f:(fun data write_enable ->
-            { port with data; write_enable })
-        in
-        match byte_write_width with
-        | Full -> [ port ]
-        | B8 -> split_port 8
-        | B9 -> split_port 9
-      in
-      (split_port port_a, None), (split_port port_b, None))
+  let min_width = Int.min width_a width_b in
+  let max_width = Int.max width_a width_b in
+  if max_width % min_width <> 0
+  then raise_port_widths_not_exact_multiple max_width min_width;
+  let scale = max_width / min_width in
+  if not (Int.is_pow2 scale) then raise_ratio_between_port_widths_not_power_of_2 scale;
+  (match byte_write_width with
+   | B9 ->
+     if not (max_width % 9 = 0 && min_width % 9 = 0)
+     then raise_port_width_not_divisible_by_byte_size ~width_a ~width_b ~byte_write_width
+   | B8 ->
+     if not (max_width % 8 = 0 && min_width % 8 = 0)
+     then raise_port_width_not_divisible_by_byte_size ~width_a ~width_b ~byte_write_width
+   | Full -> ());
+  if read_latency < 1 then raise_invalid_read_latency read_latency;
+  let qa, qb =
+    (* The width of the resulting RAM is the wider of the two port widths. So, the depth
+       is given by the corresponding depth, which will be the smaller of the two sizes. *)
+    let min_size = Int.min size_a size_b in
+    create_rtl_with_collision_model
+      ~address_collision_model
+      ~clocking_mode
+      ~simulation_name
+      ~read_latency
+      ~arch
+      ~clock_a
+      ~clock_b
+      ~clear_a
+      ~clear_b
+      ~size:min_size
+      ~port_a
+      ~port_b
   in
-  (* The width of the resulting RAM is the wider of the two port widths. So, the depth is
-     given by the corresponding depth, which will be the smaller of the two sizes. *)
-  let min_size = Int.min size_a size_b in
-  let qs =
-    List.map2_exn port_a_split port_b_split ~f:(fun port_a port_b ->
-      create_rtl_with_collision_model
-        ~address_collision_model
-        ~clocking_mode
-        ~simulation_name
-        ~read_latency
-        ~arch
-        ~clock_a
-        ~clock_b
-        ~clear_a
-        ~clear_b
-        ~size:min_size
-        ~port_a
-        ~port_b)
-  in
-  let qa, qb = List.unzip qs in
-  let apply_read_select spec q rs =
-    Option.map rs ~f:(fun (rs, re, group_size) ->
-      (* need to recombine pieces from [underlying_ram_width] to [min_width] *)
-      let q =
-        List.groupi q ~break:(fun i _ _ -> i % group_size = 0) |> List.map ~f:concat_lsb
-      in
-      assert (List.length q = 1 lsl width rs);
-      mux (pipeline spec ~n:(read_latency - 1) (reg spec ~enable:re rs)) q)
-    |> Option.value ~default:(concat_lsb q)
-  in
-  let spec_a = Reg_spec.create ~clock:clock_a ~clear:clear_a () in
-  let spec_b = Reg_spec.create ~clock:clock_b ~clear:clear_b () in
-  apply_read_select spec_a qa read_select_a, apply_read_select spec_b qb read_select_b
+  qa, qb
 ;;
 
 let create
@@ -539,7 +470,7 @@ let create
     Option.value
       clocking_mode
       ~default:
-        (if Uid.equal (Signal.uid clock_a) (Signal.uid clock_b)
+        (if Signal.Type.Uid.equal (Signal.uid clock_a) (Signal.uid clock_b)
          then Clocking_mode.Common_clock
          else Clocking_mode.Independent_clock)
   in

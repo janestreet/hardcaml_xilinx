@@ -122,7 +122,7 @@ module type Synthesis = sig
       -> ?reset_to:Signal.t
       -> ?clear:Signal.t
       -> ?clear_to:Signal.t
-      -> Reg_spec.t
+      -> Signal.Reg_spec.t
       -> Signal.t
       -> Signal.t
   end

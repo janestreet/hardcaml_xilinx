@@ -14,7 +14,7 @@ let test mode q_width =
   let waves, sim = Waveform.create sim in
   (try
      let q = Cyclesim.in_port sim "q" in
-     q := Bits.of_int ~width:q_width (-1)
+     q := Bits.of_int_trunc ~width:q_width (-1)
    with
    | _ -> ());
   for _ = 0 to 100 do
@@ -24,7 +24,7 @@ let test mode q_width =
 ;;
 
 let display_rules = Display_rule.[ port_name_is "q_collision" ~wave_format:Unsigned_int ]
-let print waves = Waveform.print ~display_rules ~wave_width:0 ~display_height:5 waves
+let print waves = Waveform.print ~display_rules ~wave_width:0 waves
 
 let%expect_test "1 bit no collision logic" =
   print (test None__there_be_dragons 1);

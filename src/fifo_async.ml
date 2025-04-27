@@ -34,6 +34,7 @@ let create
         Async_fifo.Make (struct
           let width = Signal.width d
           let log2_depth = Int.ceil_log2 capacity
+          let optimize_for_same_clock_rate_and_always_reading = false
         end)
       in
       let async_fifo =

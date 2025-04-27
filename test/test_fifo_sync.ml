@@ -58,84 +58,86 @@ let%expect_test "Rtl" =
         output [4:0] used;
 
         wire vdd;
-        wire [4:0] _19;
-        wire _28;
+        wire [4:0] _21;
         wire _29;
-        reg nearly_empty_0;
-        wire _35;
-        wire [4:0] _32;
-        wire _33;
+        wire _30;
+        reg nearly_empty_0 = 1'b1;
+        wire _36;
+        wire [4:0] _33;
         wire _34;
+        wire _35;
         reg nearly_full_0;
+        wire [3:0] _41;
         wire [3:0] _39;
-        wire [3:0] _37;
         wire [3:0] WRITE_ADDRESS_NEXT;
         (* extract_reset="FALSE" *)
         reg [3:0] WRITE_ADDRESS;
         wire [3:0] _7;
         (* RAM_STYLE="block" *)
-        reg [31:0] _64[0:15];
-        wire [4:0] _55;
+        reg [31:0] _66[0:15];
+        wire [4:0] _57;
+        wire [4:0] _45;
         wire [4:0] _43;
-        wire [4:0] _41;
-        wire [4:0] _42;
-        reg [4:0] USED_MINUS_1;
+        wire [4:0] _44;
+        reg [4:0] USED_MINUS_1 = 5'b11111;
         wire [4:0] _8;
-        wire [4:0] _46;
-        reg [4:0] USED_PLUS_1;
+        wire [4:0] _48;
+        reg [4:0] USED_PLUS_1 = 5'b00001;
         wire [4:0] _9;
-        wire [4:0] _26;
+        wire [4:0] _27;
         reg [4:0] USED;
         wire [4:0] _10;
-        wire [4:0] _51;
-        wire _52;
+        wire [4:0] _53;
+        wire _54;
         reg full_0;
         wire _11;
-        wire _23;
+        wire _12;
+        wire _24;
         wire WR_INT;
-        wire _25;
+        wire _26;
         wire [4:0] USED_NEXT;
-        wire _56;
-        wire _57;
+        wire _58;
+        wire _59;
         reg not_empty;
-        wire _13;
-        wire _20;
-        wire _21;
+        wire _14;
+        wire _38;
+        wire _15;
+        wire _22;
         wire RD_INT;
         wire [3:0] READ_ADDRESS_NEXT;
         (* extract_reset="FALSE" *)
         reg [3:0] READ_ADDRESS;
-        wire [3:0] _17;
-        wire [31:0] _65;
-        reg [31:0] _66;
+        wire [3:0] _19;
+        wire [31:0] _67;
+        reg [31:0] _68;
         assign vdd = 1'b1;
-        assign _19 = 5'b00011;
-        assign _28 = _19 < USED_NEXT;
-        assign _29 = ~ _28;
+        assign _21 = 5'b00011;
+        assign _29 = _21 < USED_NEXT;
+        assign _30 = ~ _29;
         always @(posedge clock) begin
             if (clear)
                 nearly_empty_0 <= vdd;
             else
-                if (_25)
-                    nearly_empty_0 <= _29;
+                if (_26)
+                    nearly_empty_0 <= _30;
         end
-        assign _35 = 1'b0;
-        assign _32 = 5'b01100;
-        assign _33 = USED_NEXT < _32;
-        assign _34 = ~ _33;
+        assign _36 = 1'b0;
+        assign _33 = 5'b01100;
+        assign _34 = USED_NEXT < _33;
+        assign _35 = ~ _34;
         always @(posedge clock) begin
             if (clear)
-                nearly_full_0 <= _35;
+                nearly_full_0 <= _36;
             else
-                if (_25)
-                    nearly_full_0 <= _34;
+                if (_26)
+                    nearly_full_0 <= _35;
         end
-        assign _39 = 4'b0000;
-        assign _37 = 4'b0001;
-        assign WRITE_ADDRESS_NEXT = _7 + _37;
+        assign _41 = 4'b0000;
+        assign _39 = 4'b0001;
+        assign WRITE_ADDRESS_NEXT = _7 + _39;
         always @(posedge clock) begin
             if (clear)
-                WRITE_ADDRESS <= _39;
+                WRITE_ADDRESS <= _41;
             else
                 if (WR_INT)
                     WRITE_ADDRESS <= WRITE_ADDRESS_NEXT;
@@ -143,82 +145,84 @@ let%expect_test "Rtl" =
         assign _7 = WRITE_ADDRESS;
         always @(posedge clock) begin
             if (WR_INT)
-                _64[_7] <= d;
+                _66[_7] <= d;
         end
-        assign _55 = 5'b00000;
-        assign _43 = 5'b11111;
-        assign _41 = 5'b00001;
-        assign _42 = USED_NEXT - _41;
+        assign _57 = 5'b00000;
+        assign _45 = 5'b11111;
+        assign _43 = 5'b00001;
+        assign _44 = USED_NEXT - _43;
         always @(posedge clock) begin
             if (clear)
-                USED_MINUS_1 <= _43;
+                USED_MINUS_1 <= _45;
             else
-                if (_25)
-                    USED_MINUS_1 <= _42;
+                if (_26)
+                    USED_MINUS_1 <= _44;
         end
         assign _8 = USED_MINUS_1;
-        assign _46 = USED_NEXT + _41;
+        assign _48 = USED_NEXT + _43;
         always @(posedge clock) begin
             if (clear)
-                USED_PLUS_1 <= _41;
+                USED_PLUS_1 <= _43;
             else
-                if (_25)
-                    USED_PLUS_1 <= _46;
+                if (_26)
+                    USED_PLUS_1 <= _48;
         end
         assign _9 = USED_PLUS_1;
-        assign _26 = RD_INT ? _8 : _9;
+        assign _27 = RD_INT ? _8 : _9;
         always @(posedge clock) begin
             if (clear)
-                USED <= _55;
+                USED <= _57;
             else
-                if (_25)
+                if (_26)
                     USED <= USED_NEXT;
         end
         assign _10 = USED;
-        assign _51 = 5'b10000;
-        assign _52 = USED_NEXT == _51;
+        assign _53 = 5'b10000;
+        assign _54 = USED_NEXT == _53;
         always @(posedge clock) begin
             if (clear)
-                full_0 <= _35;
+                full_0 <= _36;
             else
-                if (_25)
-                    full_0 <= _52;
+                if (_26)
+                    full_0 <= _54;
         end
         assign _11 = full_0;
-        assign _23 = ~ _11;
-        assign WR_INT = wr & _23;
-        assign _25 = RD_INT ^ WR_INT;
-        assign USED_NEXT = _25 ? _26 : _10;
-        assign _56 = USED_NEXT == _55;
-        assign _57 = ~ _56;
+        assign _12 = _11;
+        assign _24 = ~ _12;
+        assign WR_INT = wr & _24;
+        assign _26 = RD_INT ^ WR_INT;
+        assign USED_NEXT = _26 ? _27 : _10;
+        assign _58 = USED_NEXT == _57;
+        assign _59 = ~ _58;
         always @(posedge clock) begin
             if (clear)
-                not_empty <= _35;
+                not_empty <= _36;
             else
-                if (_25)
-                    not_empty <= _57;
+                if (_26)
+                    not_empty <= _59;
         end
-        assign _13 = not_empty;
-        assign _20 = ~ _13;
-        assign _21 = ~ _20;
-        assign RD_INT = rd & _21;
-        assign READ_ADDRESS_NEXT = _17 + _37;
+        assign _14 = not_empty;
+        assign _38 = ~ _14;
+        assign _15 = _38;
+        assign _22 = ~ _15;
+        assign RD_INT = rd & _22;
+        assign READ_ADDRESS_NEXT = _19 + _39;
         always @(posedge clock) begin
             if (clear)
-                READ_ADDRESS <= _39;
+                READ_ADDRESS <= _41;
             else
                 if (RD_INT)
                     READ_ADDRESS <= READ_ADDRESS_NEXT;
         end
-        assign _17 = READ_ADDRESS;
-        assign _65 = _64[_17];
+        assign _19 = READ_ADDRESS;
+        assign _67 = _66[_19];
         always @(posedge clock) begin
             if (RD_INT)
-                _66 <= _65;
+                _68 <= _67;
         end
-        assign q = _66;
+        assign q = _68;
         assign full = _11;
-        assign empty = _20;
+        assign empty = _38;
         assign nearly_full = nearly_full_0;
         assign nearly_empty = nearly_empty_0;
         assign used = _10;
