@@ -12,8 +12,7 @@ open! Hardcaml
     Note that use of other ports on the RAM for writing is discouraged during the clear
     operation. For maximum safety one can guard the write enable to the other port with
 
-    [{other_port.write_enable &: ~:port_with_clear.clear_busy}]
-*)
+    [{other_port.write_enable &: ~:port_with_clear.clear_busy}] *)
 type 'a t =
   { port : 'a Ram_port.t
   ; clear_busy : 'a

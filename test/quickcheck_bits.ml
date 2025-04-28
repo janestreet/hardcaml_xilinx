@@ -18,7 +18,7 @@ let random_width ~size ~random =
 let random_bits ~width ~random =
   let rec f width =
     let rand width =
-      Hardcaml.Bits.of_int
+      Hardcaml.Bits.of_int_trunc
         ~width
         (Splittable_random.int random ~lo:0 ~hi:((1 lsl width) - 1))
     in

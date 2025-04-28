@@ -24,13 +24,13 @@ module Model : sig
     | Const of int (** Drive the output port to a constant value **)
     | Counter (** Output a free running counter **)
     | Graycode
-    (** Output a free running gray code counter (possibly looks a little more random
-        than a straight up counter) **)
+    (** Output a free running gray code counter (possibly looks a little more random than
+        a straight up counter) **)
     | Lfsr
     (** Output a free running LFSR -- see implementation for details -- it's roughly
         random *)
   [@@deriving sexp_of]
 
   (** Model the collision on the output bus of the RAM *)
-  val q : t -> Reg_spec.t -> address_collision:Signal.t -> Signal.t -> Signal.t
+  val q : t -> Signal.Reg_spec.t -> address_collision:Signal.t -> Signal.t -> Signal.t
 end

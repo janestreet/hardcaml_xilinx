@@ -604,45 +604,32 @@ end
 module Make_sequential (Synth : Xilinx_primitives with type t = Signal.t) = struct
   module Comb_primitives = Make_comb_primitives (Synth)
   module Comb = Comb.Make (Comb_primitives)
-  open Comb
 
-  let reg ?enable ?reset_to ?clear ?clear_to (reg_spec : Reg_spec.t) d =
-    let register =
-      Signal.Type.Register.of_reg_spec
-        (Reg_spec.Expert.to_signal_type_reg_spec reg_spec)
-        ~enable
-        ~initialize_to:None
-        ~reset_to
-        ~clear
-        ~clear_to
-        d
-    in
+  let reg ?enable ?reset_to ?clear ?clear_to (reg_spec : Signal.Reg_spec.t) d =
+    let open Signal in
+    let reg_spec = Reg_spec.override ?clear reg_spec in
+    let reset_to = Option.value ~default:(Comb.zero (width d)) reset_to in
+    let clear_to = Option.value ~default:(Comb.zero (width d)) clear_to in
     let reset_value i =
-      Option.value_map
-        register.reset
-        ~default:false
-        ~f:(fun { reset = _; reset_edge = _; reset_to } ->
-          if not (Signal.Type.is_const reset_to)
-          then raise_s [%message "reset_to value must be constant"];
-          is_vdd reset_to.:[i, i])
+      Option.value_map (Reg_spec.reset reg_spec) ~default:false ~f:(fun _ ->
+        if not (Signal.Type.is_const reset_to)
+        then raise_s [%message "reset_to value must be constant"];
+        to_bool reset_to.:[i, i])
     in
     let reset =
-      Option.value_map
-        register.reset
-        ~default:gnd
-        ~f:(fun { reset; reset_edge; reset_to = _ } ->
-          match reset_edge with
-          | Falling -> ~:reset
-          | Rising -> reset)
+      Option.value_map (Reg_spec.reset reg_spec) ~default:gnd ~f:(fun reset ->
+        match Reg_spec.reset_edge reg_spec with
+        | Falling -> ~:reset
+        | Rising -> reset)
     in
     let clock =
-      match register.clock.clock_edge with
-      | Falling -> ~:(register.clock.clock)
-      | Rising -> register.clock.clock
+      match Reg_spec.clock_edge reg_spec with
+      | Falling -> ~:(Reg_spec.clock reg_spec)
+      | Rising -> Reg_spec.clock reg_spec
     in
     let enable = Option.value ~default:vdd enable in
     let enable, d =
-      Option.value_map register.clear ~default:(enable, d) ~f:(fun { clear; clear_to } ->
+      Option.value_map (Reg_spec.clear reg_spec) ~default:(enable, d) ~f:(fun clear ->
         enable |: clear, mux2 clear clear_to d)
     in
     List.mapi (bits_lsb d) ~f:(fun i d ->

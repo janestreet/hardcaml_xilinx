@@ -48,7 +48,7 @@ module Model = struct
   let q t spec ~address_collision q =
     match t with
     | None__there_be_dragons -> q
-    | Const i -> mux2 address_collision (of_int ~width:(width q) i) q
+    | Const i -> mux2 address_collision (of_int_trunc ~width:(width q) i) q
     | Counter ->
       mux2 address_collision (reg_fb spec ~width:(width q) ~f:(fun d -> d +:. 1)) q
     | Graycode ->

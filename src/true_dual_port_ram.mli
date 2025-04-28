@@ -13,7 +13,7 @@ open Hardcaml
     as follows:
 
     - write_enable = enable & write
-    - read_enable  = enable
+    - read_enable = enable
 
     The main difference occurs when write_enable and read_enable are both high. In the
     [No_change] collision mode, the read will not occur.
@@ -31,12 +31,11 @@ open Hardcaml
     Distributed RAM is set up to work the same as BlockRAM.
 
     There is a verilog testbench in [test_hdl] which works with the [xsim_modelling]
-    application to test the subtle address collision cases.
-*)
+    application to test the subtle address collision cases. *)
 val create
   :  ?address_collision_model:Address_collision.Model.t
   -> ?read_latency:int (** Default is 1 *)
-  -> ?arch:Ram_arch.t (** Default is [Block_ram No_change] *)
+  -> ?arch:Ram_arch.t (** Default is [Blockram No_change] *)
   -> ?byte_write_width:Byte_write_width.t (** Default is [Full] *)
   -> ?memory_optimization:bool
   -> ?cascade_height:Cascade_height.t

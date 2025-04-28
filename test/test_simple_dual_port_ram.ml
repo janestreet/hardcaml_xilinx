@@ -53,7 +53,7 @@ let create
 
 module Sim = Cyclesim.With_interface (I) (O)
 
-let ( <-- ) a b = a := Bits.of_int ~width:(Bits.width !a) b
+let ( <-- ) a b = a := Bits.of_int_trunc ~width:(Bits.width !a) b
 
 let test (sim : Sim.t) =
   let inputs = Cyclesim.inputs sim in
@@ -93,7 +93,6 @@ let print waves =
   Waveform.print
     ~wave_width:2
     ~display_width:86
-    ~display_height:23
     ~display_rules:
       (List.concat
          [ (let module I = Display_rules.With_interface (I) in
@@ -108,7 +107,6 @@ let print_q waves =
   Waveform.print
     ~wave_width:2
     ~display_width:86
-    ~display_height:8
     ~display_rules:
       [ Display_rule.port_name_is "q_1" ~wave_format:Unsigned_int
       ; Display_rule.port_name_is "q_2" ~wave_format:Unsigned_int

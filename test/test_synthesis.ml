@@ -3,7 +3,7 @@ open Synthesis
 open Base_quickcheck
 open Quickcheck_bits
 
-let eval6 x = Lut_equation.eval 6 x |> Hardcaml.Bits.of_int64 ~width:64
+let eval6 x = Lut_equation.eval 6 x |> Hardcaml.Bits.of_int64_trunc ~width:64
 
 let%expect_test "lut eqns" =
   let eqn = Lut_equation.(i0 &: i1 &: i2 &: i3 &: i4 &: i5 |> eval6) in
@@ -95,8 +95,8 @@ module Test_xilinx_primitives (Lut_size : Lut_size) = struct
   ;;
 end
 
-module _ = Test_xilinx_primitives (Lut4)
-module _ = Test_xilinx_primitives (Lut6)
+module%test Test_LUT4 = Test_xilinx_primitives (Lut4)
+module%test Test_LUT6 = Test_xilinx_primitives (Lut6)
 
 let%expect_test "verilog" =
   let open Signal in

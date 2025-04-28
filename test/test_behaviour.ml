@@ -41,8 +41,10 @@ let create_circuit
       ~clear:(Signal.input "clear" 1)
       ~size:(1 lsl address_bits_a)
       ~byte_write_width
-      ~port_a:Port.(map2 (map port_names ~f:(( ^ ) "a_")) port_sizes_a ~f:Signal.input)
-      ~port_b:Port.(map2 (map port_names ~f:(( ^ ) "b_")) port_sizes_b ~f:Signal.input)
+      ~port_a:
+        Port.(map2 (map port_names ~f:(fun x -> "a_" ^ x)) port_sizes_a ~f:Signal.input)
+      ~port_b:
+        Port.(map2 (map port_names ~f:(fun x -> "b_" ^ x)) port_sizes_b ~f:Signal.input)
   in
   Circuit.create_exn ~name:"ram" [ Signal.output "qa" qa; Signal.output "qb" qb ]
 ;;
@@ -82,20 +84,20 @@ let%expect_test "basic write then read, single cycle latency" =
   Cyclesim.cycle sim;
   clear := Bits.gnd;
   a.write_enable := Bits.vdd;
-  a.address := Bits.of_int ~width:8 10;
-  a.data := Bits.of_int ~width:32 100;
+  a.address := Bits.of_int_trunc ~width:8 10;
+  a.data := Bits.of_int_trunc ~width:32 100;
   Cyclesim.cycle sim;
   a.write_enable := Bits.gnd;
   Cyclesim.cycle sim;
   Cyclesim.cycle sim;
   b.read_enable := Bits.vdd;
-  b.address := Bits.of_int ~width:8 10;
+  b.address := Bits.of_int_trunc ~width:8 10;
   Cyclesim.cycle sim;
   b.read_enable := Bits.gnd;
   Cyclesim.cycle sim;
   Cyclesim.cycle sim;
   Cyclesim.cycle sim;
-  Waveform.expect ~display_height:32 ~display_width:88 waves;
+  Waveform.expect ~display_width:88 waves;
   [%expect
     {|
     ┌Signals───────────┐┌Waves─────────────────────────────────────────────────────────────┐
@@ -127,8 +129,6 @@ let%expect_test "basic write then read, single cycle latency" =
     │                  ││────────────────────────────────────────┬───────────────────────  │
     │qb                ││ 00000000                               │00000064                 │
     │                  ││────────────────────────────────────────┴───────────────────────  │
-    │                  ││                                                                  │
-    │                  ││                                                                  │
     └──────────────────┘└──────────────────────────────────────────────────────────────────┘
     c0d208f19d24171eb01e097dc9f75478
     |}]
@@ -142,20 +142,20 @@ let%expect_test "basic write then read, 2 cycle latency" =
   Cyclesim.cycle sim;
   clear := Bits.gnd;
   a.write_enable := Bits.vdd;
-  a.address := Bits.of_int ~width:8 10;
-  a.data := Bits.of_int ~width:32 100;
+  a.address := Bits.of_int_trunc ~width:8 10;
+  a.data := Bits.of_int_trunc ~width:32 100;
   Cyclesim.cycle sim;
   a.write_enable := Bits.gnd;
   Cyclesim.cycle sim;
   Cyclesim.cycle sim;
   b.read_enable := Bits.vdd;
-  b.address := Bits.of_int ~width:8 10;
+  b.address := Bits.of_int_trunc ~width:8 10;
   Cyclesim.cycle sim;
   b.read_enable := Bits.gnd;
   Cyclesim.cycle sim;
   Cyclesim.cycle sim;
   Cyclesim.cycle sim;
-  Waveform.expect ~display_height:32 ~display_width:88 waves;
+  Waveform.expect ~display_width:88 waves;
   [%expect
     {|
     ┌Signals───────────┐┌Waves─────────────────────────────────────────────────────────────┐
@@ -205,9 +205,9 @@ let%expect_test "write and read same cycle, 2 cycle latency" =
   a.read_enable := Bits.vdd;
   (* reads dont occur because we model "no change" mode. *)
   b.read_enable := Bits.vdd;
-  b.address := Bits.of_int ~width:8 10;
-  a.address := Bits.of_int ~width:8 10;
-  a.data := Bits.of_int ~width:32 100;
+  b.address := Bits.of_int_trunc ~width:8 10;
+  a.address := Bits.of_int_trunc ~width:8 10;
+  a.data := Bits.of_int_trunc ~width:32 100;
   Cyclesim.cycle sim;
   a.write_enable := Bits.gnd;
   Cyclesim.cycle sim;
@@ -217,7 +217,7 @@ let%expect_test "write and read same cycle, 2 cycle latency" =
   Cyclesim.cycle sim;
   Cyclesim.cycle sim;
   Cyclesim.cycle sim;
-  Waveform.expect ~display_height:32 ~display_width:88 waves;
+  Waveform.expect ~display_width:88 waves;
   [%expect
     {|
     ┌Signals───────────┐┌Waves─────────────────────────────────────────────────────────────┐
@@ -269,21 +269,21 @@ let%expect_test "byte write width" =
   Cyclesim.cycle sim;
   clear := Bits.gnd;
   a.write_enable := Bits.of_string "1001";
-  a.address := Bits.of_int ~width:8 10;
-  a.data := Bits.of_int ~width:32 0xAABB_CCDD;
+  a.address := Bits.of_int_trunc ~width:8 10;
+  a.data := Bits.of_int_trunc ~width:32 0xAABB_CCDD;
   Cyclesim.cycle sim;
   a.write_enable := Bits.of_string "0110";
-  a.address := Bits.of_int ~width:8 10;
-  a.data := Bits.of_int ~width:32 0xFF11_22EE;
+  a.address := Bits.of_int_trunc ~width:8 10;
+  a.data := Bits.of_int_trunc ~width:32 0xFF11_22EE;
   b.read_enable := Bits.vdd;
-  b.address := Bits.of_int ~width:8 10;
+  b.address := Bits.of_int_trunc ~width:8 10;
   Cyclesim.cycle sim;
   a.write_enable := Bits.of_string "0000";
   Cyclesim.cycle sim;
   b.read_enable := Bits.gnd;
   Cyclesim.cycle sim;
   Cyclesim.cycle sim;
-  Waveform.expect ~wave_width:4 ~display_height:32 ~display_width:88 waves;
+  Waveform.expect ~wave_width:4 ~display_width:88 waves;
   [%expect
     {|
     ┌Signals───────────┐┌Waves─────────────────────────────────────────────────────────────┐
@@ -350,21 +350,21 @@ let test_resizing ?(display_width = 88) ~write_bits ~read_bits ~writes ~reads ()
     if i < Array.length writes
     then (
       a.write_enable := Bits.of_string writes.(i).write_enable;
-      a.address := Bits.of_int ~width:write_address_bits writes.(i).write_address;
-      a.data := Bits.of_int ~width:write_bits writes.(i).write_data)
+      a.address := Bits.of_int_trunc ~width:write_address_bits writes.(i).write_address;
+      a.data := Bits.of_int_trunc ~width:write_bits writes.(i).write_data)
     else a.write_enable := Bits.zero (write_bits / 8);
     (* read port *)
     if i >= 1 && i <= Array.length reads
     then (
       b.read_enable := Bits.vdd;
-      b.address := Bits.of_int ~width:read_address_bits reads.(i - 1))
+      b.address := Bits.of_int_trunc ~width:read_address_bits reads.(i - 1))
     else b.read_enable := Bits.gnd;
     Cyclesim.cycle sim
   done;
   b.read_enable := Bits.gnd;
   Cyclesim.cycle sim;
   Cyclesim.cycle sim;
-  Waveform.expect ~wave_width:4 ~display_height:34 ~display_width waves
+  Waveform.expect ~wave_width:4 ~display_width waves
 ;;
 
 let%expect_test "resize ram with byte write enables; read/write = 1/4" =
@@ -382,8 +382,6 @@ let%expect_test "resize ram with byte write enables; read/write = 1/4" =
     ┌Signals───────────┐┌Waves─────────────────────────────────────────────────────────────┐
     │clock             ││┌────┐    ┌────┐    ┌────┐    ┌────┐    ┌────┐    ┌────┐    ┌────┐│
     │                  ││     └────┘    └────┘    └────┘    └────┘    └────┘    └────┘    └│
-    │clear             ││──────────┐                                                       │
-    │                  ││          └───────────────────────────────────────────────────────│
     │                  ││──────────┬───────────────────────────────────────────────────────│
     │a_address         ││ 00       │0A                                                     │
     │                  ││──────────┴───────────────────────────────────────────────────────│
@@ -411,9 +409,8 @@ let%expect_test "resize ram with byte write enables; read/write = 1/4" =
     │                  ││──────────────────────────────┬─────────┬─────────┬─────────┬─────│
     │qb                ││ 00                           │DD       │22       │11       │AA   │
     │                  ││──────────────────────────────┴─────────┴─────────┴─────────┴─────│
-    │                  ││                                                                  │
     └──────────────────┘└──────────────────────────────────────────────────────────────────┘
-    586051185cc93f2a909088645d0519b3
+    68a22803455b56c5810720ba62a030da
     |}]
 ;;
 
@@ -432,8 +429,6 @@ let%expect_test "resize ram with byte write enables; read/write = 1/2" =
     ┌Signals───────────┐┌Waves─────────────────────────────────────────────────────────────┐
     │clock             ││┌────┐    ┌────┐    ┌────┐    ┌────┐    ┌────┐    ┌────┐    ┌────┐│
     │                  ││     └────┘    └────┘    └────┘    └────┘    └────┘    └────┘    └│
-    │clear             ││──────────┐                                                       │
-    │                  ││          └─────────────────────────────────────────────────      │
     │                  ││──────────┬─────────────────────────────────────────────────      │
     │a_address         ││ 00       │0A                                                     │
     │                  ││──────────┴─────────────────────────────────────────────────      │
@@ -463,7 +458,7 @@ let%expect_test "resize ram with byte write enables; read/write = 1/2" =
     │qb                ││ 0000                         │22DD     │AA11                     │
     │                  ││──────────────────────────────┴─────────┴───────────────────      │
     └──────────────────┘└──────────────────────────────────────────────────────────────────┘
-    ebe4a270fb50d7b3d96f4e039bd16b68
+    62c146230df9b728549b85811ff5945a
     |}]
 ;;
 
@@ -484,8 +479,6 @@ let%expect_test "resize ram with byte write enables; read/write = 2" =
     ┌Signals───────────┐┌Waves─────────────────────────────────────────────────────────────┐
     │clock             ││┌────┐    ┌────┐    ┌────┐    ┌────┐    ┌────┐    ┌────┐    ┌────┐│
     │                  ││     └────┘    └────┘    └────┘    └────┘    └────┘    └────┘    └│
-    │clear             ││──────────┐                                                       │
-    │                  ││          └───────────────────────────────────────────────────────│
     │                  ││──────────┬───────────────────┬───────────────────────────────────│
     │a_address         ││ 00       │14                 │15                                 │
     │                  ││──────────┴───────────────────┴───────────────────────────────────│
@@ -515,7 +508,7 @@ let%expect_test "resize ram with byte write enables; read/write = 2" =
     │qb                ││ 00000000                     │0000AA11 │00DDAA11 │22DDAA11       │
     │                  ││──────────────────────────────┴─────────┴─────────┴───────────────│
     └──────────────────┘└──────────────────────────────────────────────────────────────────┘
-    fcd4ccdb023964c7a33cc171be79aade
+    f7c387424c6fe8c76b6f21189dbe5bbf
     |}]
 ;;
 
@@ -541,8 +534,6 @@ let%expect_test "resize ram with byte write enables; read/write = 4" =
     ┌Signals───────────┐┌Waves─────────────────────────────────────────────────────────────────────────────────────────────┐
     │clock             ││┌────┐    ┌────┐    ┌────┐    ┌────┐    ┌────┐    ┌────┐    ┌────┐    ┌────┐    ┌────┐    ┌────┐  │
     │                  ││     └────┘    └────┘    └────┘    └────┘    └────┘    └────┘    └────┘    └────┘    └────┘    └──│
-    │clear             ││──────────┐                                                                                       │
-    │                  ││          └───────────────────────────────────────────────────────────────────────────────────────│
     │                  ││──────────┬───────────────────┬───────────────────┬───────────────────┬───────────────────────────│
     │a_address         ││ 00       │28                 │29                 │2A                 │2B                         │
     │                  ││──────────┴───────────────────┴───────────────────┴───────────────────┴───────────────────────────│
@@ -570,8 +561,7 @@ let%expect_test "resize ram with byte write enables; read/write = 4" =
     │                  ││──────────────────────────────┬───────────────────┬───────────────────┬─────────┬─────────────────│
     │qb                ││ 00000000                     │000000AA           │000011AA           │002211AA │DD2211AA         │
     │                  ││──────────────────────────────┴───────────────────┴───────────────────┴─────────┴─────────────────│
-    │                  ││                                                                                                  │
     └──────────────────┘└──────────────────────────────────────────────────────────────────────────────────────────────────┘
-    16cee7840350faf435d6d335676367ae
+    faee08af2ebe62f230b8dda90894e3c5
     |}]
 ;;

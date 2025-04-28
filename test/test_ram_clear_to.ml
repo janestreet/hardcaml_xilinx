@@ -30,11 +30,11 @@ let create_circuit
   in
   let port_a =
     port_with_clear
-      Port.(map2 (map port_names ~f:(( ^ ) "a_")) port_sizes ~f:Signal.input)
+      Port.(map2 (map port_names ~f:(fun x -> "a_" ^ x)) port_sizes ~f:Signal.input)
   in
   let port_b =
     port_with_clear
-      Port.(map2 (map port_names ~f:(( ^ ) "b_")) port_sizes ~f:Signal.input)
+      Port.(map2 (map port_names ~f:(fun x -> "b_" ^ x)) port_sizes ~f:Signal.input)
   in
   let q_a, q_b =
     create
@@ -90,7 +90,7 @@ let%expect_test "clear followed by basic write then read, single cycle latency, 
   let (waves, sim), clear, clear_to, ((a : _ Port.t), _qa), ((b : _ Port.t), _qb) =
     create_sim ~read_latency:1 ~address_bits ~data_bits:32 ()
   in
-  clear_to := Bits.of_int ~width:32 0xBEEF;
+  clear_to := Bits.of_int_trunc ~width:32 0xBEEF;
   clear := Bits.vdd;
   Cyclesim.cycle sim;
   clear := Bits.gnd;
@@ -98,19 +98,19 @@ let%expect_test "clear followed by basic write then read, single cycle latency, 
     Cyclesim.cycle sim
   done;
   a.write_enable := Bits.vdd;
-  a.address := Bits.of_int ~width:address_bits 10;
-  a.data := Bits.of_int ~width:32 100;
+  a.address := Bits.of_int_trunc ~width:address_bits 10;
+  a.data := Bits.of_int_trunc ~width:32 100;
   Cyclesim.cycle sim;
   a.write_enable := Bits.gnd;
   Cyclesim.cycle sim;
   b.read_enable := Bits.vdd;
-  b.address := Bits.of_int ~width:address_bits 10;
+  b.address := Bits.of_int_trunc ~width:address_bits 10;
   Cyclesim.cycle sim;
   b.read_enable := Bits.gnd;
   Cyclesim.cycle sim;
   (* Read an address that should be cleared to BEEF *)
   b.read_enable := Bits.vdd;
-  b.address := Bits.of_int ~width:address_bits 1;
+  b.address := Bits.of_int_trunc ~width:address_bits 1;
   Cyclesim.cycle sim;
   b.read_enable := Bits.gnd;
   Cyclesim.cycle sim;
@@ -123,7 +123,7 @@ let%expect_test "clear followed by basic write then read, single cycle latency, 
   for _ = 0 to 1 lsl address_bits do
     Cyclesim.cycle sim
   done;
-  Waveform.expect ~display_height:65 ~display_width:85 ~wave_width:0 waves;
+  Waveform.expect ~display_width:85 ~wave_width:0 waves;
   [%expect
     {|
     ┌Signals───────────┐┌Waves──────────────────────────────────────────────────────────┐
@@ -187,9 +187,13 @@ let%expect_test "clear followed by basic write then read, single cycle latency, 
     │port$write_enable_││──────────────────┐                   ┌───────────────┐        │
     │                  ││                  └───────────────────┘               └─       │
     │                  ││──────────────────┬───────────────────┬───────────────┬─       │
-    │state             ││ Clear            │Done               │Clear          │.       │
+    │sm                ││ Clear            │Done               │Clear          │.       │
     │                  ││──────────────────┴───────────────────┴───────────────┴─       │
     │                  ││──────────────────┬───────────────────┬───────────────┬─       │
+    │sm_1              ││ Clear            │Done               │Clear          │.       │
+    │                  ││──────────────────┴───────────────────┴───────────────┴─       │
+    │vdd               ││────────────────────────────────────────────────────────       │
+    │                  ││                                                               │
     └──────────────────┘└───────────────────────────────────────────────────────────────┘
     604cb026327a890ad328013a882aa39f
     |}]

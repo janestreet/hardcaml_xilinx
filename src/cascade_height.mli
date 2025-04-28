@@ -1,6 +1,5 @@
-(** Height of BRAM cascades chains. This can be explicitly specified to help vivado
-    meet timing when it is unnecessarily cascading BRAMs.
-*)
+(** Height of BRAM cascades chains. This can be explicitly specified to help vivado meet
+    timing when it is unnecessarily cascading BRAMs. *)
 
 type t =
   | Inferred

@@ -2,9 +2,18 @@ open Base
 open Hardcaml
 
 module type Config = sig
+  (** Number of words addressed by the narrower port. *)
   val log_num_words : int
+
+  (** Width of narrower port. *)
   val bits_per_word : int
+
+  (** Controls the ratio between the write and read port widths.
+
+      - [log_scale_between_ports>0] write port is narrower then read port.
+      - [log_scale_between_ports<0] write port is wider than read port. *)
   val log_scale_between_ports : int
+
   val read_latency : int
   val collision_mode : Collision_mode.t option
   val byte_write_width : Byte_write_width.t option

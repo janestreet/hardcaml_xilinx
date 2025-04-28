@@ -90,10 +90,10 @@ let create (type a) ~(f : clock:_ -> clear:_ -> port_a:_ -> port_b:_ -> a) : a =
     }
   in
   let port_a =
-    Ram_port.(map2 (map port_names ~f:(Fn.flip ( ^ ) "_a")) port_sizes ~f:Signal.input)
+    Ram_port.(map2 (map port_names ~f:(fun x -> x ^ "_a")) port_sizes ~f:Signal.input)
   in
   let port_b =
-    Ram_port.(map2 (map port_names ~f:(Fn.flip ( ^ ) "_b")) port_sizes ~f:Signal.input)
+    Ram_port.(map2 (map port_names ~f:(fun x -> x ^ "_b")) port_sizes ~f:Signal.input)
   in
   f ~clock ~clear ~port_a ~port_b
 ;;
@@ -141,20 +141,16 @@ let create_sim () =
 let%expect_test "address collision for basic RTL models" =
   let (waves, sim), (a : _ Ram_port.t), (_b : _ Ram_port.t) = create_sim () in
   a.write_enable := Bits.vdd;
-  a.address := Bits.of_int ~width:address_bits 3;
-  a.data := Bits.of_int ~width:data_bits 8;
+  a.address := Bits.of_int_trunc ~width:address_bits 3;
+  a.data := Bits.of_int_trunc ~width:data_bits 8;
   Cyclesim.cycle sim;
   a.read_enable := Bits.vdd;
-  a.data := Bits.of_int ~width:data_bits 9;
+  a.data := Bits.of_int_trunc ~width:data_bits 9;
   Cyclesim.cycle sim;
   a.write_enable := Bits.gnd;
   Cyclesim.cycle sim;
   Cyclesim.cycle sim;
-  Waveform.expect
-    ~display_height:30
-    ~display_width:50
-    ~display_rules:Display_rules.[ clock; port_a ]
-    waves;
+  Waveform.expect ~display_width:50 ~display_rules:Display_rules.[ clock; port_a ] waves;
   [%expect
     {|
     ┌Signals───┐┌Waves───────────────────────────────┐
@@ -185,7 +181,6 @@ let%expect_test "address collision for basic RTL models" =
     │          ││────────────────────────┬───────    │
     │unc_a     ││ 0                      │9          │
     │          ││────────────────────────┴───────    │
-    │          ││                                    │
     └──────────┘└────────────────────────────────────┘
     c19b13da5309446a73618c912a590a45
     |}]
@@ -194,18 +189,17 @@ let%expect_test "address collision for basic RTL models" =
 let%expect_test "address collision across ports for basic RTL models" =
   let (waves, sim), (a : _ Ram_port.t), (b : _ Ram_port.t) = create_sim () in
   a.write_enable := Bits.vdd;
-  a.address := Bits.of_int ~width:address_bits 3;
-  b.address := Bits.of_int ~width:address_bits 3;
-  a.data := Bits.of_int ~width:data_bits 8;
+  a.address := Bits.of_int_trunc ~width:address_bits 3;
+  b.address := Bits.of_int_trunc ~width:address_bits 3;
+  a.data := Bits.of_int_trunc ~width:data_bits 8;
   b.read_enable := Bits.vdd;
   Cyclesim.cycle sim;
-  a.data := Bits.of_int ~width:data_bits 9;
+  a.data := Bits.of_int_trunc ~width:data_bits 9;
   Cyclesim.cycle sim;
   a.write_enable := Bits.gnd;
   Cyclesim.cycle sim;
   Cyclesim.cycle sim;
   Waveform.expect
-    ~display_height:54
     ~display_width:50
     ~display_rules:Display_rules.[ clock; port_a; port_b ]
     waves;
@@ -289,10 +283,10 @@ let%expect_test "address collision across ports for basic RTL models" =
 let%expect_test "Vivado XSIM testbench model" =
   let (waves, sim), (a : _ Ram_port.t), (b : _ Ram_port.t) = create_sim () in
   (* write from port a *)
-  a.address := Bits.of_int ~width:address_bits 1;
-  b.address := Bits.of_int ~width:address_bits 1;
-  a.data := Bits.of_int ~width:data_bits 8;
-  b.data := Bits.of_int ~width:data_bits 9;
+  a.address := Bits.of_int_trunc ~width:address_bits 1;
+  b.address := Bits.of_int_trunc ~width:address_bits 1;
+  a.data := Bits.of_int_trunc ~width:data_bits 8;
+  b.data := Bits.of_int_trunc ~width:data_bits 9;
   a.read_enable := Bits.vdd;
   b.read_enable := Bits.vdd;
   a.write_enable := Bits.vdd;
@@ -305,10 +299,10 @@ let%expect_test "Vivado XSIM testbench model" =
   Cyclesim.cycle sim;
   Cyclesim.cycle sim;
   (* write from port b *)
-  a.address := Bits.of_int ~width:address_bits 2;
-  b.address := Bits.of_int ~width:address_bits 2;
-  a.data := Bits.of_int ~width:data_bits 18;
-  b.data := Bits.of_int ~width:data_bits 19;
+  a.address := Bits.of_int_trunc ~width:address_bits 2;
+  b.address := Bits.of_int_trunc ~width:address_bits 2;
+  a.data := Bits.of_int_trunc ~width:data_bits 18;
+  b.data := Bits.of_int_trunc ~width:data_bits 19;
   a.read_enable := Bits.vdd;
   b.read_enable := Bits.vdd;
   b.write_enable := Bits.vdd;
@@ -321,7 +315,6 @@ let%expect_test "Vivado XSIM testbench model" =
   Cyclesim.cycle sim;
   Cyclesim.cycle sim;
   Waveform.expect
-    ~display_height:54
     ~display_width:90
     ~display_rules:Display_rules.[ clock; port_a; port_b ]
     waves;

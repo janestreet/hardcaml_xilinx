@@ -67,18 +67,18 @@ module Make (The_config : Memory_builder.Config.S) = struct
   let test () =
     let waves, sim = create_sim () in
     let inputs = Cyclesim.inputs sim in
-    inputs.write_port.data.foo := Bits.of_int ~width:8 0xAA;
-    inputs.write_port.data.bar := Bits.of_int ~width:8 0xBB;
+    inputs.write_port.data.foo := Bits.of_int_trunc ~width:8 0xAA;
+    inputs.write_port.data.bar := Bits.of_int_trunc ~width:8 0xBB;
     inputs.write_port.enable := Bits.vdd;
-    inputs.write_port.address := Bits.of_int ~width:8 0xFF;
+    inputs.write_port.address := Bits.of_int_trunc ~width:8 0xFF;
     Cyclesim.cycle sim;
     inputs.write_port.enable := Bits.gnd;
     inputs.read_port.enable := Bits.vdd;
-    inputs.read_port.address := Bits.of_int ~width:8 0xFF;
+    inputs.read_port.address := Bits.of_int_trunc ~width:8 0xFF;
     Cyclesim.cycle sim;
     inputs.read_port.enable := Bits.gnd;
     Cyclesim.cycle sim;
-    Waveform.print ~display_height:28 waves
+    Waveform.print waves
   ;;
 end
 
@@ -123,8 +123,6 @@ module%test [@name "a single ultraram"] _ = struct
       │               ││────────────────┬───────                           │
       │rd_foo         ││ 00             │AA                                │
       │               ││────────────────┴───────                           │
-      │               ││                                                   │
-      │               ││                                                   │
       └───────────────┘└───────────────────────────────────────────────────┘
       |}]
   ;;
@@ -187,8 +185,6 @@ module%test [@name "3 single ultraram"] _ = struct
       │               ││────────────────┬───────                           │
       │rd_foo         ││ 00             │AA                                │
       │               ││────────────────┴───────                           │
-      │               ││                                                   │
-      │               ││                                                   │
       └───────────────┘└───────────────────────────────────────────────────┘
       |}]
   ;;

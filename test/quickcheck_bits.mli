@@ -27,6 +27,5 @@ module Bits_upto_size : S
     [type t = Bits_at_size.t * Bits_at_size]
 
     Here both bits will have the same width (the size control parameter is the same when
-    passed to each generator of the pair).
-*)
+    passed to each generator of the pair). *)
 val bits_with_size : (module S) -> int -> (module S)

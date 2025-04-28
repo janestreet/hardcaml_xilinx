@@ -16,8 +16,8 @@ open Hardcaml
     pipelining to the FIFO output. *)
 val create
   :  ?read_latency:int
-       (** Default is None which will either set [read_latency] to 0 or 1 if [showahead] is
-      true or false respectively. *)
+       (** Default is None which will either set [read_latency] to 0 or 1 if [showahead]
+           is true or false respectively. *)
   -> ?overflow_check:bool (** default is [true] *)
   -> ?showahead:bool (** default is [false] **)
   -> ?underflow_check:bool (** default is [true] *)

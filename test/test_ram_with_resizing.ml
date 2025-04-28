@@ -67,12 +67,13 @@ module For_rtl_sim = struct
           }
         in
         { Step.write_enable =
-            Signal.of_int ~width:Step.port_widths.write_enable d.write_enable
-        ; read_enable = Signal.of_int ~width:1 d.read_enable
+            Signal.of_int_trunc ~width:Step.port_widths.write_enable d.write_enable
+        ; read_enable = Signal.of_int_trunc ~width:1 d.read_enable
         ; write_address =
-            Signal.of_int ~width:Step.port_widths.write_address d.write_address
-        ; read_address = Signal.of_int ~width:Step.port_widths.read_address d.read_address
-        ; write_data = Signal.of_int ~width:Step.port_widths.write_data d.write_data
+            Signal.of_int_trunc ~width:Step.port_widths.write_address d.write_address
+        ; read_address =
+            Signal.of_int_trunc ~width:Step.port_widths.read_address d.read_address
+        ; write_data = Signal.of_int_trunc ~width:Step.port_widths.write_data d.write_data
         }
         :: f d t
     in
@@ -146,8 +147,6 @@ module For_rtl_sim = struct
   ;;
 end
 
-let ( <-. ) a b = a := Bits.of_int ~width:(Bits.width !a) b
-
 let test
   ?(strobe_enable = true)
   ?(bits_per_word = 4)
@@ -155,6 +154,7 @@ let test
   ?(read_latency = 1)
   log_scale_between_ports
   =
+  let open Bits in
   assert (bits_per_word = 4 || bits_per_word = 8);
   let log_num_words = 3 in
   let module Ram =
@@ -188,29 +188,29 @@ let test
   print_s [%message (scale_up : int)];
   for i = 0 to ((1 lsl log_num_words) / scale_up) - 1 do
     inputs.write_enable
-    <-.
+    <--.
     if strobe_enable
     then 1 lsl (i % Ram.write_enable_bits)
     else (1 lsl Ram.write_enable_bits) - 1;
-    inputs.write_address <-. i;
-    inputs.write_data <-. 0x4321 + (i * 0x11111111 * scale_up * (bits_per_word / 4));
+    inputs.write_address <--. i;
+    inputs.write_data <--. 0x4321 + (i * 0x11111111 * scale_up * (bits_per_word / 4));
     Cyclesim.cycle sim
   done;
-  inputs.write_enable <-. 0;
+  inputs.write_enable <--. 0;
   (* read *)
   let scale_up =
     1 lsl if log_scale_between_ports <= 0 then 0 else log_scale_between_ports
   in
-  inputs.read_enable <-. 1;
+  inputs.read_enable <--. 1;
   for i = 0 to ((1 lsl log_num_words) / scale_up) - 1 do
-    inputs.read_address <-. i;
+    inputs.read_address <--. i;
     Cyclesim.cycle sim
   done;
-  inputs.read_enable <-. 0;
+  inputs.read_enable <--. 0;
   for _ = 0 to read_latency do
     Cyclesim.cycle sim
   done;
-  Waveform.expect ~display_width:90 ~display_height:24 ~wave_width:1 waves
+  Waveform.expect ~display_width:90 ~wave_width:1 waves
 ;;
 
 let%expect_test "no scale" =
@@ -241,8 +241,6 @@ let%expect_test "no scale" =
     │                  ││────────────────────────────────────┬───┬───┬───┬───┬───┬───┬───┬───│
     │q                 ││ 0                                  │1  │2  │3  │4  │5  │6  │7  │8  │
     │                  ││────────────────────────────────────┴───┴───┴───┴───┴───┴───┴───┴───│
-    │                  ││                                                                    │
-    │                  ││                                                                    │
     └──────────────────┘└────────────────────────────────────────────────────────────────────┘
     28122f35fca3d13a7ecb595b5252fd75
     |}]
@@ -259,8 +257,6 @@ let%expect_test "write port wider x2" =
     │                  ││────────────────────┬───┬───┬───┬───┬───┬───┬───────────            │
     │read_address      ││ 0                  │1  │2  │3  │4  │5  │6  │7                      │
     │                  ││────────────────────┴───┴───┴───┴───┴───┴───┴───────────            │
-    │read_clear        ││                                                                    │
-    │                  ││────────────────────────────────────────────────────────            │
     │read_clock        ││                                                                    │
     │                  ││────────────────────────────────────────────────────────            │
     │read_enable       ││                ┌───────────────────────────────┐                   │
@@ -279,7 +275,7 @@ let%expect_test "write port wider x2" =
     │q                 ││ 0                  │1  │2  │3  │4  │5  │6  │7  │8                  │
     │                  ││────────────────────┴───┴───┴───┴───┴───┴───┴───┴───────            │
     └──────────────────┘└────────────────────────────────────────────────────────────────────┘
-    00127977b6203ca0fcf411ac8797d552
+    7d019184a5c43607d3d286d6a35a5331
     |}]
 ;;
 
@@ -294,8 +290,6 @@ let%expect_test "write port wider x4" =
     │                  ││────────────┬───┬───┬───┬───┬───┬───┬───────────                    │
     │read_address      ││ 0          │1  │2  │3  │4  │5  │6  │7                              │
     │                  ││────────────┴───┴───┴───┴───┴───┴───┴───────────                    │
-    │read_clear        ││                                                                    │
-    │                  ││────────────────────────────────────────────────                    │
     │read_clock        ││                                                                    │
     │                  ││────────────────────────────────────────────────                    │
     │read_enable       ││        ┌───────────────────────────────┐                           │
@@ -312,9 +306,8 @@ let%expect_test "write port wider x4" =
     │                  ││────────────┬───┬───┬───┬───┬───┬───┬───┬───────                    │
     │q                 ││ 0          │1  │2  │3  │4  │5  │6  │7  │8                          │
     │                  ││────────────┴───┴───┴───┴───┴───┴───┴───┴───────                    │
-    │                  ││                                                                    │
     └──────────────────┘└────────────────────────────────────────────────────────────────────┘
-    7e759625d982bedd2b5ff5e677dbcd5e
+    82ba47eee3b6da540e0343be4feadf29
     |}]
 ;;
 
@@ -358,8 +351,6 @@ let%expect_test "read port wider x2" =
     │                  ││────────────────────────────────────┬───┬───┬───┬───────            │
     │q                 ││ 00                                 │21 │43 │65 │87                 │
     │                  ││────────────────────────────────────┴───┴───┴───┴───────            │
-    │                  ││                                                                    │
-    │                  ││                                                                    │
     └──────────────────┘└────────────────────────────────────────────────────────────────────┘
     f9403aab861029e9023c8b228bdd7a9a
     |}]
@@ -392,9 +383,6 @@ let%expect_test "read port wider x4" =
     │                  ││────────────────────────────────────┬───┬───────                    │
     │q                 ││ 0000                               │43.│8765                       │
     │                  ││────────────────────────────────────┴───┴───────                    │
-    │                  ││                                                                    │
-    │                  ││                                                                    │
-    │                  ││                                                                    │
     └──────────────────┘└────────────────────────────────────────────────────────────────────┘
     b4ada320a90d3ddb9d2501b784fdcbcf
     |}]
@@ -429,7 +417,6 @@ let%expect_test "read port wider x4, read_latency=2" =
     │                  ││────────────────────────────────────────┬───┬───────                │
     │q                 ││ 0000                                   │43.│8765                   │
     │                  ││────────────────────────────────────────┴───┴───────                │
-    │                  ││                                                                    │
     └──────────────────┘└────────────────────────────────────────────────────────────────────┘
     e3be538bebdc775700274611d36535d2
     |}]
@@ -458,8 +445,6 @@ let%expect_test "write port wider x2, with byte enables" =
     │                  ││────────────────────┬───┬───┬───┬───┬───┬───┬───────────            │
     │read_address      ││ 0                  │1  │2  │3  │4  │5  │6  │7                      │
     │                  ││────────────────────┴───┴───┴───┴───┴───┴───┴───────────            │
-    │read_clear        ││                                                                    │
-    │                  ││────────────────────────────────────────────────────────            │
     │read_clock        ││                                                                    │
     │                  ││────────────────────────────────────────────────────────            │
     │read_enable       ││                ┌───────────────────────────────┐                   │
@@ -477,8 +462,9 @@ let%expect_test "write port wider x2, with byte enables" =
     │                  ││────┴───┴───┴───┴───────────────────────────────────────            │
     │                  ││────────────────────┬───┬───────┬───┬───┬───────┬───────            │
     │q                 ││ 00                 │21 │00     │87 │A9 │00     │0F                 │
+    │                  ││────────────────────┴───┴───────┴───┴───┴───────┴───────            │
     └──────────────────┘└────────────────────────────────────────────────────────────────────┘
-    1dfecd0a63eec76e7dfd5ece7744f3e1
+    967dbf778d86a422e03fa6b5d5cbd75f
     |}]
 ;;
 
@@ -493,8 +479,6 @@ let%expect_test "write port wider x2, with byte enables all high" =
     │                  ││────────────────────┬───┬───┬───┬───┬───┬───┬───────────            │
     │read_address      ││ 0                  │1  │2  │3  │4  │5  │6  │7                      │
     │                  ││────────────────────┴───┴───┴───┴───┴───┴───┴───────────            │
-    │read_clear        ││                                                                    │
-    │                  ││────────────────────────────────────────────────────────            │
     │read_clock        ││                                                                    │
     │                  ││────────────────────────────────────────────────────────            │
     │read_enable       ││                ┌───────────────────────────────┐                   │
@@ -512,7 +496,65 @@ let%expect_test "write port wider x2, with byte enables all high" =
     │                  ││────────────────┴───────────────────────────────────────            │
     │                  ││────────────────────┬───┬───┬───┬───┬───┬───┬───┬───────            │
     │q                 ││ 00                 │21 │43 │65 │87 │A9 │CB │ED │0F                 │
+    │                  ││────────────────────┴───┴───┴───┴───┴───┴───┴───┴───────            │
     └──────────────────┘└────────────────────────────────────────────────────────────────────┘
-    b87f21a3aa5c910ca54d650685e8df7f
+    e3744082a3d292bbee069f6d063328a3
+    |}]
+;;
+
+(* The way we specify the size of the ram, and the ratio between ports is, frankly, a bit
+   confusing. The following shows the rules. *)
+let%expect_test "ratios between ports" =
+  let test ~log_num_words ~bits_per_word ~log_scale_between_ports =
+    let open Ram_with_resizing.Make (struct
+        let log_num_words = log_num_words
+        let bits_per_word = bits_per_word
+        let log_scale_between_ports = log_scale_between_ports
+        let read_latency = 1
+        let collision_mode = None
+        let byte_write_width = None
+        let clocking_mode = None
+      end) in
+    print_endline
+      (Sexp_pretty.sexp_to_string
+         [%message
+           (log_num_words : int)
+             (read_address_bits : int)
+             (write_address_bits : int)
+             (bits_per_word : int)
+             (read_data_bits : int)
+             (write_data_bits : int)])
+  in
+  (* read port is narrower *)
+  test ~log_num_words:4 ~bits_per_word:16 ~log_scale_between_ports:(-1);
+  [%expect
+    {|
+    ((log_num_words      4)
+     (read_address_bits  4)
+     (write_address_bits 3)
+     (bits_per_word      16)
+     (read_data_bits     16)
+     (write_data_bits    32))
+    |}];
+  test ~log_num_words:4 ~bits_per_word:16 ~log_scale_between_ports:0;
+  [%expect
+    {|
+    ((log_num_words      4)
+     (read_address_bits  4)
+     (write_address_bits 4)
+     (bits_per_word      16)
+     (read_data_bits     16)
+     (write_data_bits    16))
+    |}];
+  (* write port is narrower *)
+  test ~log_num_words:4 ~bits_per_word:16 ~log_scale_between_ports:1;
+  [%expect
+    {|
+    ((log_num_words      4)
+     (read_address_bits  3)
+     (write_address_bits 4)
+     (bits_per_word      16)
+     (read_data_bits     32)
+     (write_data_bits    16))
     |}]
 ;;

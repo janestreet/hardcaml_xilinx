@@ -165,7 +165,7 @@ let instantiate_underlying_memory
               }
             (1 lsl Signal.width read_address_b)
           |> Signal.pipeline
-               (Reg_spec.create ~clock ())
+               (Signal.Reg_spec.create ~clock ())
                ~n:(config.underlying_ram_read_latency - 1)
         in
         Signal.zero (Signal.width rdata), rdata)
@@ -280,6 +280,11 @@ module Write_port_1d = struct
     ; data : 'write_data
     }
   [@@deriving sexp_of]
+
+  let and_enable ~with_ t =
+    let open Signal in
+    { t with enable = t.enable &: with_ }
+  ;;
 
   module type S = sig
     type 'a write_data
@@ -474,7 +479,7 @@ module Component (M : Hardcaml.Interface.S) (The_config : Config.S) = struct
           "read data width mismatch"
             ~read_data_width:(Signal.width read_data : int)
             (underlying_memories_data_width : int)];
-    let spec_no_clear = Reg_spec.create ~clock () in
+    let spec_no_clear = Signal.Reg_spec.create ~clock () in
     List.init config.horizontal_dimension ~f:(fun i ->
       let high = ((i + 1) * num_bits_per_entry) - 1 in
       let low = i * num_bits_per_entry in
@@ -698,7 +703,7 @@ module Create (M : Hardcaml.Interface.S) = struct
   ;;
 end
 
-let ( <==? ) dst src =
+let ( <--? ) dst src =
   match dst with
   | None ->
     if not (Signal.width src <= 1)
@@ -707,7 +712,7 @@ let ( <==? ) dst src =
         [%message
           "When outer dimension / vertical dimension is of size 1, must provide empty \
            signal or width 1 signal"]
-  | Some dst -> Signal.( <== ) dst src
+  | Some dst -> Signal.( <-- ) dst src
 ;;
 
 let validate_not_reading_from_port_A_in_inferred_ram
@@ -731,9 +736,9 @@ let set_read_port_2d (t : _ t) port_label (read_port : _ Read_port_2d.t) =
   | `Unassigned ports ->
     let open Signal in
     Hashtbl.set ~key:port_label ~data:`Assigned t.read_ports;
-    ports.read_enable <== read_port.enable;
-    ports.horizontal_index <==? read_port.horizontal_index;
-    ports.vertical_index <==? read_port.vertical_index;
+    ports.read_enable <-- read_port.enable;
+    ports.horizontal_index <--? read_port.horizontal_index;
+    ports.vertical_index <--? read_port.vertical_index;
     Hashtbl.find_exn t.read_datas port_label
 ;;
 
@@ -772,15 +777,15 @@ let set_write_port_2d (t : _ t) port_label (write_port : _ Write_port_2d.t) =
         port_label);
     let open Signal in
     Hashtbl.set ~key:port_label ~data:`Assigned t.write_ports;
-    ports.write_enable <== write_port.enable;
-    ports.vertical_index <==? write_port.vertical_index;
+    ports.write_enable <-- write_port.enable;
+    ports.vertical_index <--? write_port.vertical_index;
     List.iter2_exn ports.write_data write_port.data ~f:(fun dst src ->
-      dst <== t.signal_of_a src)
+      dst <-- t.signal_of_a src)
 ;;
 
 let zero_out a =
   let open Signal in
-  a <== zero (width a)
+  a <-- zero (width a)
 ;;
 
 let complete t =
@@ -799,6 +804,8 @@ let complete t =
       zero_out ports.write_enable;
       List.iter ~f:zero_out ports.write_data)
 ;;
+
+let get_config t = t.config
 
 let assert_is_1d (t : _ t) =
   if Config.horizontal_dimension t.config <> 1

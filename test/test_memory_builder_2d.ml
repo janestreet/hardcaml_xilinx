@@ -85,7 +85,7 @@ let create_sim () =
   Hardcaml_waveterm.Waveform.create sim
 ;;
 
-let ( @<--. ) a b = a := Bits.of_int ~width:(Bits.width !a) b
+let ( <--. ) = Bits.( <--. )
 
 let test ~write_vectors ~read_indices =
   let waves, sim = create_sim () in
@@ -95,23 +95,23 @@ let test ~write_vectors ~read_indices =
       dst.foo := src.foo;
       dst.bar := src.bar);
     inputs.write_port.enable := Bits.vdd;
-    inputs.write_port.vertical_index @<--. vertical_index;
+    inputs.write_port.vertical_index <--. vertical_index;
     Cyclesim.cycle sim);
   inputs.write_port.enable := Bits.gnd;
   List.iter read_indices ~f:(fun (horizontal_index, vertical_index) ->
     inputs.read_port.enable := Bits.vdd;
-    inputs.read_port.horizontal_index @<--. horizontal_index;
-    inputs.read_port.vertical_index @<--. vertical_index;
+    inputs.read_port.horizontal_index <--. horizontal_index;
+    inputs.read_port.vertical_index <--. vertical_index;
     Cyclesim.cycle sim);
   inputs.read_port.enable := Bits.gnd;
   Cyclesim.cycle sim;
   Cyclesim.cycle sim;
   Cyclesim.cycle sim;
-  Waveform.print ~display_height:40 ~wave_width:2 waves
+  Waveform.print ~wave_width:2 waves
 ;;
 
 let%expect_test "" =
-  let i8 = Bits.of_int ~width:8 in
+  let i8 = Bits.of_int_trunc ~width:8 in
   let write_vectors =
     [ 0, [ { Data.bar = i8 0xAB; foo = i8 0xCD }; { Data.bar = i8 0x12; foo = i8 0x34 } ]
     ; 1, [ { Data.bar = i8 0xEE; foo = i8 0xFF }; { Data.bar = i8 0x56; foo = i8 0x78 } ]
@@ -154,12 +154,6 @@ let%expect_test "" =
     │               ││────────────────────────┬─────┬─────┬─────┬────────│
     │rd_foo         ││ 00                     │CD   │FF   │34   │78      │
     │               ││────────────────────────┴─────┴─────┴─────┴────────│
-    │               ││                                                   │
-    │               ││                                                   │
-    │               ││                                                   │
-    │               ││                                                   │
-    │               ││                                                   │
-    │               ││                                                   │
     └───────────────┘└───────────────────────────────────────────────────┘
     |}]
 ;;

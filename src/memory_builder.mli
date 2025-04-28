@@ -1,9 +1,7 @@
-(** A general-purpose means of representing memories. The [Config.t] type
-    allows the user to configure the underlying memory implementations. Eg:
-    Using URAM for bits 0-72, and BRAMs for bits 73-80. This module allows
-    construction of memories in 1D or 2D Modes. See further documentation
-    below.
-*)
+(** A general-purpose means of representing memories. The [Config.t] type allows the user
+    to configure the underlying memory implementations. Eg: Using URAM for bits 0-72, and
+    BRAMs for bits 73-80. This module allows construction of memories in 1D or 2D Modes.
+    See further documentation below. *)
 
 open Base
 open Hardcaml
@@ -12,9 +10,8 @@ module For_deriving : sig
   module type Sexp_of_m = sig end
 end
 
-(** Configuration for the memory builder. See documentation below for
-    elaboration about the purpose of configuration fields.
-*)
+(** Configuration for the memory builder. See documentation below for elaboration about
+    the purpose of configuration fields. *)
 module Config : sig
   type inferred_memory =
     { rtl_attributes : Rtl_attribute.t list option
@@ -42,20 +39,17 @@ module Config : sig
     ; combinational_output : bool
     }
 
-  (** The size of the outermost inner dimension. ie: shape[1]  *)
+  (** The size of the outermost inner dimension. ie: shape[1] *)
   val vertical_dimension : t -> int
 
   (** The bit width for the horizontal dimension. Note that this will return 0 when the
-      appropriate dimension is zero.
-  *)
+      appropriate dimension is zero. *)
   val horizontal_index_width : t -> int
 
   (** Similar to [horizontal_index_width], but for the vertical index *)
   val vertical_index_width : t -> int
 
-  (** Equivalent to
-      [underlying_ram_read_latency + if combinational_output then 1 else 0]
-  *)
+  (** Equivalent to [underlying_ram_read_latency + if combinational_output then 1 else 0] *)
   val read_latency : t -> int
 
   (** Create the simplest possible 1D configuration with a single RAM architecture. *)
@@ -110,18 +104,17 @@ module Create (M : Hardcaml.Interface.S) : sig
     -> Signal.t M.t t
 end
 
-(** Returns the read latency of the memory, including possibly any
-    combinational latency due to muxing.
-*)
+(** Returns the read latency of the memory, including possibly any combinational latency
+    due to muxing. *)
 val read_latency : _ t -> int
 
-(** Must be called strictly after all [set_{read/write}_] functions have been
-    called. This assigns to the underlying instantiated memories, and asserts
-    that the memory satisfies the config's requirements.
-*)
+(** Must be called strictly after all [set_{read/write}_] functions have been called. This
+    assigns to the underlying instantiated memories, and asserts that the memory satisfies
+    the config's requirements. *)
 val complete : _ t -> unit
 
-(** {2 Straightforward 1D Memories}
+(** {v
+ {2 Straightforward 1D Memories}
 
     1-dimensional memories are laid out the way one would expect. A memory
     of depth [d], with columns shared between URAM and BRAM will have the
@@ -138,7 +131,9 @@ val complete : _ t -> unit
     and [data] are not necessarily known without a config. To get something
     one can use in Hardcaml interfaces, you'll have to specialize it with
     [Specialize].
-*)
+    v} *)
+
+val get_config : _ t -> Config.t
 
 module type Widths_1d = sig
   val address_width : int
@@ -162,8 +157,7 @@ module Read_port_1d : sig
 end
 
 (** General purpose 1D Write ports. Note that it is possible to write
-    ['a Write_port_1d.M(Foo).t] in type declarations in mlis.
-*)
+    ['a Write_port_1d.M(Foo).t] in type declarations in mlis. *)
 module Write_port_1d : sig
   type ('a, 'write_data) t =
     { address : 'a
@@ -171,6 +165,8 @@ module Write_port_1d : sig
     ; data : 'write_data
     }
   [@@deriving sexp_of]
+
+  val and_enable : with_:Signal.t -> (Signal.t, 'a) t -> (Signal.t, 'a) t
 
   module type S = sig
     type 'a write_data
@@ -186,8 +182,7 @@ module Write_port_1d : sig
   module Specialize_with_config (M : Hardcaml.Interface.S) (_ : Config.S) :
     S with type 'a write_data := 'a M.t
 
-  (** Shorthand useful for writing ['a Write_port_1d.M(Foo).t] in type
-      signatures. *)
+  (** Shorthand useful for writing ['a Write_port_1d.M(Foo).t] in type signatures. *)
   module M (X : T1) : sig
     type nonrec 'a t = ('a, 'a X.t) t
 
@@ -201,19 +196,19 @@ module Write_port_1d : sig
     -> Sexp.t
 end
 
-(** Assigns the read port for 1D memories. Raises a runtime exception when
-    called on a non single dimensional memory.
-*)
+(** Assigns the read port for 1D memories. Raises a runtime exception when called on a non
+    single dimensional memory. *)
 val set_read_port_1d : 'data t -> Port_label.t -> Signal.t Read_port_1d.t -> 'data
 
-(** Similar to [set_read_port_1d], but for write ports.*)
+(** Similar to [set_read_port_1d], but for write ports. *)
 val set_write_port_1d
   :  'data t
   -> Port_label.t
   -> (Signal.t, 'data) Write_port_1d.t
   -> unit
 
-(** {2 General-Purpose "2D" Memories}
+(** {v
+ {2 General-Purpose "2D" Memories}
 
     The more general-purporse memory builders can be used to construct memories
     with the layout [H * V] where every entry is [B] bits wide. One can
@@ -247,7 +242,7 @@ val set_write_port_1d
     x[{0, 1, 2}][d] must be written to simultaneously.
 
     Note that 1D memories are simply a special case of 2D memories where H = 1.
-*)
+    v} *)
 
 module type Widths_2d = sig
   val vertical_index_width : int
@@ -267,9 +262,10 @@ module Read_port_2d : sig
     Hardcaml.Interface.S with type 'a t = 'a t
 end
 
-(** General purpose write ports. Note that it is possible to write
+(** {v
+ General purpose write ports. Note that it is possible to write
     ['a Write_port_2d.M(Foo).t in type declarations in mlis
-*)
+    v} *)
 module Write_port_2d : sig
   type ('a, 'write_data) t =
     { vertical_index : 'a
@@ -300,8 +296,7 @@ module Write_port_2d : sig
   module Specialize_with_config (M : Hardcaml.Interface.S) (_ : Config.S) :
     S with type 'a write_data := 'a M.t
 
-  (** Shorthand useful for writing ['a Write_port_2d.M(Foo).t] in type
-      signatures. *)
+  (** Shorthand useful for writing ['a Write_port_2d.M(Foo).t] in type signatures. *)
   module M (M : T1) : sig
     type nonrec 'a t = ('a, 'a M.t) t
 
