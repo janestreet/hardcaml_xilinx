@@ -38,12 +38,12 @@ let create
         end)
       in
       let async_fifo =
-        Async_fifo.create
+        Async_fifo.For_testing.create_with_synchronous_clear_semantics_for_simulation_only
           ?scope
           { clock_write = write_clock
           ; clock_read = read_clock
           ; reset_write = clear
-          ; reset_read = gnd
+          ; reset_read = clear
           ; data_in = d
           ; write_enable = write
           ; read_enable = read
