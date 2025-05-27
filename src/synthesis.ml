@@ -115,7 +115,8 @@ module Unisim_combinational_primitives = struct
 
   let inv a =
     Map.find_exn
-      (Instantiation.create () ~name:"INV" ~inputs:[ "I", a ] ~outputs:[ "O", 1 ])
+      (Instantiation.create () ~name:"INV" ~inputs:[ "I", a ] ~outputs:[ "O", 1 ]
+       |> Instantiation.outputs)
       "O"
   ;;
 
@@ -128,7 +129,7 @@ module Unisim_combinational_primitives = struct
       |> Bits.reverse
       |> Bits.to_string
     in
-    Map.find_exn
+    Instantiation.output
       (Instantiation.create
          ()
          ~name:("LUT" ^ w')
@@ -139,7 +140,7 @@ module Unisim_combinational_primitives = struct
   ;;
 
   let muxcy ci di sel =
-    Map.find_exn
+    Instantiation.output
       (Instantiation.create
          ()
          ~name:"MUXCY"
@@ -149,7 +150,7 @@ module Unisim_combinational_primitives = struct
   ;;
 
   let xorcy ci li =
-    Map.find_exn
+    Instantiation.output
       (Instantiation.create
          ()
          ~name:"XORCY"
@@ -159,7 +160,7 @@ module Unisim_combinational_primitives = struct
   ;;
 
   let muxf5 f t s =
-    Map.find_exn
+    Instantiation.output
       (Instantiation.create
          ()
          ~name:"MUXF5"
@@ -169,7 +170,7 @@ module Unisim_combinational_primitives = struct
   ;;
 
   let muxf6 f t s =
-    Map.find_exn
+    Instantiation.output
       (Instantiation.create
          ()
          ~name:"MUXF6"
@@ -179,7 +180,7 @@ module Unisim_combinational_primitives = struct
   ;;
 
   let muxf7 f t s =
-    Map.find_exn
+    Instantiation.output
       (Instantiation.create
          ()
          ~name:"MUXF7"
@@ -189,7 +190,7 @@ module Unisim_combinational_primitives = struct
   ;;
 
   let muxf8 f t s =
-    Map.find_exn
+    Instantiation.output
       (Instantiation.create
          ()
          ~name:"MUXF8"
@@ -199,7 +200,7 @@ module Unisim_combinational_primitives = struct
   ;;
 
   let mult_and a b =
-    Map.find_exn
+    Instantiation.output
       (Instantiation.create
          ()
          ~name:"MULT_AND"
@@ -213,7 +214,7 @@ module Unisim_sequential_primitives = struct
   open Signal
 
   let fdce c ce clr d =
-    Map.find_exn
+    Instantiation.output
       (Instantiation.create
          ()
          ~name:"FDCE"
@@ -224,7 +225,7 @@ module Unisim_sequential_primitives = struct
   ;;
 
   let fdpe c ce pre d =
-    Map.find_exn
+    Instantiation.output
       (Instantiation.create
          ()
          ~name:"FDPE"
@@ -238,7 +239,7 @@ module Unisim_sequential_primitives = struct
     let width = width a in
     let size = 1 lsl width in
     let a = List.mapi (bits_lsb a) ~f:(fun i s -> "A" ^ Int.to_string i, s) in
-    Map.find_exn
+    Instantiation.output
       (Instantiation.create
          ()
          ~name:("RAM" ^ Int.to_string size ^ "X1S")
