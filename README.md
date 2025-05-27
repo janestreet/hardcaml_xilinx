@@ -1,5 +1,5 @@
-Hardcaml Xilinx
-===============
+Xilinx Libraries
+================
 
 The Hardcaml_xilinx library provides wrappers for Xilinx specific RAM
 and FIFO primitive blocks.  In many cases a simulation model is provided.
