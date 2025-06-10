@@ -23,7 +23,7 @@ let create ~scope ~clear_to ~clear ~clock ~size ~(port : _ Ram_port.t) =
   let spec = Reg_spec.create ~clock ~clear () in
   let%hw.State_machine sm = State_machine.create ~enable (module State) spec in
   let addr = Variable.reg ~enable spec ~width:(num_bits_to_represent (size - 1)) in
-  let ram_port = Ram_port.map port ~f:(fun default -> Variable.wire ~default) in
+  let ram_port = Ram_port.map port ~f:(fun default -> Variable.wire ~default ()) in
   Always.(
     compile
       [ sm.switch
