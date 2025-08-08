@@ -31,11 +31,12 @@ module Make (The_config : Memory_builder.Config.S) = struct
       ; write_port : 'a Write_port.t [@rtlprefix "wr_"]
       ; read_port : 'a Read_port.t [@rtlprefix "rd_"]
       }
-    [@@deriving hardcaml]
+    [@@deriving hardcaml ~rtlmangle:false]
   end
 
   module O = struct
-    type 'a t = { read_data : 'a Data.t [@rtlprefix "rd_"] } [@@deriving hardcaml]
+    type 'a t = { read_data : 'a Data.t [@rtlprefix "rd_"] }
+    [@@deriving hardcaml ~rtlmangle:false]
   end
 
   let create scope (i : _ I.t) =

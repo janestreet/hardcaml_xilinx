@@ -55,10 +55,15 @@ module type S = sig
     type 'a t = { q : 'a } [@@deriving hardcaml]
   end
 
-  val create : Scope.t -> build_mode:Build_mode.t -> Interface.Create_fn(I)(O).t
+  val create
+    :  ?address_collision_model:Address_collision.Model.t
+    -> Scope.t
+    -> build_mode:Build_mode.t
+    -> Interface.Create_fn(I)(O).t
 
   val hierarchical
     :  ?instance:string
+    -> ?address_collision_model:Address_collision.Model.t
     -> Scope.t
     -> build_mode:Build_mode.t
     -> Interface.Create_fn(I)(O).t

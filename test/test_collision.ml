@@ -20,7 +20,7 @@ module O_rams = struct
     ; bnc : 'a O_ports.t
     ; unc : 'a O_ports.t
     }
-  [@@deriving hardcaml ~rtlmangle:true]
+  [@@deriving hardcaml ~rtlmangle:"_"]
 end
 
 module O = struct
@@ -29,7 +29,7 @@ module O = struct
     ; xpm : 'a O_rams.t
     ; ok : 'a [@bits 10]
     }
-  [@@deriving hardcaml ~rtlmangle:true]
+  [@@deriving hardcaml ~rtlmangle:"_"]
 end
 
 let create_ram ~arch ~build_mode ~clock ~clear ~port_a ~port_b =

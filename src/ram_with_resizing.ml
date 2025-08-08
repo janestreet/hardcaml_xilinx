@@ -86,9 +86,10 @@ module Make (Config : Config) = struct
     type 'a t = { q : 'a [@bits read_data_bits] } [@@deriving hardcaml]
   end
 
-  let create _scope ~build_mode (i : _ I.t) =
+  let create ?address_collision_model _scope ~build_mode (i : _ I.t) =
     let ram =
       True_dual_port_ram.create
+        ?address_collision_model
         ~read_latency
         ~build_mode
         ~arch:(Blockram (Option.value ~default:Read_before_write collision_mode))
@@ -116,8 +117,12 @@ module Make (Config : Config) = struct
     { O.q = snd ram }
   ;;
 
-  let hierarchical ?instance scope ~build_mode =
+  let hierarchical ?instance ?address_collision_model scope ~build_mode =
     let module Scoped = Hierarchy.In_scope (I) (O) in
-    Scoped.hierarchical ?instance ~scope ~name:"ram_with_resizing" (create ~build_mode)
+    Scoped.hierarchical
+      ?instance
+      ~scope
+      ~name:"ram_with_resizing"
+      (create ?address_collision_model ~build_mode)
   ;;
 end

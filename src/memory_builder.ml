@@ -279,7 +279,7 @@ module Write_port_1d = struct
     ; enable : 'a
     ; data : 'write_data
     }
-  [@@deriving sexp_of]
+  [@@deriving equal ~localize, sexp_of]
 
   let and_enable ~with_ t =
     let open Signal in
@@ -299,11 +299,11 @@ module Write_port_1d = struct
         ; enable : 'a [@bits 1]
         ; data : 'a M.t
         }
-      [@@deriving hardcaml]
+      [@@deriving hardcaml ~rtlmangle:false]
     end
 
     module Pre = struct
-      type nonrec 'a t = ('a, 'a M.t) t
+      type nonrec 'a t = ('a, 'a M.t) t [@@deriving equal ~localize]
 
       let to_repr t : _ Repr.t =
         { Repr.address = t.address; enable = t.enable; data = t.data }
@@ -350,7 +350,7 @@ module Write_port_2d = struct
     ; enable : 'a
     ; data : 'write_data list
     }
-  [@@deriving sexp_of]
+  [@@deriving equal ~localize, sexp_of]
 
   let map (t : _ t) ~f_write_data ~f =
     { vertical_index = f t.vertical_index
@@ -377,11 +377,11 @@ module Write_port_2d = struct
         ; enable : 'a [@bits 1]
         ; data : 'a M.t list [@length X.horizontal_dimension]
         }
-      [@@deriving hardcaml]
+      [@@deriving hardcaml ~rtlmangle:false]
     end
 
     module Pre = struct
-      type nonrec 'a t = ('a, 'a M.t) t
+      type nonrec 'a t = ('a, 'a M.t) t [@@deriving equal ~localize]
 
       let to_repr t : _ Repr.t =
         { Repr.vertical_index = t.vertical_index; enable = t.enable; data = t.data }
@@ -460,7 +460,7 @@ module Component (M : Hardcaml.Interface.S) (The_config : Config.S) = struct
       ; read_port_a : 'a Read_port_2d.t [@rtlprefix "rda_"]
       ; read_port_b : 'a Read_port_2d.t [@rtlprefix "rdb_"]
       }
-    [@@deriving hardcaml]
+    [@@deriving hardcaml ~rtlmangle:false]
   end
 
   module O = struct
@@ -468,7 +468,7 @@ module Component (M : Hardcaml.Interface.S) (The_config : Config.S) = struct
       { read_data_a : 'a M.t [@rtlprefix "rd_a_"]
       ; read_data_b : 'a M.t [@rtlprefix "rd_b_"]
       }
-    [@@deriving hardcaml]
+    [@@deriving hardcaml ~rtlmangle:false]
   end
 
   let post_process_rd_data ~clock ~read_enable ~horizontal_index read_data =
@@ -562,7 +562,7 @@ module Port_label = struct
   type t =
     | A
     | B
-  [@@deriving sexp_of, hash, compare, enumerate]
+  [@@deriving sexp_of, hash, compare ~localize, enumerate]
 end
 
 let wire_if_nonzero n = if n = 0 then None else Some (Signal.wire n)

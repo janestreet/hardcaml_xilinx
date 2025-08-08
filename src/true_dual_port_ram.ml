@@ -3,6 +3,8 @@ open Hardcaml
 open Signal
 module Tdpram = Xpm_2019_1.Xpm_memory_tdpram
 
+type 'signal create = 'signal True_dual_port_ram_intf.create
+
 (* Block RAM - address collision behaviour.  UG573, table 1-3, common clocks.
 
    For a given mode on port a and b, and read/write enables on each port, what is the
@@ -506,3 +508,49 @@ let create
       ~port_a
       ~port_b
 ;;
+
+module Clocked = struct
+  let create
+    ?address_collision_model
+    ?read_latency
+    ?arch
+    ?byte_write_width
+    ?memory_optimization
+    ?cascade_height
+    ?clocking_mode
+    ?simulation_name
+    ~(build_mode : Build_mode.t)
+    ()
+    ~clock_a
+    ~clock_b
+    ~clear_a
+    ~clear_b
+    ~size
+    ~port_a
+    ~port_b
+    =
+    let dom_a = Clocked_signal.get_domain clock_a in
+    let dom_b = Clocked_signal.get_domain clock_b in
+    let qa, qb =
+      create
+        ?address_collision_model
+        ?read_latency
+        ?arch
+        ?byte_write_width
+        ?memory_optimization
+        ?cascade_height
+        ?clocking_mode
+        ?simulation_name
+        ~build_mode:(build_mode : Build_mode.t)
+        ()
+        ~clock_a:(Clocked_signal.unwrap_signal ~dom:dom_a clock_a)
+        ~clock_b:(Clocked_signal.unwrap_signal ~dom:dom_b clock_b)
+        ~clear_a:(Clocked_signal.unwrap_signal ~dom:dom_a clear_a)
+        ~clear_b:(Clocked_signal.unwrap_signal ~dom:dom_b clear_b)
+        ~size
+        ~port_a:(Ram_port.map port_a ~f:(Clocked_signal.unwrap_signal ~dom:dom_a))
+        ~port_b:(Ram_port.map port_b ~f:(Clocked_signal.unwrap_signal ~dom:dom_b))
+    in
+    Clocked_signal.to_clocked ~dom:dom_a qa, Clocked_signal.to_clocked ~dom:dom_b qb
+  ;;
+end

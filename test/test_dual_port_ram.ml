@@ -173,12 +173,12 @@ let%expect_test "True_dual_port_ram" =
               .dinb(data_b),
               .injectsbiterrb(gnd),
               .injectdbiterrb(gnd),
-              .dbiterrb(_19[19:19]),
-              .sbiterrb(_19[18:18]),
-              .doutb(_19[17:10]),
-              .dbiterra(_19[9:9]),
+              .douta(_19[7:0]),
               .sbiterra(_19[8:8]),
-              .douta(_19[7:0]) );
+              .dbiterra(_19[9:9]),
+              .doutb(_19[17:10]),
+              .sbiterrb(_19[18:18]),
+              .dbiterrb(_19[19:19]) );
         assign _21 = _19[7:0];
         assign qa = _21;
         assign qb = _20;
@@ -283,12 +283,12 @@ let%expect_test "True_dual_port_ram" =
               .dinb(data_b),
               .injectsbiterrb(gnd),
               .injectdbiterrb(gnd),
-              .dbiterrb(_19[19:19]),
-              .sbiterrb(_19[18:18]),
-              .doutb(_19[17:10]),
-              .dbiterra(_19[9:9]),
+              .douta(_19[7:0]),
               .sbiterra(_19[8:8]),
-              .douta(_19[7:0]) );
+              .dbiterra(_19[9:9]),
+              .doutb(_19[17:10]),
+              .sbiterrb(_19[18:18]),
+              .dbiterrb(_19[19:19]) );
         assign _21 = _19[7:0];
         assign qa = _21;
         assign qb = _20;
@@ -393,12 +393,12 @@ let%expect_test "True_dual_port_ram" =
               .dinb(data_b),
               .injectsbiterrb(gnd),
               .injectdbiterrb(gnd),
-              .dbiterrb(_19[19:19]),
-              .sbiterrb(_19[18:18]),
-              .doutb(_19[17:10]),
-              .dbiterra(_19[9:9]),
+              .douta(_19[7:0]),
               .sbiterra(_19[8:8]),
-              .douta(_19[7:0]) );
+              .dbiterra(_19[9:9]),
+              .doutb(_19[17:10]),
+              .sbiterrb(_19[18:18]),
+              .dbiterrb(_19[19:19]) );
         assign _21 = _19[7:0];
         assign qa = _21;
         assign qb = _20;
@@ -562,12 +562,12 @@ let%expect_test "True_dual_port_ram" =
               .dinb(data_b),
               .injectsbiterrb(gnd),
               .injectdbiterrb(gnd),
-              .dbiterrb(_19[19:19]),
-              .sbiterrb(_19[18:18]),
-              .doutb(_19[17:6]),
-              .dbiterra(_19[5:5]),
+              .douta(_19[3:0]),
               .sbiterra(_19[4:4]),
-              .douta(_19[3:0]) );
+              .dbiterra(_19[5:5]),
+              .doutb(_19[17:6]),
+              .sbiterrb(_19[18:18]),
+              .dbiterrb(_19[19:19]) );
         assign _21 = _19[3:0];
         assign qa = _21;
         assign qb = _20;

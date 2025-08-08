@@ -74,7 +74,7 @@ module Port_label : sig
   type t =
     | A
     | B
-  [@@deriving sexp_of, compare, enumerate]
+  [@@deriving sexp_of, compare ~localize, enumerate]
 end
 
 module Create (M : Hardcaml.Interface.S) : sig

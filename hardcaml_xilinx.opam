@@ -14,7 +14,6 @@ depends: [
   "base"
   "hardcaml"
   "hardcaml_circuits"
-  "n_ary"
   "ppx_hardcaml"
   "ppx_jane"
   "dune"              {>= "3.17.0"}

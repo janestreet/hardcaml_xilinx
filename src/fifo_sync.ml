@@ -1,6 +1,32 @@
 open! Base
 open Hardcaml
 
+type 'signal create =
+  ?read_latency:int
+    (** Default is None which will either set [read_latency] to 0 or 1 if [showahead] is
+        true or false respectively. *)
+  -> ?overflow_check:bool (** default is [true] *)
+  -> ?showahead:bool (** default is [false] **)
+  -> ?underflow_check:bool (** default is [true] *)
+  -> ?build_mode:Build_mode.t (** default is [Synthesis] *)
+  -> ?scope:Scope.t
+  -> ?fifo_memory_type:Fifo_memory_type.t
+       (** See [Xpm_fifo_sync] parameters in [xpm.ml] for default. *)
+  -> ?instance:string (** Only used in synthesis *)
+  -> ?xpm_version:[ `Xpm_2019_1 | `Xpm_2022_1 ]
+       (** Used to decide which XPM version instantiation to use *)
+  -> ?cascade_height:int (** default is [0] -> Vivado chooses; only used for Xpm 2022.1 *)
+  -> ?nearly_full:int (** usage level at which [nearly_full] will be asserted *)
+  -> ?nearly_empty:int (** usage level at which [nearly_empty] will be asserted *)
+  -> unit
+  -> capacity:int
+  -> clock:'signal
+  -> clear:'signal
+  -> wr:'signal
+  -> d:'signal
+  -> rd:'signal
+  -> 'signal Fifo.t
+
 let create
   ?read_latency
   ?(overflow_check = true)
@@ -93,6 +119,53 @@ let create
       ~d
 ;;
 
+module Clocked = struct
+  let create
+    ?read_latency
+    ?overflow_check
+    ?showahead
+    ?underflow_check
+    ?build_mode
+    ?scope
+    ?fifo_memory_type
+    ?instance
+    ?xpm_version
+    ?cascade_height
+    ?nearly_full
+    ?nearly_empty
+    ()
+    ~capacity
+    ~clock
+    ~clear
+    ~wr
+    ~d
+    ~rd
+    =
+    let dom = Clocked_signal.get_domain clock in
+    create
+      ?read_latency
+      ?overflow_check
+      ?showahead
+      ?underflow_check
+      ?build_mode
+      ?scope
+      ?fifo_memory_type
+      ?instance
+      ?xpm_version
+      ?cascade_height
+      ?nearly_full
+      ?nearly_empty
+      ()
+      ~capacity
+      ~clock:(clock |> Clocked_signal.unwrap_signal ~dom)
+      ~clear:(clear |> Clocked_signal.unwrap_signal ~dom)
+      ~wr:(wr |> Clocked_signal.unwrap_signal ~dom)
+      ~d:(d |> Clocked_signal.unwrap_signal ~dom)
+      ~rd:(rd |> Clocked_signal.unwrap_signal ~dom)
+    |> Fifo.map ~f:(Clocked_signal.to_clocked ~dom)
+  ;;
+end
+
 module With_interface (X : Hardcaml.Interface.S) = struct
   open Signal
 
@@ -104,7 +177,7 @@ module With_interface (X : Hardcaml.Interface.S) = struct
       ; wr : 'a
       ; rd : 'a
       }
-    [@@deriving hardcaml]
+    [@@deriving hardcaml ~rtlmangle:false]
   end
 
   module X_with_valid = With_valid.Wrap.Make (X)
@@ -117,7 +190,7 @@ module With_interface (X : Hardcaml.Interface.S) = struct
       ; full : 'a
       ; nearly_full : 'a
       }
-    [@@deriving hardcaml]
+    [@@deriving hardcaml ~rtlmangle:false]
   end
 
   let always_reg ( -- ) spec ~width ~name =

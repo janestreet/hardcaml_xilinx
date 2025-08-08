@@ -14,10 +14,10 @@ open Hardcaml
     [showahead] reduces the fifo read latency from 1 to 0 cycles relative to [rd].
     Optionally the [read_latency] can be increased when [showahead] is false, to add extra
     pipelining to the FIFO output. *)
-val create
-  :  ?read_latency:int
-       (** Default is None which will either set [read_latency] to 0 or 1 if [showahead]
-           is true or false respectively. *)
+type 'signal create =
+  ?read_latency:int
+    (** Default is None which will either set [read_latency] to 0 or 1 if [showahead] is
+        true or false respectively. *)
   -> ?overflow_check:bool (** default is [true] *)
   -> ?showahead:bool (** default is [false] **)
   -> ?underflow_check:bool (** default is [true] *)
@@ -33,12 +33,19 @@ val create
   -> ?nearly_empty:int (** usage level at which [nearly_empty] will be asserted *)
   -> unit
   -> capacity:int
-  -> clock:Signal.t
-  -> clear:Signal.t
-  -> wr:Signal.t
-  -> d:Signal.t
-  -> rd:Signal.t
-  -> Signal.t Fifo.t
+  -> clock:'signal
+  -> clear:'signal
+  -> wr:'signal
+  -> d:'signal
+  -> rd:'signal
+  -> 'signal Fifo.t
+
+val create : Signal.t create
+
+(** Same as [create] but with clocked signals. *)
+module Clocked : sig
+  val create : Clocked_signal.t create
+end
 
 module With_interface (X : Hardcaml.Interface.S) : sig
   module I : sig

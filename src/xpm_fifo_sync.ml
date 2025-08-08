@@ -52,15 +52,30 @@ module Xpm_2019_1 = struct
           let read_mode_val = if String.equal read_mode "std" then 0 else 1 in
           let min_thresh = 3 + (read_mode_val * 2) in
           let max_thresh = fifo_write_depth - 3 - (read_mode_val * 2) in
-          let check_prog_thresh thresh =
+          let check_prog_thresh ~tag thresh =
             if thresh < min_thresh
-            then raise_s [%message "threshold too low!" (thresh : int) (min_thresh : int)];
+            then
+              raise_s
+                [%message
+                  [%string
+                    "%{tag#String} is below its minimum threshold, this suggests that \
+                     %{tag#String} is too close to zero"]
+                    (thresh : int)
+                    (min_thresh : int)
+                    (capacity : int)];
             if thresh > max_thresh
             then
-              raise_s [%message "threshold too high!" (thresh : int) (max_thresh : int)]
+              raise_s
+                [%message
+                  [%string
+                    "%{tag#String} is past its maximum threshold, this suggests that \
+                     %{tag#String} is too close to capacity"]
+                    (thresh : int)
+                    (max_thresh : int)
+                    (capacity : int)]
           in
-          check_prog_thresh prog_full_thresh;
-          check_prog_thresh prog_empty_thresh
+          check_prog_thresh ~tag:"nearly_full" prog_full_thresh;
+          check_prog_thresh ~tag:"nearly_empy" prog_empty_thresh
         ;;
       end)
     in
