@@ -12,6 +12,7 @@ module Ram_arch = Ram_arch
 module Ram_port = Ram_port
 module Ram_port_with_clear = Ram_port_with_clear
 module Ram_with_resizing = Ram_with_resizing
+module Safer_uram_collision_inference = Safer_uram_collision_inference
 module Simple_dual_port_ram = Simple_dual_port_ram
 module Synthesis = Synthesis
 module True_dual_port_ram = True_dual_port_ram

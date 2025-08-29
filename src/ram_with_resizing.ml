@@ -86,9 +86,10 @@ module Make (Config : Config) = struct
     type 'a t = { q : 'a [@bits read_data_bits] } [@@deriving hardcaml]
   end
 
-  let create ?address_collision_model _scope ~build_mode (i : _ I.t) =
+  let create ?address_collision_model scope ~build_mode (i : _ I.t) =
     let ram =
       True_dual_port_ram.create
+        ~scope
         ?address_collision_model
         ~read_latency
         ~build_mode

@@ -5,7 +5,8 @@ open Base
 open Hardcaml
 
 type 'signal create =
-  ?address_collision_model:Address_collision.Model.t
+  ?scope:Scope.t
+  -> ?address_collision_model:Address_collision.Model.t
   -> ?read_latency:int (** Default is 1 *)
   -> ?arch:Ram_arch.t (** Default is [Blockram No_change] *)
   -> ?byte_write_width:Byte_write_width.t (** Default is [Full] *)

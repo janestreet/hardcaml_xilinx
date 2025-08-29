@@ -6,9 +6,17 @@ module For_deriving = struct
 end
 
 module Config = struct
+  type how_to_create_inferred_memory =
+    [ `Inlined
+    | `Hierarchical_with_keep_hierarchy
+    ]
+  [@@deriving sexp_of]
+
   type inferred_memory =
     { rtl_attributes : Rtl_attribute.t list option
     ; rw_order : [ `Wbr | `Rbw ]
+    ; tie_read_enable_to_vdd : bool
+    ; how_to_create : how_to_create_inferred_memory
     }
   [@@deriving sexp_of]
 
@@ -79,6 +87,82 @@ module Config = struct
   ;;
 end
 
+module Inferred_ram (M : sig
+    val address_width : int
+    val data_width : int
+    val tie_read_enable_to_vdd : bool
+  end) =
+struct
+  open M
+
+  module I = struct
+    type 'a t =
+      { clock : 'a
+      ; write_address : 'a [@bits address_width]
+      ; write_enable : 'a
+      ; write_data : 'a [@bits data_width]
+      ; read_address : 'a [@bits address_width]
+      ; read_enable : 'a option [@exists not tie_read_enable_to_vdd]
+      }
+    [@@deriving hardcaml]
+  end
+
+  module O = struct
+    type 'a t = { read_data : 'a [@bits data_width] } [@@deriving hardcaml]
+  end
+
+  let create
+    ~simulation_name
+    ~rw_order
+    ~rtl_attributes
+    (_ : Scope.t)
+    { I.clock; write_address; write_enable; write_data; read_address; read_enable }
+    =
+    let read_enable = Option.value ~default:Signal.vdd read_enable in
+    let create =
+      match rw_order with
+      | `Rbw -> Signal.ram_rbw
+      | `Wbr -> Signal.ram_wbr
+    in
+    let read_data =
+      create
+        ?name:simulation_name
+        ?attributes:rtl_attributes
+        ~write_port:{ write_clock = clock; write_address; write_enable; write_data }
+        ~read_port:{ read_clock = clock; read_address; read_enable }
+        (1 lsl address_width)
+    in
+    { O.read_data }
+  ;;
+
+  let hierarchical
+    ~simulation_name
+    ~rw_order
+    ~rtl_attributes
+    ~(build_mode : Build_mode.t)
+    ~(how_to_create : Config.how_to_create_inferred_memory)
+    scope
+    i
+    =
+    let module H = Hierarchy.In_scope (I) (O) in
+    let how_to_instantiate =
+      match build_mode, how_to_create with
+      | Simulation, _ | _, `Inlined -> Hierarchy.How_to_instantiate.Inlined
+      | Synthesis, `Hierarchical_with_keep_hierarchy ->
+        Hierarchy.How_to_instantiate.Hierarchical
+    in
+    (* Empirically, KEEP_HIERARCHY is necessary for ram inference to work reliably. *)
+    H.hierarchical_single_clock_domain
+      ~name:"inferred_ram"
+      ~attributes:[ Rtl_attribute.Vivado.keep_hierarchy true ]
+      ~how_to_instantiate
+      ~caller_signal_type:Signal
+      ~scope
+      (create ~simulation_name ~rw_order ~rtl_attributes)
+      i
+  ;;
+end
+
 let instantiate_underlying_memory
   ~clock
   ~clear
@@ -120,6 +204,7 @@ let instantiate_underlying_memory
       match entry.how_to_instantiate_ram with
       | Xpm arch ->
         Dual_port_ram.create
+          ~scope
           ?simulation_name
           ~address_collision_model:Counter
           ~clock
@@ -142,33 +227,37 @@ let instantiate_underlying_memory
             ; write_enable = write_enable_b
             }
           ()
-      | Inferred { rtl_attributes; rw_order } ->
-        let create =
-          match rw_order with
-          | `Rbw -> Signal.ram_rbw
-          | `Wbr -> Signal.ram_wbr
+      | Inferred { rtl_attributes; rw_order; tie_read_enable_to_vdd; how_to_create } ->
+        let module X =
+          Inferred_ram (struct
+            let address_width = Signal.width read_address_b
+            let data_width = entry.data_width
+            let tie_read_enable_to_vdd = tie_read_enable_to_vdd
+          end)
         in
-        let rdata =
-          create
-            ?name:simulation_name
-            ?attributes:rtl_attributes
-            ~write_port:
-              { write_clock = clock
-              ; write_address = address_a
-              ; write_enable = write_enable_a
-              ; write_data = write_data_a
-              }
-            ~read_port:
-              { read_clock = clock
-              ; read_address = address_b
-              ; read_enable = read_enable_b
-              }
-            (1 lsl Signal.width read_address_b)
-          |> Signal.pipeline
-               (Signal.Reg_spec.create ~clock ())
-               ~n:(config.underlying_ram_read_latency - 1)
+        let%tydi { read_data } =
+          X.hierarchical
+            ~simulation_name
+            ~rtl_attributes
+            ~rw_order
+            ~build_mode
+            ~how_to_create
+            scope
+            { clock
+            ; write_address = address_a
+            ; write_enable = write_enable_a
+            ; write_data = write_data_a
+            ; read_address = address_b
+            ; read_enable = (if tie_read_enable_to_vdd then None else Some read_enable_b)
+            }
         in
-        Signal.zero (Signal.width rdata), rdata)
+        let read_data =
+          Signal.pipeline
+            (Signal.Reg_spec.create ~clock ())
+            ~n:(config.underlying_ram_read_latency - 1)
+            read_data
+        in
+        Signal.zero (Signal.width read_data), read_data)
   in
   ( Signal.concat_msb (List.rev_map ~f:fst read_datas)
   , Signal.concat_msb (List.rev_map ~f:snd read_datas) )

@@ -3,6 +3,7 @@ open Hardcaml
 open Signal
 
 let create
+  ?scope
   ?(address_collision_protection = Address_collision.Protection.None__there_be_dragons)
   ?(address_collision_model = Address_collision.Model.None__there_be_dragons)
   ?(read_latency = 1)
@@ -25,6 +26,7 @@ let create
   assert (read_latency >= 1);
   let create ~port_a ~port_b =
     Dual_port_ram.create
+      ?scope
       ~address_collision_model:
         (match build_mode with
          | Simulation -> address_collision_model
@@ -57,7 +59,7 @@ let create
   let address_collision = write_address ==: read_address in
   let address_collision_reg = pipeline spec ~n:read_latency address_collision in
   match arch, address_collision_protection with
-  | (Distributed | Ultraram | Blockram Read_before_write), _ | _, None__there_be_dragons
+  | (Distributed | Ultraram _ | Blockram Read_before_write), _ | _, None__there_be_dragons
     ->
     let _, q =
       create

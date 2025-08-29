@@ -9,6 +9,7 @@ let circuit
   ?(data_width_b = 8)
   ?(byte_enables = false)
   ?size
+  ?scope
   arch
   build_mode
   =
@@ -36,6 +37,7 @@ let circuit
   in
   let qa, qb =
     True_dual_port_ram.create
+      ?scope
       ~memory_optimization:false
       ~cascade_height:Inferred
       ~byte_write_width
@@ -62,7 +64,9 @@ let print_verilog
   arch
   build_mode
   =
+  let scope = Scope.create () in
   Rtl.print
+    ~database:(Scope.circuit_database scope)
     Verilog
     (circuit
        ?address_width_a
@@ -70,6 +74,7 @@ let print_verilog
        ?address_width_b
        ?data_width_b
        ?size
+       ~scope
        arch
        build_mode)
 ;;
@@ -295,7 +300,7 @@ let%expect_test "True_dual_port_ram" =
 
     endmodule
     |}];
-  print_verilog Ultraram Synthesis;
+  print_verilog (Ultraram Let_vivado_decide) Synthesis;
   [%expect
     {|
     module true_dual_port_ram (
@@ -374,6 +379,281 @@ let%expect_test "True_dual_port_ram" =
                .WRITE_MODE_B("no_change"),
                .RST_MODE_B("SYNC") )
             the_xpm_memory_tdpram
+            ( .sleep(gnd),
+              .clka(clock_a),
+              .rsta(clear_a),
+              .ena(_16),
+              .regcea(vdd),
+              .wea(write_a),
+              .addra(address_a),
+              .dina(data_a),
+              .injectsbiterra(gnd),
+              .injectdbiterra(gnd),
+              .clkb(clock_b),
+              .rstb(clear_b),
+              .enb(_18),
+              .regceb(vdd),
+              .web(write_b),
+              .addrb(address_b),
+              .dinb(data_b),
+              .injectsbiterrb(gnd),
+              .injectdbiterrb(gnd),
+              .douta(_19[7:0]),
+              .sbiterra(_19[8:8]),
+              .dbiterra(_19[9:9]),
+              .doutb(_19[17:10]),
+              .sbiterrb(_19[18:18]),
+              .dbiterrb(_19[19:19]) );
+        assign _21 = _19[7:0];
+        assign qa = _21;
+        assign qb = _20;
+
+    endmodule
+    |}];
+  print_verilog (Ultraram Wrap_in_module_with_keep_directives) Synthesis;
+  [%expect
+    {|
+    module xpm_tdpram_wrapper (
+        injectdbiterrb,
+        injectsbiterrb,
+        dinb,
+        addrb,
+        web,
+        regceb,
+        enb,
+        rstb,
+        clkb,
+        injectdbiterra,
+        injectsbiterra,
+        dina,
+        addra,
+        wea,
+        regcea,
+        ena,
+        rsta,
+        clka,
+        sleep,
+        douta,
+        sbiterra,
+        dbiterra,
+        doutb,
+        sbiterrb,
+        dbiterrb
+    );
+
+        input injectdbiterrb;
+        input injectsbiterrb;
+        input [7:0] dinb;
+        input [3:0] addrb;
+        input web;
+        input regceb;
+        input enb;
+        input rstb;
+        input clkb;
+        input injectdbiterra;
+        input injectsbiterra;
+        input [7:0] dina;
+        input [3:0] addra;
+        input wea;
+        input regcea;
+        input ena;
+        input rsta;
+        input clka;
+        input sleep;
+        output [7:0] douta;
+        output sbiterra;
+        output dbiterra;
+        output [7:0] doutb;
+        output sbiterrb;
+        output dbiterrb;
+
+        (* keep="TRUE" *)
+        wire _46;
+        (* keep="TRUE" *)
+        wire _47;
+        (* keep="TRUE" *)
+        wire [7:0] _48;
+        (* keep="TRUE" *)
+        wire _49;
+        (* keep="TRUE" *)
+        wire _50;
+        (* keep="TRUE" *)
+        wire _7;
+        (* keep="TRUE" *)
+        wire _9;
+        (* keep="TRUE" *)
+        wire [7:0] _11;
+        (* keep="TRUE" *)
+        wire [3:0] _13;
+        (* keep="TRUE" *)
+        wire _15;
+        (* keep="TRUE" *)
+        wire _17;
+        (* keep="TRUE" *)
+        wire _19;
+        (* keep="TRUE" *)
+        wire _21;
+        (* keep="TRUE" *)
+        wire _23;
+        (* keep="TRUE" *)
+        wire _25;
+        (* keep="TRUE" *)
+        wire _27;
+        (* keep="TRUE" *)
+        wire [7:0] _29;
+        (* keep="TRUE" *)
+        wire [3:0] _31;
+        (* keep="TRUE" *)
+        wire _33;
+        (* keep="TRUE" *)
+        wire _35;
+        (* keep="TRUE" *)
+        wire _37;
+        (* keep="TRUE" *)
+        wire _39;
+        (* keep="TRUE" *)
+        wire _41;
+        (* keep="TRUE" *)
+        wire _43;
+        wire [19:0] _45;
+        (* keep="TRUE" *)
+        wire [7:0] _51;
+        assign _46 = _45[19:19];
+        assign _47 = _45[18:18];
+        assign _48 = _45[17:10];
+        assign _49 = _45[9:9];
+        assign _50 = _45[8:8];
+        assign _7 = injectdbiterrb;
+        assign _9 = injectsbiterrb;
+        assign _11 = dinb;
+        assign _13 = addrb;
+        assign _15 = web;
+        assign _17 = regceb;
+        assign _19 = enb;
+        assign _21 = rstb;
+        assign _23 = clkb;
+        assign _25 = injectdbiterra;
+        assign _27 = injectsbiterra;
+        assign _29 = dina;
+        assign _31 = addra;
+        assign _33 = wea;
+        assign _35 = regcea;
+        assign _37 = ena;
+        assign _39 = rsta;
+        assign _41 = clka;
+        assign _43 = sleep;
+        xpm_memory_tdpram
+            #( .MEMORY_SIZE(128),
+               .MEMORY_PRIMITIVE("ultra"),
+               .CLOCKING_MODE("independent_clock"),
+               .ECC_MODE("no_ecc"),
+               .MEMORY_INIT_FILE("none"),
+               .MEMORY_INIT_PARAM(""),
+               .USE_MEM_INIT(0),
+               .WAKEUP_TIME("disable_sleep"),
+               .AUTO_SLEEP_TIME(0),
+               .MESSAGE_CONTROL(0),
+               .USE_EMBEDDED_CONSTRAINT(0),
+               .MEMORY_OPTIMIZATION("false"),
+               .CASCADE_HEIGHT(0),
+               .SIM_ASSERT_CHK(0),
+               .WRITE_DATA_WIDTH_A(8),
+               .READ_DATA_WIDTH_A(8),
+               .BYTE_WRITE_WIDTH_A(8),
+               .ADDR_WIDTH_A(4),
+               .READ_RESET_VALUE_A("0"),
+               .READ_LATENCY_A(1),
+               .WRITE_MODE_A("no_change"),
+               .RST_MODE_A("SYNC"),
+               .WRITE_DATA_WIDTH_B(8),
+               .READ_DATA_WIDTH_B(8),
+               .BYTE_WRITE_WIDTH_B(8),
+               .ADDR_WIDTH_B(4),
+               .READ_RESET_VALUE_B("0"),
+               .READ_LATENCY_B(1),
+               .WRITE_MODE_B("no_change"),
+               .RST_MODE_B("SYNC") )
+            the_xpm_memory_tdpram
+            ( .sleep(_43),
+              .clka(_41),
+              .rsta(_39),
+              .ena(_37),
+              .regcea(_35),
+              .wea(_33),
+              .addra(_31),
+              .dina(_29),
+              .injectsbiterra(_27),
+              .injectdbiterra(_25),
+              .clkb(_23),
+              .rstb(_21),
+              .enb(_19),
+              .regceb(_17),
+              .web(_15),
+              .addrb(_13),
+              .dinb(_11),
+              .injectsbiterrb(_9),
+              .injectdbiterrb(_7),
+              .douta(_45[7:0]),
+              .sbiterra(_45[8:8]),
+              .dbiterra(_45[9:9]),
+              .doutb(_45[17:10]),
+              .sbiterrb(_45[18:18]),
+              .dbiterrb(_45[19:19]) );
+        assign _51 = _45[7:0];
+        assign douta = _51;
+        assign sbiterra = _50;
+        assign dbiterra = _49;
+        assign doutb = _48;
+        assign sbiterrb = _47;
+        assign dbiterrb = _46;
+
+    endmodule
+    module true_dual_port_ram (
+        data_b,
+        address_b,
+        read_b,
+        write_b,
+        clear_b,
+        clock_b,
+        data_a,
+        address_a,
+        read_a,
+        write_a,
+        clear_a,
+        clock_a,
+        qa,
+        qb
+    );
+
+        input [7:0] data_b;
+        input [3:0] address_b;
+        input read_b;
+        input write_b;
+        input clear_b;
+        input clock_b;
+        input [7:0] data_a;
+        input [3:0] address_a;
+        input read_a;
+        input write_a;
+        input clear_a;
+        input clock_a;
+        output [7:0] qa;
+        output [7:0] qb;
+
+        wire [7:0] _20;
+        wire _18;
+        wire vdd;
+        wire _16;
+        wire gnd;
+        wire [19:0] _19;
+        wire [7:0] _21;
+        assign _20 = _19[17:10];
+        assign _18 = write_b | read_b;
+        assign vdd = 1'b1;
+        assign _16 = write_a | read_a;
+        assign gnd = 1'b0;
+        xpm_tdpram_wrapper
+            xpm_tdpram_wrapper
             ( .sleep(gnd),
               .clka(clock_a),
               .rsta(clear_a),
@@ -613,10 +893,10 @@ let%expect_test "Elaborate Dual_port_ram in synthesis and simulation modes." =
   in
   require_does_not_raise (fun () -> create Distributed Synthesis);
   require_does_not_raise (fun () -> create (Blockram No_change) Synthesis);
-  require_does_not_raise (fun () -> create Ultraram Synthesis);
+  require_does_not_raise (fun () -> create (Ultraram Let_vivado_decide) Synthesis);
   require_does_not_raise (fun () -> create Distributed Simulation);
   require_does_not_raise (fun () -> create (Blockram Write_before_read) Simulation);
-  require_does_not_raise (fun () -> create Ultraram Simulation);
+  require_does_not_raise (fun () -> create (Ultraram Let_vivado_decide) Simulation);
   [%expect {| |}]
 ;;
 
@@ -648,10 +928,10 @@ let%expect_test "Elaborate Simple_dual_port_ram in synthesis and simulation mode
   in
   require_does_not_raise (fun () -> create Distributed Synthesis);
   require_does_not_raise (fun () -> create (Blockram Read_before_write) Synthesis);
-  require_does_not_raise (fun () -> create Ultraram Synthesis);
+  require_does_not_raise (fun () -> create (Ultraram Let_vivado_decide) Synthesis);
   require_does_not_raise (fun () -> create Distributed Simulation);
   require_does_not_raise (fun () -> create (Blockram No_change) Simulation);
-  require_does_not_raise (fun () -> create Ultraram Simulation);
+  require_does_not_raise (fun () -> create (Ultraram Let_vivado_decide) Simulation);
   [%expect {| |}]
 ;;
 

@@ -62,7 +62,7 @@ let create_rams ~build_mode ~clock ~clear ~port_a ~port_b =
   ; O_rams.brw = create_ram ~arch:(Blockram Read_before_write)
   ; O_rams.bwr = create_ram ~arch:(Blockram Write_before_read)
   ; O_rams.bnc = create_ram ~arch:(Blockram No_change)
-  ; O_rams.unc = create_ram ~arch:Ultraram
+  ; O_rams.unc = create_ram ~arch:(Ultraram Let_vivado_decide)
   }
 ;;
 

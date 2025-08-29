@@ -51,7 +51,7 @@ let collision_mode (arch : Ram_arch.t) : Collision_mode.t =
   match arch with
   | Distributed -> Read_before_write
   | Blockram mode -> mode
-  | Ultraram -> No_change
+  | Ultraram _ -> No_change
 ;;
 
 module Size_calculations = struct
@@ -82,6 +82,7 @@ module Size_calculations = struct
 end
 
 let create_xpm
+  ?scope
   ~read_latency
   ~arch
   ~clock_a
@@ -95,6 +96,7 @@ let create_xpm
   ~cascade_height:arg_cascade_height
   ~memory_optimization:arg_memory_optimization
   ~clocking_mode:arg_clocking_mode
+  ()
   =
   let byte_write_width (port : _ Ram_port.t) =
     match byte_write_width with
@@ -161,7 +163,20 @@ let create_xpm
     | n -> pipeline spec ~enable:vdd ~n:(n - 1) en
   in
   let ram : _ RAM.O.t =
-    RAM.create
+    let module Hier = Hierarchy.In_scope (RAM.I) (RAM.O) in
+    let ram_create_wrapper =
+      match arch, scope with
+      | Ultraram Wrap_in_module_with_keep_directives, Some scope ->
+        let keep s = add_attribute s (Rtl_attribute.Vivado.keep true) in
+        Hier.hierarchical ~name:"xpm_tdpram_wrapper" ~scope (fun _ i ->
+          RAM.create (RAM.I.map i ~f:keep) |> RAM.O.map ~f:keep)
+      | Ultraram Wrap_in_module_with_keep_directives, None ->
+        raise_s
+          [%message
+            "You must provide a scope for [Ultraram Wrap_in_module_with_keep_directives]"]
+      | _ -> fun i -> RAM.create i
+    in
+    ram_create_wrapper
       { RAM.I.clka (* Port A *) = clock_a
       ; rsta = clear_a
       ; regcea = regce clock_a port_a.read_enable
@@ -225,7 +240,7 @@ let create_base_rtl_ram
   let reg_b = reg clock_b (read_enable port_b) in
   let f_read_address, f_q =
     match arch with
-    | Ultraram -> [| Fn.id; reg_b |], [| reg_a; Fn.id |]
+    | Ultraram _ -> [| Fn.id; reg_b |], [| reg_a; Fn.id |]
     | Distributed | Blockram (Read_before_write | No_change) ->
       [| Fn.id; Fn.id |], [| reg_a; reg_b |]
     | Blockram Write_before_read -> [| reg_a; reg_b |], [| Fn.id; Fn.id |]
@@ -246,7 +261,7 @@ let create_base_rtl_ram
                (match arch with
                 | Distributed -> gnd
                 (* Distributed RAM will not write on port B. *)
-                | Blockram _ | Ultraram -> port_b.write_enable)
+                | Blockram _ | Ultraram _ -> port_b.write_enable)
            ; write_address = port_b.address
            ; write_data = port_b.data
            }
@@ -273,7 +288,7 @@ let resolve_address_collision_model
   | Common_clock ->
     (match arch with
      | Blockram (No_change | Write_before_read) -> address_collision_model
-     | Blockram Read_before_write | Distributed | Ultraram -> None__there_be_dragons)
+     | Blockram Read_before_write | Distributed | Ultraram _ -> None__there_be_dragons)
 ;;
 
 let model_common_clock_address_collisions
@@ -450,6 +465,7 @@ let create_rtl
 ;;
 
 let create
+  ?scope
   ?(address_collision_model = Address_collision.Model.None__there_be_dragons)
   ?(read_latency = 1)
   ?(arch = Ram_arch.Blockram No_change)
@@ -494,6 +510,7 @@ let create
       ~port_b
   | Synthesis ->
     create_xpm
+      ?scope
       ~read_latency
       ~arch
       ~byte_write_width
@@ -507,10 +524,12 @@ let create
       ~size
       ~port_a
       ~port_b
+      ()
 ;;
 
 module Clocked = struct
   let create
+    ?scope
     ?address_collision_model
     ?read_latency
     ?arch
@@ -533,6 +552,7 @@ module Clocked = struct
     let dom_b = Clocked_signal.get_domain clock_b in
     let qa, qb =
       create
+        ?scope
         ?address_collision_model
         ?read_latency
         ?arch
