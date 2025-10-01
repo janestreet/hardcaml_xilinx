@@ -152,7 +152,7 @@ module Xpm_memory_tdpram = struct
         ; injectsbiterrb : 'a [@bits 1] [@rtlname "injectsbiterrb"]
         ; injectdbiterrb : 'a [@bits 1] [@rtlname "injectdbiterrb"]
         }
-      [@@deriving hardcaml]
+      [@@deriving hardcaml ~rtlmangle:false]
     end
 
     module O = struct
@@ -164,7 +164,7 @@ module Xpm_memory_tdpram = struct
         ; sbiterrb : 'a [@bits 1] [@rtlname "sbiterrb"]
         ; dbiterrb : 'a [@bits 1] [@rtlname "dbiterrb"]
         }
-      [@@deriving hardcaml]
+      [@@deriving hardcaml ~rtlmangle:false]
     end
 
     module T = Hardcaml.Interface.Empty
@@ -280,7 +280,7 @@ module Xpm_fifo_async = struct
         ; injectsbiterr : 'a [@bits 1] [@rtlname "injectsbiterr"]
         ; injectdbiterr : 'a [@bits 1] [@rtlname "injectdbiterr"]
         }
-      [@@deriving hardcaml]
+      [@@deriving hardcaml ~rtlmangle:false]
     end
 
     module O = struct
@@ -305,7 +305,7 @@ module Xpm_fifo_async = struct
         ; sbiterr : 'a [@bits 1] [@rtlname "sbiterr"]
         ; dbiterr : 'a [@bits 1] [@rtlname "dbiterr"]
         }
-      [@@deriving hardcaml]
+      [@@deriving hardcaml ~rtlmangle:false]
     end
 
     module T = Hardcaml.Interface.Empty
@@ -414,7 +414,7 @@ module Xpm_fifo_sync = struct
         ; injectsbiterr : 'a [@bits 1] [@rtlname "injectsbiterr"]
         ; injectdbiterr : 'a [@bits 1] [@rtlname "injectdbiterr"]
         }
-      [@@deriving hardcaml]
+      [@@deriving hardcaml ~rtlmangle:false]
     end
 
     module O = struct
@@ -439,7 +439,7 @@ module Xpm_fifo_sync = struct
         ; sbiterr : 'a [@bits 1] [@rtlname "sbiterr"]
         ; dbiterr : 'a [@bits 1] [@rtlname "dbiterr"]
         }
-      [@@deriving hardcaml]
+      [@@deriving hardcaml ~rtlmangle:false]
     end
 
     module T = Hardcaml.Interface.Empty

@@ -14,22 +14,22 @@ end
 let memory_config =
   { Memory_builder.Config.underlying_memories =
       [ { data_width = 7
-        ; how_to_instantiate_ram = Xpm Ultraram
+        ; how_to_instantiate_ram = Xpm (Ultraram Let_vivado_decide)
         ; cascade_height = Specified 1
         ; simulation_name = None
         }
       ; { data_width = 7
-        ; how_to_instantiate_ram = Xpm Ultraram
+        ; how_to_instantiate_ram = Xpm (Ultraram Let_vivado_decide)
         ; cascade_height = Specified 1
         ; simulation_name = None
         }
       ; { data_width = 3
-        ; how_to_instantiate_ram = Xpm Ultraram
+        ; how_to_instantiate_ram = Xpm (Ultraram Let_vivado_decide)
         ; cascade_height = Specified 1
         ; simulation_name = None
         }
       ; { data_width = 15
-        ; how_to_instantiate_ram = Xpm Ultraram
+        ; how_to_instantiate_ram = Xpm (Ultraram Let_vivado_decide)
         ; cascade_height = Specified 1
         ; simulation_name = None
         }
@@ -52,11 +52,12 @@ module I = struct
     ; write_port : 'a Write_port.t [@rtlprefix "wr_"]
     ; read_port : 'a Read_port.t [@rtlprefix "rd_"]
     }
-  [@@deriving hardcaml]
+  [@@deriving hardcaml ~rtlmangle:false]
 end
 
 module O = struct
-  type 'a t = { read_data : 'a Data.t [@rtlprefix "rd_"] } [@@deriving hardcaml]
+  type 'a t = { read_data : 'a Data.t [@rtlprefix "rd_"] }
+  [@@deriving hardcaml ~rtlmangle:false]
 end
 
 let create scope (i : _ I.t) =

@@ -31,11 +31,12 @@ module Make (The_config : Memory_builder.Config.S) = struct
       ; write_port : 'a Write_port.t [@rtlprefix "wr_"]
       ; read_port : 'a Read_port.t [@rtlprefix "rd_"]
       }
-    [@@deriving hardcaml]
+    [@@deriving hardcaml ~rtlmangle:false]
   end
 
   module O = struct
-    type 'a t = { read_data : 'a Data.t [@rtlprefix "rd_"] } [@@deriving hardcaml]
+    type 'a t = { read_data : 'a Data.t [@rtlprefix "rd_"] }
+    [@@deriving hardcaml ~rtlmangle:false]
   end
 
   let create scope (i : _ I.t) =
@@ -85,7 +86,7 @@ end
 module%test [@name "a single ultraram"] _ = struct
   let memory_config =
     Memory_builder.Config.create_simple_1d_config
-      ~how_to_instantiate_ram:(Xpm Ultraram)
+      ~how_to_instantiate_ram:(Xpm (Ultraram Let_vivado_decide))
       ~depth:256
       ~num_bits_per_entry:Data.num_bits
       ~ram_read_latency:1
@@ -132,17 +133,17 @@ module%test [@name "3 single ultraram"] _ = struct
   let memory_config =
     { Memory_builder.Config.underlying_memories =
         [ { data_width = 7
-          ; how_to_instantiate_ram = Xpm Ultraram
+          ; how_to_instantiate_ram = Xpm (Ultraram Let_vivado_decide)
           ; cascade_height = Specified 1
           ; simulation_name = None
           }
         ; { data_width = 7
-          ; how_to_instantiate_ram = Xpm Ultraram
+          ; how_to_instantiate_ram = Xpm (Ultraram Let_vivado_decide)
           ; cascade_height = Specified 1
           ; simulation_name = None
           }
         ; { data_width = 2
-          ; how_to_instantiate_ram = Xpm Ultraram
+          ; how_to_instantiate_ram = Xpm (Ultraram Let_vivado_decide)
           ; cascade_height = Specified 1
           ; simulation_name = None
           }

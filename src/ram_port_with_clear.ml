@@ -5,13 +5,13 @@ type 'a t =
   { port : 'a Ram_port.t
   ; clear_busy : 'a
   }
-[@@deriving hardcaml]
+[@@deriving hardcaml ~rtlmangle:false]
 
 module State = struct
   type t =
     | Clear
     | Done
-  [@@deriving sexp_of, enumerate, compare]
+  [@@deriving sexp_of, enumerate, compare ~localize]
 end
 
 let create ~scope ~clear_to ~clear ~clock ~size ~(port : _ Ram_port.t) =

@@ -41,7 +41,7 @@ let create_circuit
       ~memory_optimization:false
       ~cascade_height:Inferred
       ~read_latency
-      ~arch:Ultraram
+      ~arch:(Ultraram Let_vivado_decide)
       ~build_mode:Simulation
       ()
       ~clock_a:(Signal.input "clock_a" 1)

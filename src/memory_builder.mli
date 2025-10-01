@@ -13,9 +13,17 @@ end
 (** Configuration for the memory builder. See documentation below for elaboration about
     the purpose of configuration fields. *)
 module Config : sig
+  type how_to_create_inferred_memory =
+    [ `Inlined
+    | `Hierarchical_with_keep_hierarchy
+    ]
+  [@@deriving sexp_of]
+
   type inferred_memory =
     { rtl_attributes : Rtl_attribute.t list option
     ; rw_order : [ `Wbr | `Rbw ]
+    ; tie_read_enable_to_vdd : bool
+    ; how_to_create : how_to_create_inferred_memory
     }
   [@@deriving sexp_of]
 
@@ -74,7 +82,7 @@ module Port_label : sig
   type t =
     | A
     | B
-  [@@deriving sexp_of, compare, enumerate]
+  [@@deriving sexp_of, compare ~localize, enumerate]
 end
 
 module Create (M : Hardcaml.Interface.S) : sig

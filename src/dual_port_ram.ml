@@ -2,6 +2,7 @@ open! Base
 open! Hardcaml
 
 let create
+  ?scope
   ?address_collision_model
   ?read_latency
   ?arch
@@ -18,6 +19,7 @@ let create
   ~port_b
   =
   True_dual_port_ram.create
+    ?scope
     ?address_collision_model
     ?read_latency
     ?arch
