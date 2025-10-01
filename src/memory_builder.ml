@@ -368,7 +368,7 @@ module Write_port_1d = struct
     ; enable : 'a
     ; data : 'write_data
     }
-  [@@deriving equal ~localize, sexp_of]
+  [@@deriving equal ~localize, compare ~localize, sexp_of]
 
   let and_enable ~with_ t =
     let open Signal in
@@ -392,7 +392,7 @@ module Write_port_1d = struct
     end
 
     module Pre = struct
-      type nonrec 'a t = ('a, 'a M.t) t [@@deriving equal ~localize]
+      type nonrec 'a t = ('a, 'a M.t) t [@@deriving equal ~localize, compare ~localize]
 
       let to_repr t : _ Repr.t =
         { Repr.address = t.address; enable = t.enable; data = t.data }
@@ -428,9 +428,7 @@ module Write_port_1d = struct
     module type S = S with type 'a write_data := 'a M.t
   end
 
-  let sexp_of_m__t (module _ : For_deriving.Sexp_of_m) sexp_of_a t =
-    [%sexp_of: (a, _) t] t
-  ;;
+  let sexp_of_m__t _ sexp_of_a t = [%sexp_of: (a, _) t] t
 end
 
 module Write_port_2d = struct
@@ -439,7 +437,7 @@ module Write_port_2d = struct
     ; enable : 'a
     ; data : 'write_data list
     }
-  [@@deriving equal ~localize, sexp_of]
+  [@@deriving equal ~localize, compare ~localize, sexp_of]
 
   let map (t : _ t) ~f_write_data ~f =
     { vertical_index = f t.vertical_index
@@ -470,7 +468,7 @@ module Write_port_2d = struct
     end
 
     module Pre = struct
-      type nonrec 'a t = ('a, 'a M.t) t [@@deriving equal ~localize]
+      type nonrec 'a t = ('a, 'a M.t) t [@@deriving equal ~localize, compare ~localize]
 
       let to_repr t : _ Repr.t =
         { Repr.vertical_index = t.vertical_index; enable = t.enable; data = t.data }
@@ -507,9 +505,7 @@ module Write_port_2d = struct
     module type S = S with type 'a write_data := 'a M.t
   end
 
-  let sexp_of_m__t (module _ : For_deriving.Sexp_of_m) sexp_of_a t =
-    [%sexp_of: (a, _) t] t
-  ;;
+  let sexp_of_m__t _ sexp_of_a t = [%sexp_of: (a, _) t] t
 end
 
 module Component (M : Hardcaml.Interface.S) (The_config : Config.S) = struct
