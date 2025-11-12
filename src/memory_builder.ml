@@ -489,6 +489,8 @@ module Write_port_2d = struct
 
     include Pre
     include Interface.Make (Pre)
+
+    let wave_formats = of_repr Repr.wave_formats
   end
 
   module Specialize_with_config (M : Hardcaml.Interface.S) (X : Config.S) =

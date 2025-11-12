@@ -93,11 +93,11 @@ module Hardcaml_sequential_primitives = struct
   open Signal
 
   let fdce c ce clr d =
-    reg (Reg_spec.create () ~clock:c ~reset:clr) ~reset_to:gnd ~enable:ce d
+    reg (Reg_spec.create () ~clock:c ~reset:clr) ~reset_to:Bits.gnd ~enable:ce d
   ;;
 
   let fdpe c ce pre d =
-    reg (Reg_spec.create () ~clock:c ~reset:pre) ~reset_to:vdd ~enable:ce d
+    reg (Reg_spec.create () ~clock:c ~reset:pre) ~reset_to:Bits.vdd ~enable:ce d
   ;;
 
   let ram1s a d clk we =
