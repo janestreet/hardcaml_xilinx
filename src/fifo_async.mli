@@ -15,7 +15,7 @@ open Hardcaml
     In simulation mode, the write clock is ignored and the FIFO is effectively
     synchronous. *)
 val create
-  :  ?showahead:bool (** default is [false] **)
+  :  ?showahead:bool (** default is [false] *)
   -> ?build_mode:Build_mode.t (* default is [Synthesis] *)
   -> ?fifo_memory_type:Fifo_memory_type.t
        (** See [Xpm_fifo_async] parameters in [xpm.ml] for default. *)

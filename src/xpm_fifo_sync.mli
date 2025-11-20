@@ -10,7 +10,7 @@ module Xpm_2019_1 : sig
       implementations, however, relative to the data, they are the consistent. *)
   val create
     :  ?overflow_check:bool (** default is [true] *)
-    -> ?showahead:bool (** default is [false] **)
+    -> ?showahead:bool (** default is [false] *)
     -> ?underflow_check:bool (** default is [true] *)
     -> ?fifo_memory_type:Fifo_memory_type.t
          (** See [Xpm_fifo_sync] parameters in [xpm.ml] for default. *)
@@ -38,7 +38,7 @@ module Xpm_2022_1 : sig
       set the cascade height Vivado uses to synthesize the FIFO. *)
   val create
     :  ?overflow_check:bool (** default is [true] *)
-    -> ?showahead:bool (** default is [false] **)
+    -> ?showahead:bool (** default is [false] *)
     -> ?underflow_check:bool (** default is [true] *)
     -> ?fifo_memory_type:Fifo_memory_type.t
          (** See [Xpm_fifo_sync] parameters in [xpm.ml] for default. *)

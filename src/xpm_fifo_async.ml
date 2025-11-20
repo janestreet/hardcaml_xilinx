@@ -45,9 +45,9 @@ let create
       let prog_full_thresh = Option.value nearly_full ~default:(capacity - 16)
       let prog_empty_thresh = nearly_empty
 
-      (* There are limitations on the range for [prog_*_thresh], see docs for details.
-         The checks are slightly simplified because write_data_width = read_data_width
-         for our configuration. *)
+      (* There are limitations on the range for [prog_*_thresh], see docs for details. The
+         checks are slightly simplified because write_data_width = read_data_width for our
+         configuration. *)
       let () =
         let read_mode_val = if String.equal read_mode "std" then 0 else 1 in
         let empty_min_thresh = 3 + (read_mode_val * 2) in

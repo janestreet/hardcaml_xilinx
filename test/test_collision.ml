@@ -276,7 +276,7 @@ let%expect_test "address collision across ports for basic RTL models" =
    models. Roughly speaking once the test is initialized it should always be all ones.
    There are two cases where it is not:
 
-   - Blockram cross port writes lead to X's.  We cannot model these in hardcaml currently.
+   - Blockram cross port writes lead to X's. We cannot model these in hardcaml currently.
    - Ultrarams use a 1ps delay on the B-port. Every time the b port changes there is a
      brief glitch compared to the hardcaml model.
 *)
@@ -318,7 +318,7 @@ let%expect_test "Vivado XSIM testbench model" =
     ~display_width:90
     ~display_rules:Display_rules.[ clock; port_a; port_b ]
     waves;
-  (* BE VERY WARY OF CHANGES TO THIS WAVEFORM.  *)
+  (* BE VERY WARY OF CHANGES TO THIS WAVEFORM. *)
   [%expect
     {|
     ┌Signals───────────┐┌Waves───────────────────────────────────────────────────────────────┐

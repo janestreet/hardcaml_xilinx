@@ -87,7 +87,7 @@ let test (sim : Sim.t) =
 ;;
 
 (* In the following tests, we are interested in the very last output on [q] where we force
-   an address collsion.  We use [666] to display a collision. *)
+   an address collsion. We use [666] to display a collision. *)
 
 let print waves =
   Waveform.print

@@ -20,12 +20,12 @@ end
 (** What to output when there is an address collision *)
 module Model : sig
   type t =
-    | None__there_be_dragons (** Do nothing **)
-    | Const of int (** Drive the output port to a constant value **)
-    | Counter (** Output a free running counter **)
+    | None__there_be_dragons (** Do nothing *)
+    | Const of int (** Drive the output port to a constant value *)
+    | Counter (** Output a free running counter *)
     | Graycode
     (** Output a free running gray code counter (possibly looks a little more random than
-        a straight up counter) **)
+        a straight up counter) *)
     | Lfsr
     (** Output a free running LFSR -- see implementation for details -- it's roughly
         random *)
