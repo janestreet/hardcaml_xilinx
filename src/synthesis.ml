@@ -93,11 +93,11 @@ module Hardcaml_sequential_primitives = struct
   open Signal
 
   let fdce c ce clr d =
-    reg (Reg_spec.create () ~clock:c ~reset:clr) ~reset_to:gnd ~enable:ce d
+    reg (Reg_spec.create () ~clock:c ~reset:clr) ~reset_to:Bits.gnd ~enable:ce d
   ;;
 
   let fdpe c ce pre d =
-    reg (Reg_spec.create () ~clock:c ~reset:pre) ~reset_to:vdd ~enable:ce d
+    reg (Reg_spec.create () ~clock:c ~reset:pre) ~reset_to:Bits.vdd ~enable:ce d
   ;;
 
   let ram1s a d clk we =
@@ -470,7 +470,7 @@ struct
     | _ -> []
   ;;
 
-  (* This assumes that all arch's have muxf5/6/7/8, but they dont.  V5 seems to only have
+  (* This assumes that all arch's have muxf5/6/7/8, but they dont. V5 seems to only have
      muxf7/8 ??? *)
   let x_mux_bit s d =
     let l_max, l_off = if max_lut >= 6 then 6, 2 else 5, 1 in

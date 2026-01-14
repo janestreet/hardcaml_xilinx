@@ -57,7 +57,7 @@ let%expect_test "Rtl" =
         output nearly_empty;
         output [4:0] used;
 
-        wire vdd;
+        wire _31;
         wire [4:0] _21;
         wire _29;
         wire _30;
@@ -110,13 +110,13 @@ let%expect_test "Rtl" =
         wire [3:0] _19;
         wire [31:0] _67;
         reg [31:0] _68;
-        assign vdd = 1'b1;
+        assign _31 = 1'b1;
         assign _21 = 5'b00011;
         assign _29 = _21 < USED_NEXT;
         assign _30 = ~ _29;
         always @(posedge clock) begin
             if (clear)
-                nearly_empty_0 <= vdd;
+                nearly_empty_0 <= _31;
             else
                 if (_26)
                     nearly_empty_0 <= _30;

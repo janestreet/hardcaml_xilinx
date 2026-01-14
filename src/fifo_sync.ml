@@ -6,7 +6,7 @@ type 'signal create =
     (** Default is None which will either set [read_latency] to 0 or 1 if [showahead] is
         true or false respectively. *)
   -> ?overflow_check:bool (** default is [true] *)
-  -> ?showahead:bool (** default is [false] **)
+  -> ?showahead:bool (** default is [false] *)
   -> ?underflow_check:bool (** default is [true] *)
   -> ?build_mode:Build_mode.t (** default is [Synthesis] *)
   -> ?scope:Scope.t

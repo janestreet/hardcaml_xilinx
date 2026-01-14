@@ -266,6 +266,8 @@ module Read_port_2d : sig
     }
   [@@deriving sexp_of]
 
+  module type S = Hardcaml.Interface.S with type 'a t = 'a t
+
   module Specialize_with_config (_ : Config.S) :
     Hardcaml.Interface.S with type 'a t = 'a t
 end

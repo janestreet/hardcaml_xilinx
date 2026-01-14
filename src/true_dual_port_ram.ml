@@ -5,7 +5,7 @@ module Tdpram = Xpm_2019_1.Xpm_memory_tdpram
 
 type 'signal create = 'signal True_dual_port_ram_intf.create
 
-(* Block RAM - address collision behaviour.  UG573, table 1-3, common clocks.
+(*=Block RAM - address collision behaviour.  UG573, table 1-3, common clocks.
 
    For a given mode on port a and b, and read/write enables on each port, what is the
    resulting value on the data out ports, and stored in memory?

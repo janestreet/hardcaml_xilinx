@@ -331,12 +331,9 @@ module Read_port_2d = struct
     [@@deriving hardcaml]
   end
 
-  type 'a t = 'a Pre.t =
-    { horizontal_index : 'a
-    ; vertical_index : 'a
-    ; enable : 'a
-    }
-  [@@deriving sexp_of]
+  include Pre
+
+  module type S = Hardcaml.Interface.S with type 'a t = 'a t
 
   module Specialize_with_config (The_config : Config.S) = struct
     let config = The_config.t

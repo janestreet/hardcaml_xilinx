@@ -61,7 +61,7 @@ module Test_xilinx_primitives (Lut_size : Lut_size) = struct
           if not (Bits.equal bits xilinx)
           then raise_s [%message (bits : Bits.t) (xilinx : Bits.t)])
     in
-    (* Mulitplication is a large circuit and takes time to compute.  Limit the test length. *)
+    (* Mulitplication is a large circuit and takes time to compute. Limit the test length. *)
     let num_tests = 1000 in
     binop_different_arg_width ~num_tests ~f_bits:Bits.( *: ) ~f_xilinx:X.x_mulu;
     binop_different_arg_width ~num_tests ~f_bits:Bits.( *+ ) ~f_xilinx:X.x_muls
