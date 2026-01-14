@@ -107,18 +107,8 @@ let create_circuit () =
 
 module Display_rules = struct
   let clock = Display_rule.port_name_is "clock" ~wave_format:Bit
-
-  let port_a =
-    Display_rule.port_name_matches
-      Re.Posix.(compile (re ".*_a$"))
-      ~wave_format:(Bit_or Int)
-  ;;
-
-  let port_b =
-    Display_rule.port_name_matches
-      Re.Posix.(compile (re ".*_b$"))
-      ~wave_format:(Bit_or Int)
-  ;;
+  let port_a = Display_rule.port_name_matches (Posix ".*_a$") ~wave_format:(Bit_or Int)
+  let port_b = Display_rule.port_name_matches (Posix ".*_b$") ~wave_format:(Bit_or Int)
 end
 
 let create_sim () =
