@@ -37,6 +37,7 @@ module Config : sig
     ; cascade_height : Cascade_height.t
     ; how_to_instantiate_ram : how_to_instantiate_ram
     ; simulation_name : string option
+    ; address_collision_model : Address_collision.Model.t
     }
 
   type t =
@@ -45,6 +46,7 @@ module Config : sig
     ; vertical_dimension : int
     ; horizontal_dimension : int
     ; combinational_output : bool
+    ; byte_write_width : Byte_write_width.t
     }
 
   (** The size of the outermost inner dimension. ie: shape[1] *)
@@ -62,11 +64,15 @@ module Config : sig
 
   (** Create the simplest possible 1D configuration with a single RAM architecture. *)
   val create_simple_1d_config
-    :  depth:int
+    :  ?cascade_height:Cascade_height.t
+    -> depth:int
     -> num_bits_per_entry:int
     -> ram_read_latency:int
     -> how_to_instantiate_ram:how_to_instantiate_ram
+    -> ?address_collision_model:Address_collision.Model.t
+    -> ?byte_write_width:Byte_write_width.t
     -> simulation_name:string option
+    -> unit
     -> t
 
   module type S = sig
@@ -89,6 +95,9 @@ module Create (M : Hardcaml.Interface.S) : sig
   val create_simple_1d
     :  ?name:string
     -> ?simulation_name:string
+    -> ?address_collision_model:Address_collision.Model.t
+    -> ?byte_write_width:Byte_write_width.t
+    -> ?cascade_height:Cascade_height.t
     -> instance:string
     -> build_mode:Build_mode.t
     -> depth:int
@@ -255,6 +264,7 @@ val set_write_port_1d
 module type Widths_2d = sig
   val vertical_index_width : int
   val horizontal_dimension : int
+  val write_enable_width : int
 end
 
 (** General-purpose Read Ports. *)

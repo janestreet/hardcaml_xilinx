@@ -30,6 +30,7 @@ module Config = struct
     ; cascade_height : Cascade_height.t
     ; how_to_instantiate_ram : how_to_instantiate_ram
     ; simulation_name : string option
+    ; address_collision_model : Address_collision.Model.t
     }
   [@@deriving sexp_of, fields ~getters]
 
@@ -39,27 +40,34 @@ module Config = struct
     ; vertical_dimension : int
     ; horizontal_dimension : int
     ; combinational_output : bool
+    ; byte_write_width : Byte_write_width.t
     }
   [@@deriving sexp_of, fields ~getters]
 
   let create_simple_1d_config
+    ?(cascade_height = Cascade_height.Specified 1)
     ~depth
     ~num_bits_per_entry
     ~ram_read_latency
     ~how_to_instantiate_ram
+    ?(address_collision_model = Address_collision.Model.Counter)
+    ?(byte_write_width = Byte_write_width.Full)
     ~simulation_name
+    ()
     =
     { underlying_memories =
         [ { how_to_instantiate_ram
-          ; cascade_height = Cascade_height.Specified 1
+          ; cascade_height
           ; data_width = num_bits_per_entry
           ; simulation_name
+          ; address_collision_model
           }
         ]
     ; underlying_ram_read_latency = ram_read_latency
     ; vertical_dimension = depth
     ; horizontal_dimension = 1
     ; combinational_output = true
+    ; byte_write_width
     }
   ;;
 
@@ -183,6 +191,8 @@ let instantiate_underlying_memory
   let ( -- ) = Scope.naming scope in
   if Signal.width write_data_a <> Signal.width write_data_b
   then raise_s [%message "write_data on both ports must be the same width"];
+  if Signal.width write_enable_a <> Signal.width write_enable_b
+  then raise_s [%message "write_enable on both ports must be the same width"];
   let get_write_segment write_data =
     let pos = ref 0 in
     fun width ->
@@ -194,10 +204,12 @@ let instantiate_underlying_memory
   let get_write_segment_b = get_write_segment write_data_b in
   let read_datas =
     let address_a =
-      Signal.mux2 write_enable_a write_address_a read_address_a -- "address_a"
+      Signal.mux2 (Signal.any_bit_set write_enable_a) write_address_a read_address_a
+      -- "address_a"
     in
     let address_b =
-      Signal.mux2 write_enable_b write_address_b read_address_b -- "address_b"
+      Signal.mux2 (Signal.any_bit_set write_enable_b) write_address_b read_address_b
+      -- "address_b"
     in
     List.map config.underlying_memories ~f:(fun entry ->
       let simulation_name = Option.map ~f:(Scope.name scope) entry.simulation_name in
@@ -206,7 +218,8 @@ let instantiate_underlying_memory
         Dual_port_ram.create
           ~scope
           ?simulation_name
-          ~address_collision_model:Counter
+          ~byte_write_width:config.byte_write_width
+          ~address_collision_model:entry.address_collision_model
           ~clock
           ~clear
           ~arch
@@ -228,6 +241,10 @@ let instantiate_underlying_memory
             }
           ()
       | Inferred { rtl_attributes; rw_order; tie_read_enable_to_vdd; how_to_create } ->
+        (match entry.address_collision_model with
+         | None__there_be_dragons -> ()
+         | _ ->
+           raise_s [%message "Inferred RAM requires the [None] address collision model"]);
         let module X =
           Inferred_ram (struct
             let address_width = Signal.width read_address_b
@@ -357,6 +374,7 @@ end
 module type Widths_2d = sig
   val vertical_index_width : int
   val horizontal_dimension : int
+  val write_enable_width : int
 end
 
 module Write_port_1d = struct
@@ -458,7 +476,7 @@ module Write_port_2d = struct
     module Repr = struct
       type 'a t =
         { vertical_index : 'a [@bits X.vertical_index_width]
-        ; enable : 'a [@bits 1]
+        ; enable : 'a [@bits X.write_enable_width]
         ; data : 'a M.t list [@length X.horizontal_dimension]
         }
       [@@deriving hardcaml ~rtlmangle:false]
@@ -490,13 +508,22 @@ module Write_port_2d = struct
     let wave_formats = of_repr Repr.wave_formats
   end
 
-  module Specialize_with_config (M : Hardcaml.Interface.S) (X : Config.S) =
-    Specialize
-      (M)
-      (struct
-        let vertical_index_width = Config.vertical_index_width X.t
-        let horizontal_dimension = Config.horizontal_dimension X.t
-      end)
+  module Specialize_with_config (M : Hardcaml.Interface.S) (X : Config.S) = struct
+    include
+      Specialize
+        (M)
+        (struct
+          let vertical_index_width = Config.vertical_index_width X.t
+          let horizontal_dimension = Config.horizontal_dimension X.t
+
+          let write_enable_width =
+            match X.t.byte_write_width with
+            | Full -> 1
+            | B8 -> M.sum_of_port_widths / 8
+            | B9 -> M.sum_of_port_widths / 9
+          ;;
+        end)
+  end
 
   module M (M : T1) = struct
     type nonrec 'a t = ('a, 'a M.t) t
@@ -509,7 +536,7 @@ end
 
 module Component (M : Hardcaml.Interface.S) (The_config : Config.S) = struct
   let config = The_config.t
-  let num_bits_per_entry = M.fold ~f:( + ) ~init:0 M.port_widths
+  let num_bits_per_entry = M.sum_of_port_widths
 
   let required_underlying_memories_data_width =
     Config.horizontal_dimension config * num_bits_per_entry
@@ -674,7 +701,13 @@ module Write_port_wires = struct
     }
 
   let create ~num_bits_per_entry (config : Config.t) =
-    { write_enable = Signal.wire 1
+    let write_enable_width =
+      match config.byte_write_width with
+      | Full -> 1
+      | B8 -> num_bits_per_entry / 8
+      | B9 -> num_bits_per_entry / 9
+    in
+    { write_enable = Signal.wire write_enable_width
     ; vertical_index = wire_if_nonzero (Config.vertical_index_width config)
     ; write_data =
         List.init (Config.horizontal_dimension config) ~f:(fun _ ->
@@ -695,7 +728,7 @@ type 'a t =
   }
 
 module Create (M : Hardcaml.Interface.S) = struct
-  let num_bits_per_entry = M.fold ~init:0 ~f:( + ) M.port_widths
+  let num_bits_per_entry = M.sum_of_port_widths
 
   let create
     ?(name = "memory_builder_component")
@@ -765,6 +798,9 @@ module Create (M : Hardcaml.Interface.S) = struct
   let create_simple_1d
     ?name
     ?simulation_name
+    ?address_collision_model
+    ?byte_write_width
+    ?cascade_height
     ~instance
     ~build_mode
     ~depth
@@ -777,11 +813,15 @@ module Create (M : Hardcaml.Interface.S) = struct
     =
     let config =
       Config.create_simple_1d_config
+        ?cascade_height
         ~num_bits_per_entry
         ~depth
         ~ram_read_latency
         ~how_to_instantiate_ram
+        ?address_collision_model
+        ?byte_write_width
         ~simulation_name
+        ()
     in
     create ?name ~instance ~build_mode ~config ~scope ~clock ~clear ()
   ;;

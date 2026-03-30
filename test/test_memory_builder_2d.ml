@@ -12,38 +12,46 @@ module Data = struct
 end
 
 let memory_config =
-  { Memory_builder.Config.underlying_memories =
+  { Xilinx_memory_builder.Config.underlying_memories =
       [ { data_width = 7
         ; how_to_instantiate_ram = Xpm (Ultraram Let_vivado_decide)
         ; cascade_height = Specified 1
         ; simulation_name = None
+        ; address_collision_model = Counter
         }
       ; { data_width = 7
         ; how_to_instantiate_ram = Xpm (Ultraram Let_vivado_decide)
         ; cascade_height = Specified 1
         ; simulation_name = None
+        ; address_collision_model = Counter
         }
       ; { data_width = 3
         ; how_to_instantiate_ram = Xpm (Ultraram Let_vivado_decide)
         ; cascade_height = Specified 1
         ; simulation_name = None
+        ; address_collision_model = Counter
         }
       ; { data_width = 15
         ; how_to_instantiate_ram = Xpm (Ultraram Let_vivado_decide)
         ; cascade_height = Specified 1
         ; simulation_name = None
+        ; address_collision_model = Counter
         }
       ]
   ; underlying_ram_read_latency = 1
   ; vertical_dimension = 256
   ; horizontal_dimension = 2
   ; combinational_output = false
+  ; byte_write_width = Full
   }
 ;;
 
-module Config = (val Memory_builder.Config.as_module memory_config)
-module Write_port = Memory_builder.Write_port_2d.Specialize_with_config (Data) (Config)
-module Read_port = Memory_builder.Read_port_2d.Specialize_with_config (Config)
+module Config = (val Xilinx_memory_builder.Config.as_module memory_config)
+
+module Write_port =
+  Xilinx_memory_builder.Write_port_2d.Specialize_with_config (Data) (Config)
+
+module Read_port = Xilinx_memory_builder.Read_port_2d.Specialize_with_config (Config)
 
 module I = struct
   type 'a t =
@@ -62,7 +70,7 @@ end
 
 let create scope (i : _ I.t) =
   let data_memory =
-    let open Memory_builder.Create (Data) in
+    let open Xilinx_memory_builder.Create (Data) in
     create
       ~instance:"memory"
       ~build_mode:Simulation
@@ -72,9 +80,9 @@ let create scope (i : _ I.t) =
       ~clear:i.clear
       ()
   in
-  Memory_builder.set_write_port_2d data_memory A i.write_port;
-  let read_data = Memory_builder.set_read_port_2d data_memory B i.read_port in
-  Memory_builder.complete data_memory;
+  Xilinx_memory_builder.set_write_port_2d data_memory A i.write_port;
+  let read_data = Xilinx_memory_builder.set_read_port_2d data_memory B i.read_port in
+  Xilinx_memory_builder.complete data_memory;
   { O.read_data }
 ;;
 

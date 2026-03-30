@@ -86,7 +86,7 @@ let%expect_test "Rtl" =
         reg [4:0] USED_PLUS_1 = 5'b00001;
         wire [4:0] _9;
         wire [4:0] _27;
-        reg [4:0] USED;
+        reg [4:0] USED_0;
         wire [4:0] _10;
         wire [4:0] _53;
         wire _54;
@@ -172,12 +172,12 @@ let%expect_test "Rtl" =
         assign _27 = RD_INT ? _8 : _9;
         always @(posedge read_clock) begin
             if (clear)
-                USED <= _57;
+                USED_0 <= _57;
             else
                 if (_26)
-                    USED <= USED_NEXT;
+                    USED_0 <= USED_NEXT;
         end
-        assign _10 = USED;
+        assign _10 = USED_0;
         assign _53 = 5'b10000;
         assign _54 = USED_NEXT == _53;
         always @(posedge read_clock) begin

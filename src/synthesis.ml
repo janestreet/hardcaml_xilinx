@@ -619,9 +619,9 @@ module Make_sequential (Synth : Xilinx_primitives with type t = Signal.t) = stru
     in
     let reset =
       Option.value_map (Reg_spec.reset reg_spec) ~default:gnd ~f:(fun reset ->
-        match Reg_spec.reset_edge reg_spec with
-        | Falling -> ~:reset
-        | Rising -> reset)
+        match Reg_spec.reset_level reg_spec with
+        | Low -> ~:reset
+        | High -> reset)
     in
     let clock =
       match Reg_spec.clock_edge reg_spec with

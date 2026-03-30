@@ -17,7 +17,7 @@ module Model = struct
     | Counter
     | Graycode
     | Lfsr
-  [@@deriving sexp_of]
+  [@@deriving sexp_of, equal]
 
   (* We can create LFSR's of width [2..max_lfsr_width] (which is 168).
 

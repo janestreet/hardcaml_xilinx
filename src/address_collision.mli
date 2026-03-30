@@ -29,7 +29,7 @@ module Model : sig
     | Lfsr
     (** Output a free running LFSR -- see implementation for details -- it's roughly
         random *)
-  [@@deriving sexp_of]
+  [@@deriving sexp_of, equal]
 
   (** Model the collision on the output bus of the RAM *)
   val q : t -> Signal.Reg_spec.t -> address_collision:Signal.t -> Signal.t -> Signal.t
