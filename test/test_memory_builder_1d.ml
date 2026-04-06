@@ -17,12 +17,15 @@ module Data = struct
   let num_bits = fold ~f:( + ) ~init:0 port_widths
 end
 
-module Make (The_config : Memory_builder.Config.S) = struct
+module Make (The_config : Xilinx_memory_builder.Config.S) = struct
   let memory_config = The_config.t
 
-  module Config = (val Memory_builder.Config.as_module memory_config)
-  module Write_port = Memory_builder.Write_port_1d.Specialize_with_config (Data) (Config)
-  module Read_port = Memory_builder.Read_port_1d.Specialize_with_config (Config)
+  module Config = (val Xilinx_memory_builder.Config.as_module memory_config)
+
+  module Write_port =
+    Xilinx_memory_builder.Write_port_1d.Specialize_with_config (Data) (Config)
+
+  module Read_port = Xilinx_memory_builder.Read_port_1d.Specialize_with_config (Config)
 
   module I = struct
     type 'a t =
@@ -41,7 +44,7 @@ module Make (The_config : Memory_builder.Config.S) = struct
 
   let create scope (i : _ I.t) =
     let data_memory =
-      let open Memory_builder.Create (Data) in
+      let open Xilinx_memory_builder.Create (Data) in
       create
         ~instance:"memory"
         ~build_mode:Simulation
@@ -51,9 +54,9 @@ module Make (The_config : Memory_builder.Config.S) = struct
         ~clear:i.clear
         ()
     in
-    Memory_builder.set_write_port_1d data_memory A i.write_port;
-    let read_data = Memory_builder.set_read_port_1d data_memory A i.read_port in
-    Memory_builder.complete data_memory;
+    Xilinx_memory_builder.set_write_port_1d data_memory A i.write_port;
+    let read_data = Xilinx_memory_builder.set_read_port_1d data_memory A i.read_port in
+    Xilinx_memory_builder.complete data_memory;
     { O.read_data }
   ;;
 
@@ -85,15 +88,16 @@ end
 
 module%test [@name "a single ultraram"] _ = struct
   let memory_config =
-    Memory_builder.Config.create_simple_1d_config
+    Xilinx_memory_builder.Config.create_simple_1d_config
       ~how_to_instantiate_ram:(Xpm (Ultraram Let_vivado_decide))
       ~depth:256
       ~num_bits_per_entry:Data.num_bits
       ~ram_read_latency:1
       ~simulation_name:None
+      ()
   ;;
 
-  include Make ((val Memory_builder.Config.as_module memory_config))
+  include Make ((val Xilinx_memory_builder.Config.as_module memory_config))
 
   let%expect_test "" =
     test ();
@@ -131,31 +135,35 @@ end
 
 module%test [@name "3 single ultraram"] _ = struct
   let memory_config =
-    { Memory_builder.Config.underlying_memories =
+    { Xilinx_memory_builder.Config.underlying_memories =
         [ { data_width = 7
           ; how_to_instantiate_ram = Xpm (Ultraram Let_vivado_decide)
           ; cascade_height = Specified 1
           ; simulation_name = None
+          ; address_collision_model = Counter
           }
         ; { data_width = 7
           ; how_to_instantiate_ram = Xpm (Ultraram Let_vivado_decide)
           ; cascade_height = Specified 1
           ; simulation_name = None
+          ; address_collision_model = Counter
           }
         ; { data_width = 2
           ; how_to_instantiate_ram = Xpm (Ultraram Let_vivado_decide)
           ; cascade_height = Specified 1
           ; simulation_name = None
+          ; address_collision_model = Counter
           }
         ]
     ; underlying_ram_read_latency = 1
     ; vertical_dimension = 256
     ; horizontal_dimension = 1
     ; combinational_output = true
+    ; byte_write_width = Full
     }
   ;;
 
-  include Make ((val Memory_builder.Config.as_module memory_config))
+  include Make ((val Xilinx_memory_builder.Config.as_module memory_config))
 
   let%expect_test "" =
     test ();
