@@ -22,7 +22,7 @@ type 'signal create =
   -> ?showahead:bool (** default is [false] *)
   -> ?underflow_check:bool (** default is [true] *)
   -> ?build_mode:Build_mode.t (** default is [Synthesis] *)
-  -> ?scope:Scope.t
+  -> scope:Scope.t
   -> ?fifo_memory_type:Fifo_memory_type.t
        (** See [Xpm_fifo_sync] parameters in [xpm.ml] for default. *)
   -> ?instance:string (** Only used in synthesis *)

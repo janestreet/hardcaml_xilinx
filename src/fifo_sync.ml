@@ -9,7 +9,7 @@ type 'signal create =
   -> ?showahead:bool (** default is [false] *)
   -> ?underflow_check:bool (** default is [true] *)
   -> ?build_mode:Build_mode.t (** default is [Synthesis] *)
-  -> ?scope:Scope.t
+  -> scope:Scope.t
   -> ?fifo_memory_type:Fifo_memory_type.t
        (** See [Xpm_fifo_sync] parameters in [xpm.ml] for default. *)
   -> ?instance:string (** Only used in synthesis *)
@@ -33,7 +33,7 @@ let create
   ?(showahead = false)
   ?(underflow_check = true)
   ?(build_mode = Build_mode.Synthesis)
-  ?scope
+  ~scope
   ?fifo_memory_type
   ?instance
   ?(xpm_version = `Xpm_2019_1)
@@ -98,12 +98,12 @@ let create
   | Simulation ->
     (* Create a new scope for the FIFO signals if both [scope] and [instance] are provided *)
     let scope =
-      match scope, instance with
-      | Some scope, Some inst -> Some (Scope.sub_scope scope inst)
-      | _, _ -> scope
+      match instance with
+      | Some inst -> Scope.sub_scope scope inst
+      | None -> scope
     in
     Fifo.create
-      ?scope
+      ~scope
       ~overflow_check
       ~underflow_check
       ~showahead
@@ -126,7 +126,7 @@ module Clocked = struct
     ?showahead
     ?underflow_check
     ?build_mode
-    ?scope
+    ~scope
     ?fifo_memory_type
     ?instance
     ?xpm_version
@@ -148,7 +148,7 @@ module Clocked = struct
       ?showahead
       ?underflow_check
       ?build_mode
-      ?scope
+      ~scope
       ?fifo_memory_type
       ?instance
       ?xpm_version

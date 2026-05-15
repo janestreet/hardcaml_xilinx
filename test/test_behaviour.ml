@@ -60,7 +60,7 @@ let create_sim ?byte_write_width ?data_bits_b ~read_latency ~address_bits ~data_
       ~data_bits_a:data_bits
   in
   let sim = Cyclesim.create circuit in
-  let wave, sim = Waveform.create sim in
+  let wave, sim = Cyclesim.Waveform.create sim in
   let clear =
     try Cyclesim.in_port sim "clear" with
     | _ -> ref Bits.empty

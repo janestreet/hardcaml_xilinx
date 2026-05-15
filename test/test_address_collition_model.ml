@@ -11,7 +11,7 @@ let test mode q_width =
     Circuit.create_exn ~name:"address_collisions" [ output "q_collision" q_collision ]
   in
   let sim = Cyclesim.create circ in
-  let waves, sim = Waveform.create sim in
+  let waves, sim = Cyclesim.Waveform.create sim in
   (try
      let q = Cyclesim.in_port sim "q" in
      q := Bits.of_int_trunc ~width:q_width (-1)
