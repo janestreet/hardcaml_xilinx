@@ -9,6 +9,7 @@ let%expect_test "Rtl" =
         ~build_mode
         ~nearly_empty:3
         ~nearly_full:12
+        ~scope:(Scope.create ())
         ()
         ~capacity:16
         ~clock:(input "clock" 1)
@@ -57,175 +58,175 @@ let%expect_test "Rtl" =
         output nearly_empty;
         output [4:0] used;
 
-        wire _31;
-        wire [4:0] _21;
-        wire _29;
-        wire _30;
+        wire signal_const;
+        wire [4:0] signal_const_1;
+        wire signal_lt;
+        wire signal_not;
         reg nearly_empty_0 = 1'b1;
-        wire _36;
-        wire [4:0] _33;
-        wire _34;
-        wire _35;
+        wire signal_const_2;
+        wire [4:0] signal_const_3;
+        wire signal_lt_1;
+        wire signal_not_1;
         reg nearly_full_0;
-        wire [3:0] _41;
-        wire [3:0] _39;
+        wire [3:0] signal_const_4;
+        wire [3:0] signal_const_5;
         wire [3:0] WRITE_ADDRESS_NEXT;
         (* extract_reset="FALSE" *)
         reg [3:0] WRITE_ADDRESS;
-        wire [3:0] _7;
+        wire [3:0] signal_wire;
         (* RAM_STYLE="block" *)
-        reg [31:0] _66[0:15];
-        wire [4:0] _57;
-        wire [4:0] _45;
-        wire [4:0] _43;
-        wire [4:0] _44;
+        reg [31:0] signal_multiport_mem[0:15];
+        wire [4:0] signal_const_7;
+        wire [4:0] signal_const_8;
+        wire [4:0] signal_const_9;
+        wire [4:0] signal_sub;
         reg [4:0] USED_MINUS_1 = 5'b11111;
-        wire [4:0] _8;
-        wire [4:0] _48;
+        wire [4:0] signal_wire_1;
+        wire [4:0] signal_add;
         reg [4:0] USED_PLUS_1 = 5'b00001;
-        wire [4:0] _9;
-        wire [4:0] _27;
+        wire [4:0] signal_wire_2;
+        wire [4:0] signal_mux;
         reg [4:0] USED_0;
-        wire [4:0] _10;
-        wire [4:0] _53;
-        wire _54;
+        wire [4:0] signal_wire_3;
+        wire [4:0] signal_const_14;
+        wire signal_eq;
         reg full_0;
-        wire _11;
-        wire _12;
-        wire _24;
+        wire signal_wire_4;
+        wire signal_wire_5;
+        wire signal_not_2;
         wire WR_INT;
-        wire _26;
+        wire signal_xor;
         wire [4:0] USED_NEXT;
-        wire _58;
-        wire _59;
+        wire signal_eq_1;
+        wire signal_not_3;
         reg not_empty;
-        wire _14;
-        wire _38;
-        wire _15;
-        wire _22;
+        wire signal_wire_6;
+        wire signal_not_4;
+        wire signal_wire_7;
+        wire signal_not_5;
         wire RD_INT;
         wire [3:0] READ_ADDRESS_NEXT;
         (* extract_reset="FALSE" *)
         reg [3:0] READ_ADDRESS;
-        wire [3:0] _19;
-        wire [31:0] _67;
-        reg [31:0] _68;
-        assign _31 = 1'b1;
-        assign _21 = 5'b00011;
-        assign _29 = _21 < USED_NEXT;
-        assign _30 = ~ _29;
+        wire [3:0] signal_wire_8;
+        wire [31:0] signal_mem_read_port;
+        reg [31:0] signal_reg;
+        assign signal_const = 1'b1;
+        assign signal_const_1 = 5'b00011;
+        assign signal_lt = signal_const_1 < USED_NEXT;
+        assign signal_not = ~ signal_lt;
         always @(posedge clock) begin
             if (clear)
-                nearly_empty_0 <= _31;
+                nearly_empty_0 <= signal_const;
             else
-                if (_26)
-                    nearly_empty_0 <= _30;
+                if (signal_xor)
+                    nearly_empty_0 <= signal_not;
         end
-        assign _36 = 1'b0;
-        assign _33 = 5'b01100;
-        assign _34 = USED_NEXT < _33;
-        assign _35 = ~ _34;
+        assign signal_const_2 = 1'b0;
+        assign signal_const_3 = 5'b01100;
+        assign signal_lt_1 = USED_NEXT < signal_const_3;
+        assign signal_not_1 = ~ signal_lt_1;
         always @(posedge clock) begin
             if (clear)
-                nearly_full_0 <= _36;
+                nearly_full_0 <= signal_const_2;
             else
-                if (_26)
-                    nearly_full_0 <= _35;
+                if (signal_xor)
+                    nearly_full_0 <= signal_not_1;
         end
-        assign _41 = 4'b0000;
-        assign _39 = 4'b0001;
-        assign WRITE_ADDRESS_NEXT = _7 + _39;
+        assign signal_const_4 = 4'b0000;
+        assign signal_const_5 = 4'b0001;
+        assign WRITE_ADDRESS_NEXT = signal_wire + signal_const_5;
         always @(posedge clock) begin
             if (clear)
-                WRITE_ADDRESS <= _41;
+                WRITE_ADDRESS <= signal_const_4;
             else
                 if (WR_INT)
                     WRITE_ADDRESS <= WRITE_ADDRESS_NEXT;
         end
-        assign _7 = WRITE_ADDRESS;
+        assign signal_wire = WRITE_ADDRESS;
         always @(posedge clock) begin
             if (WR_INT)
-                _66[_7] <= d;
+                signal_multiport_mem[signal_wire] <= d;
         end
-        assign _57 = 5'b00000;
-        assign _45 = 5'b11111;
-        assign _43 = 5'b00001;
-        assign _44 = USED_NEXT - _43;
+        assign signal_const_7 = 5'b00000;
+        assign signal_const_8 = 5'b11111;
+        assign signal_const_9 = 5'b00001;
+        assign signal_sub = USED_NEXT - signal_const_9;
         always @(posedge clock) begin
             if (clear)
-                USED_MINUS_1 <= _45;
+                USED_MINUS_1 <= signal_const_8;
             else
-                if (_26)
-                    USED_MINUS_1 <= _44;
+                if (signal_xor)
+                    USED_MINUS_1 <= signal_sub;
         end
-        assign _8 = USED_MINUS_1;
-        assign _48 = USED_NEXT + _43;
+        assign signal_wire_1 = USED_MINUS_1;
+        assign signal_add = USED_NEXT + signal_const_9;
         always @(posedge clock) begin
             if (clear)
-                USED_PLUS_1 <= _43;
+                USED_PLUS_1 <= signal_const_9;
             else
-                if (_26)
-                    USED_PLUS_1 <= _48;
+                if (signal_xor)
+                    USED_PLUS_1 <= signal_add;
         end
-        assign _9 = USED_PLUS_1;
-        assign _27 = RD_INT ? _8 : _9;
+        assign signal_wire_2 = USED_PLUS_1;
+        assign signal_mux = RD_INT ? signal_wire_1 : signal_wire_2;
         always @(posedge clock) begin
             if (clear)
-                USED_0 <= _57;
+                USED_0 <= signal_const_7;
             else
-                if (_26)
+                if (signal_xor)
                     USED_0 <= USED_NEXT;
         end
-        assign _10 = USED_0;
-        assign _53 = 5'b10000;
-        assign _54 = USED_NEXT == _53;
+        assign signal_wire_3 = USED_0;
+        assign signal_const_14 = 5'b10000;
+        assign signal_eq = USED_NEXT == signal_const_14;
         always @(posedge clock) begin
             if (clear)
-                full_0 <= _36;
+                full_0 <= signal_const_2;
             else
-                if (_26)
-                    full_0 <= _54;
+                if (signal_xor)
+                    full_0 <= signal_eq;
         end
-        assign _11 = full_0;
-        assign _12 = _11;
-        assign _24 = ~ _12;
-        assign WR_INT = wr & _24;
-        assign _26 = RD_INT ^ WR_INT;
-        assign USED_NEXT = _26 ? _27 : _10;
-        assign _58 = USED_NEXT == _57;
-        assign _59 = ~ _58;
+        assign signal_wire_4 = full_0;
+        assign signal_wire_5 = signal_wire_4;
+        assign signal_not_2 = ~ signal_wire_5;
+        assign WR_INT = wr & signal_not_2;
+        assign signal_xor = RD_INT ^ WR_INT;
+        assign USED_NEXT = signal_xor ? signal_mux : signal_wire_3;
+        assign signal_eq_1 = USED_NEXT == signal_const_7;
+        assign signal_not_3 = ~ signal_eq_1;
         always @(posedge clock) begin
             if (clear)
-                not_empty <= _36;
+                not_empty <= signal_const_2;
             else
-                if (_26)
-                    not_empty <= _59;
+                if (signal_xor)
+                    not_empty <= signal_not_3;
         end
-        assign _14 = not_empty;
-        assign _38 = ~ _14;
-        assign _15 = _38;
-        assign _22 = ~ _15;
-        assign RD_INT = rd & _22;
-        assign READ_ADDRESS_NEXT = _19 + _39;
+        assign signal_wire_6 = not_empty;
+        assign signal_not_4 = ~ signal_wire_6;
+        assign signal_wire_7 = signal_not_4;
+        assign signal_not_5 = ~ signal_wire_7;
+        assign RD_INT = rd & signal_not_5;
+        assign READ_ADDRESS_NEXT = signal_wire_8 + signal_const_5;
         always @(posedge clock) begin
             if (clear)
-                READ_ADDRESS <= _41;
+                READ_ADDRESS <= signal_const_4;
             else
                 if (RD_INT)
                     READ_ADDRESS <= READ_ADDRESS_NEXT;
         end
-        assign _19 = READ_ADDRESS;
-        assign _67 = _66[_19];
+        assign signal_wire_8 = READ_ADDRESS;
+        assign signal_mem_read_port = signal_multiport_mem[signal_wire_8];
         always @(posedge clock) begin
             if (RD_INT)
-                _68 <= _67;
+                signal_reg <= signal_mem_read_port;
         end
-        assign q = _68;
-        assign full = _11;
-        assign empty = _38;
+        assign q = signal_reg;
+        assign full = signal_wire_4;
+        assign empty = signal_not_4;
         assign nearly_full = nearly_full_0;
         assign nearly_empty = nearly_empty_0;
-        assign used = _10;
+        assign used = signal_wire_3;
 
     endmodule
     |}];
@@ -258,19 +259,19 @@ let%expect_test "Rtl" =
         output nearly_empty;
         output [4:0] used;
 
-        wire [4:0] _14;
-        wire _15;
-        wire _16;
-        wire _17;
-        wire _18;
+        wire [4:0] signal_select;
+        wire signal_select_1;
+        wire signal_select_2;
+        wire signal_select_3;
+        wire signal_select_4;
         wire gnd;
-        wire [55:0] _13;
-        wire [31:0] _19;
-        assign _14 = _13[6:2];
-        assign _15 = _13[44:44];
-        assign _16 = _13[1:1];
-        assign _17 = _13[43:43];
-        assign _18 = _13[0:0];
+        wire [55:0] signal_inst;
+        wire [31:0] signal_select_5;
+        assign signal_select = signal_inst[6:2];
+        assign signal_select_1 = signal_inst[44:44];
+        assign signal_select_2 = signal_inst[1:1];
+        assign signal_select_3 = signal_inst[43:43];
+        assign signal_select_4 = signal_inst[0:0];
         assign gnd = 1'b0;
         xpm_fifo_sync
             #( .FIFO_MEMORY_TYPE("block"),
@@ -298,30 +299,30 @@ let%expect_test "Rtl" =
               .rd_en(rd),
               .injectsbiterr(gnd),
               .injectdbiterr(gnd),
-              .full(_13[0:0]),
-              .prog_full(_13[1:1]),
-              .wr_data_count(_13[6:2]),
-              .overflow(_13[7:7]),
-              .wr_rst_busy(_13[8:8]),
-              .almost_full(_13[9:9]),
-              .wr_ack(_13[10:10]),
-              .dout(_13[42:11]),
-              .empty(_13[43:43]),
-              .prog_empty(_13[44:44]),
-              .rd_data_count(_13[49:45]),
-              .underflow(_13[50:50]),
-              .rd_rst_busy(_13[51:51]),
-              .almost_empty(_13[52:52]),
-              .data_valid(_13[53:53]),
-              .sbiterr(_13[54:54]),
-              .dbiterr(_13[55:55]) );
-        assign _19 = _13[42:11];
-        assign q = _19;
-        assign full = _18;
-        assign empty = _17;
-        assign nearly_full = _16;
-        assign nearly_empty = _15;
-        assign used = _14;
+              .full(signal_inst[0:0]),
+              .prog_full(signal_inst[1:1]),
+              .wr_data_count(signal_inst[6:2]),
+              .overflow(signal_inst[7:7]),
+              .wr_rst_busy(signal_inst[8:8]),
+              .almost_full(signal_inst[9:9]),
+              .wr_ack(signal_inst[10:10]),
+              .dout(signal_inst[42:11]),
+              .empty(signal_inst[43:43]),
+              .prog_empty(signal_inst[44:44]),
+              .rd_data_count(signal_inst[49:45]),
+              .underflow(signal_inst[50:50]),
+              .rd_rst_busy(signal_inst[51:51]),
+              .almost_empty(signal_inst[52:52]),
+              .data_valid(signal_inst[53:53]),
+              .sbiterr(signal_inst[54:54]),
+              .dbiterr(signal_inst[55:55]) );
+        assign signal_select_5 = signal_inst[42:11];
+        assign q = signal_select_5;
+        assign full = signal_select_4;
+        assign empty = signal_select_3;
+        assign nearly_full = signal_select_2;
+        assign nearly_empty = signal_select_1;
+        assign used = signal_select;
 
     endmodule
     |}]

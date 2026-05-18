@@ -179,7 +179,7 @@ let test
   let sim =
     Sim.create (Ram.create ~build_mode:Simulation (Scope.create ~flatten_design:true ()))
   in
-  let waves, sim = Waveform.create sim in
+  let waves, sim = Cyclesim.Waveform.create sim in
   let inputs = Cyclesim.inputs sim in
   (* write *)
   let scale_up =

@@ -115,17 +115,17 @@ let%expect_test "True_dual_port_ram" =
         output [7:0] qa;
         output [7:0] qb;
 
-        wire [7:0] _20;
-        wire _18;
+        wire [7:0] signal_select;
+        wire signal_or;
         wire vdd;
-        wire _16;
+        wire signal_or_1;
         wire gnd;
-        wire [19:0] _19;
-        wire [7:0] _21;
-        assign _20 = _19[17:10];
-        assign _18 = write_b | read_b;
+        wire [19:0] signal_inst;
+        wire [7:0] signal_select_1;
+        assign signal_select = signal_inst[17:10];
+        assign signal_or = write_b | read_b;
         assign vdd = 1'b1;
-        assign _16 = write_a | read_a;
+        assign signal_or_1 = write_a | read_a;
         assign gnd = 1'b0;
         xpm_memory_tdpram
             #( .MEMORY_SIZE(128),
@@ -162,7 +162,7 @@ let%expect_test "True_dual_port_ram" =
             ( .sleep(gnd),
               .clka(clock_a),
               .rsta(clear_a),
-              .ena(_16),
+              .ena(signal_or_1),
               .regcea(vdd),
               .wea(write_a),
               .addra(address_a),
@@ -171,22 +171,22 @@ let%expect_test "True_dual_port_ram" =
               .injectdbiterra(gnd),
               .clkb(clock_b),
               .rstb(clear_b),
-              .enb(_18),
+              .enb(signal_or),
               .regceb(vdd),
               .web(write_b),
               .addrb(address_b),
               .dinb(data_b),
               .injectsbiterrb(gnd),
               .injectdbiterrb(gnd),
-              .douta(_19[7:0]),
-              .sbiterra(_19[8:8]),
-              .dbiterra(_19[9:9]),
-              .doutb(_19[17:10]),
-              .sbiterrb(_19[18:18]),
-              .dbiterrb(_19[19:19]) );
-        assign _21 = _19[7:0];
-        assign qa = _21;
-        assign qb = _20;
+              .douta(signal_inst[7:0]),
+              .sbiterra(signal_inst[8:8]),
+              .dbiterra(signal_inst[9:9]),
+              .doutb(signal_inst[17:10]),
+              .sbiterrb(signal_inst[18:18]),
+              .dbiterrb(signal_inst[19:19]) );
+        assign signal_select_1 = signal_inst[7:0];
+        assign qa = signal_select_1;
+        assign qb = signal_select;
 
     endmodule
     |}];
@@ -225,17 +225,17 @@ let%expect_test "True_dual_port_ram" =
         output [7:0] qa;
         output [7:0] qb;
 
-        wire [7:0] _20;
-        wire _18;
+        wire [7:0] signal_select;
+        wire signal_or;
         wire vdd;
-        wire _16;
+        wire signal_or_1;
         wire gnd;
-        wire [19:0] _19;
-        wire [7:0] _21;
-        assign _20 = _19[17:10];
-        assign _18 = write_b | read_b;
+        wire [19:0] signal_inst;
+        wire [7:0] signal_select_1;
+        assign signal_select = signal_inst[17:10];
+        assign signal_or = write_b | read_b;
         assign vdd = 1'b1;
-        assign _16 = write_a | read_a;
+        assign signal_or_1 = write_a | read_a;
         assign gnd = 1'b0;
         xpm_memory_tdpram
             #( .MEMORY_SIZE(128),
@@ -272,7 +272,7 @@ let%expect_test "True_dual_port_ram" =
             ( .sleep(gnd),
               .clka(clock_a),
               .rsta(clear_a),
-              .ena(_16),
+              .ena(signal_or_1),
               .regcea(vdd),
               .wea(write_a),
               .addra(address_a),
@@ -281,22 +281,22 @@ let%expect_test "True_dual_port_ram" =
               .injectdbiterra(gnd),
               .clkb(clock_b),
               .rstb(clear_b),
-              .enb(_18),
+              .enb(signal_or),
               .regceb(vdd),
               .web(write_b),
               .addrb(address_b),
               .dinb(data_b),
               .injectsbiterrb(gnd),
               .injectdbiterrb(gnd),
-              .douta(_19[7:0]),
-              .sbiterra(_19[8:8]),
-              .dbiterra(_19[9:9]),
-              .doutb(_19[17:10]),
-              .sbiterrb(_19[18:18]),
-              .dbiterrb(_19[19:19]) );
-        assign _21 = _19[7:0];
-        assign qa = _21;
-        assign qb = _20;
+              .douta(signal_inst[7:0]),
+              .sbiterra(signal_inst[8:8]),
+              .dbiterra(signal_inst[9:9]),
+              .doutb(signal_inst[17:10]),
+              .sbiterrb(signal_inst[18:18]),
+              .dbiterrb(signal_inst[19:19]) );
+        assign signal_select_1 = signal_inst[7:0];
+        assign qa = signal_select_1;
+        assign qb = signal_select;
 
     endmodule
     |}];
@@ -335,17 +335,17 @@ let%expect_test "True_dual_port_ram" =
         output [7:0] qa;
         output [7:0] qb;
 
-        wire [7:0] _20;
-        wire _18;
+        wire [7:0] signal_select;
+        wire signal_or;
         wire vdd;
-        wire _16;
+        wire signal_or_1;
         wire gnd;
-        wire [19:0] _19;
-        wire [7:0] _21;
-        assign _20 = _19[17:10];
-        assign _18 = write_b | read_b;
+        wire [19:0] signal_inst;
+        wire [7:0] signal_select_1;
+        assign signal_select = signal_inst[17:10];
+        assign signal_or = write_b | read_b;
         assign vdd = 1'b1;
-        assign _16 = write_a | read_a;
+        assign signal_or_1 = write_a | read_a;
         assign gnd = 1'b0;
         xpm_memory_tdpram
             #( .MEMORY_SIZE(128),
@@ -382,7 +382,7 @@ let%expect_test "True_dual_port_ram" =
             ( .sleep(gnd),
               .clka(clock_a),
               .rsta(clear_a),
-              .ena(_16),
+              .ena(signal_or_1),
               .regcea(vdd),
               .wea(write_a),
               .addra(address_a),
@@ -391,22 +391,22 @@ let%expect_test "True_dual_port_ram" =
               .injectdbiterra(gnd),
               .clkb(clock_b),
               .rstb(clear_b),
-              .enb(_18),
+              .enb(signal_or),
               .regceb(vdd),
               .web(write_b),
               .addrb(address_b),
               .dinb(data_b),
               .injectsbiterrb(gnd),
               .injectdbiterrb(gnd),
-              .douta(_19[7:0]),
-              .sbiterra(_19[8:8]),
-              .dbiterra(_19[9:9]),
-              .doutb(_19[17:10]),
-              .sbiterrb(_19[18:18]),
-              .dbiterrb(_19[19:19]) );
-        assign _21 = _19[7:0];
-        assign qa = _21;
-        assign qb = _20;
+              .douta(signal_inst[7:0]),
+              .sbiterra(signal_inst[8:8]),
+              .dbiterra(signal_inst[9:9]),
+              .doutb(signal_inst[17:10]),
+              .sbiterrb(signal_inst[18:18]),
+              .dbiterrb(signal_inst[19:19]) );
+        assign signal_select_1 = signal_inst[7:0];
+        assign qa = signal_select_1;
+        assign qb = signal_select;
 
     endmodule
     |}];
@@ -468,80 +468,80 @@ let%expect_test "True_dual_port_ram" =
         output dbiterrb;
 
         (* keep="TRUE" *)
-        wire _46;
+        wire signal_select;
         (* keep="TRUE" *)
-        wire _47;
+        wire signal_select_1;
         (* keep="TRUE" *)
-        wire [7:0] _48;
+        wire [7:0] signal_select_2;
         (* keep="TRUE" *)
-        wire _49;
+        wire signal_select_3;
         (* keep="TRUE" *)
-        wire _50;
+        wire signal_select_4;
         (* keep="TRUE" *)
-        wire _7;
+        wire signal_wire;
         (* keep="TRUE" *)
-        wire _9;
+        wire signal_wire_1;
         (* keep="TRUE" *)
-        wire [7:0] _11;
+        wire [7:0] signal_wire_2;
         (* keep="TRUE" *)
-        wire [3:0] _13;
+        wire [3:0] signal_wire_3;
         (* keep="TRUE" *)
-        wire _15;
+        wire signal_wire_4;
         (* keep="TRUE" *)
-        wire _17;
+        wire signal_wire_5;
         (* keep="TRUE" *)
-        wire _19;
+        wire signal_wire_6;
         (* keep="TRUE" *)
-        wire _21;
+        wire signal_wire_7;
         (* keep="TRUE" *)
-        wire _23;
+        wire signal_wire_8;
         (* keep="TRUE" *)
-        wire _25;
+        wire signal_wire_9;
         (* keep="TRUE" *)
-        wire _27;
+        wire signal_wire_10;
         (* keep="TRUE" *)
-        wire [7:0] _29;
+        wire [7:0] signal_wire_11;
         (* keep="TRUE" *)
-        wire [3:0] _31;
+        wire [3:0] signal_wire_12;
         (* keep="TRUE" *)
-        wire _33;
+        wire signal_wire_13;
         (* keep="TRUE" *)
-        wire _35;
+        wire signal_wire_14;
         (* keep="TRUE" *)
-        wire _37;
+        wire signal_wire_15;
         (* keep="TRUE" *)
-        wire _39;
+        wire signal_wire_16;
         (* keep="TRUE" *)
-        wire _41;
+        wire signal_wire_17;
         (* keep="TRUE" *)
-        wire _43;
-        wire [19:0] _45;
+        wire signal_wire_18;
+        wire [19:0] signal_inst;
         (* keep="TRUE" *)
-        wire [7:0] _51;
-        assign _46 = _45[19:19];
-        assign _47 = _45[18:18];
-        assign _48 = _45[17:10];
-        assign _49 = _45[9:9];
-        assign _50 = _45[8:8];
-        assign _7 = injectdbiterrb;
-        assign _9 = injectsbiterrb;
-        assign _11 = dinb;
-        assign _13 = addrb;
-        assign _15 = web;
-        assign _17 = regceb;
-        assign _19 = enb;
-        assign _21 = rstb;
-        assign _23 = clkb;
-        assign _25 = injectdbiterra;
-        assign _27 = injectsbiterra;
-        assign _29 = dina;
-        assign _31 = addra;
-        assign _33 = wea;
-        assign _35 = regcea;
-        assign _37 = ena;
-        assign _39 = rsta;
-        assign _41 = clka;
-        assign _43 = sleep;
+        wire [7:0] signal_select_5;
+        assign signal_select = signal_inst[19:19];
+        assign signal_select_1 = signal_inst[18:18];
+        assign signal_select_2 = signal_inst[17:10];
+        assign signal_select_3 = signal_inst[9:9];
+        assign signal_select_4 = signal_inst[8:8];
+        assign signal_wire = injectdbiterrb;
+        assign signal_wire_1 = injectsbiterrb;
+        assign signal_wire_2 = dinb;
+        assign signal_wire_3 = addrb;
+        assign signal_wire_4 = web;
+        assign signal_wire_5 = regceb;
+        assign signal_wire_6 = enb;
+        assign signal_wire_7 = rstb;
+        assign signal_wire_8 = clkb;
+        assign signal_wire_9 = injectdbiterra;
+        assign signal_wire_10 = injectsbiterra;
+        assign signal_wire_11 = dina;
+        assign signal_wire_12 = addra;
+        assign signal_wire_13 = wea;
+        assign signal_wire_14 = regcea;
+        assign signal_wire_15 = ena;
+        assign signal_wire_16 = rsta;
+        assign signal_wire_17 = clka;
+        assign signal_wire_18 = sleep;
         xpm_memory_tdpram
             #( .MEMORY_SIZE(128),
                .MEMORY_PRIMITIVE("ultra"),
@@ -574,38 +574,38 @@ let%expect_test "True_dual_port_ram" =
                .WRITE_MODE_B("no_change"),
                .RST_MODE_B("SYNC") )
             the_xpm_memory_tdpram
-            ( .sleep(_43),
-              .clka(_41),
-              .rsta(_39),
-              .ena(_37),
-              .regcea(_35),
-              .wea(_33),
-              .addra(_31),
-              .dina(_29),
-              .injectsbiterra(_27),
-              .injectdbiterra(_25),
-              .clkb(_23),
-              .rstb(_21),
-              .enb(_19),
-              .regceb(_17),
-              .web(_15),
-              .addrb(_13),
-              .dinb(_11),
-              .injectsbiterrb(_9),
-              .injectdbiterrb(_7),
-              .douta(_45[7:0]),
-              .sbiterra(_45[8:8]),
-              .dbiterra(_45[9:9]),
-              .doutb(_45[17:10]),
-              .sbiterrb(_45[18:18]),
-              .dbiterrb(_45[19:19]) );
-        assign _51 = _45[7:0];
-        assign douta = _51;
-        assign sbiterra = _50;
-        assign dbiterra = _49;
-        assign doutb = _48;
-        assign sbiterrb = _47;
-        assign dbiterrb = _46;
+            ( .sleep(signal_wire_18),
+              .clka(signal_wire_17),
+              .rsta(signal_wire_16),
+              .ena(signal_wire_15),
+              .regcea(signal_wire_14),
+              .wea(signal_wire_13),
+              .addra(signal_wire_12),
+              .dina(signal_wire_11),
+              .injectsbiterra(signal_wire_10),
+              .injectdbiterra(signal_wire_9),
+              .clkb(signal_wire_8),
+              .rstb(signal_wire_7),
+              .enb(signal_wire_6),
+              .regceb(signal_wire_5),
+              .web(signal_wire_4),
+              .addrb(signal_wire_3),
+              .dinb(signal_wire_2),
+              .injectsbiterrb(signal_wire_1),
+              .injectdbiterrb(signal_wire),
+              .douta(signal_inst[7:0]),
+              .sbiterra(signal_inst[8:8]),
+              .dbiterra(signal_inst[9:9]),
+              .doutb(signal_inst[17:10]),
+              .sbiterrb(signal_inst[18:18]),
+              .dbiterrb(signal_inst[19:19]) );
+        assign signal_select_5 = signal_inst[7:0];
+        assign douta = signal_select_5;
+        assign sbiterra = signal_select_4;
+        assign dbiterra = signal_select_3;
+        assign doutb = signal_select_2;
+        assign sbiterrb = signal_select_1;
+        assign dbiterrb = signal_select;
 
     endmodule
     module true_dual_port_ram (
@@ -640,24 +640,24 @@ let%expect_test "True_dual_port_ram" =
         output [7:0] qa;
         output [7:0] qb;
 
-        wire [7:0] _20;
-        wire _18;
+        wire [7:0] signal_select;
+        wire signal_or;
         wire vdd;
-        wire _16;
+        wire signal_or_1;
         wire gnd;
-        wire [19:0] _19;
-        wire [7:0] _21;
-        assign _20 = _19[17:10];
-        assign _18 = write_b | read_b;
+        wire [19:0] signal_inst;
+        wire [7:0] signal_select_1;
+        assign signal_select = signal_inst[17:10];
+        assign signal_or = write_b | read_b;
         assign vdd = 1'b1;
-        assign _16 = write_a | read_a;
+        assign signal_or_1 = write_a | read_a;
         assign gnd = 1'b0;
         xpm_tdpram_wrapper
             xpm_tdpram_wrapper
             ( .sleep(gnd),
               .clka(clock_a),
               .rsta(clear_a),
-              .ena(_16),
+              .ena(signal_or_1),
               .regcea(vdd),
               .wea(write_a),
               .addra(address_a),
@@ -666,22 +666,22 @@ let%expect_test "True_dual_port_ram" =
               .injectdbiterra(gnd),
               .clkb(clock_b),
               .rstb(clear_b),
-              .enb(_18),
+              .enb(signal_or),
               .regceb(vdd),
               .web(write_b),
               .addrb(address_b),
               .dinb(data_b),
               .injectsbiterrb(gnd),
               .injectdbiterrb(gnd),
-              .douta(_19[7:0]),
-              .sbiterra(_19[8:8]),
-              .dbiterra(_19[9:9]),
-              .doutb(_19[17:10]),
-              .sbiterrb(_19[18:18]),
-              .dbiterrb(_19[19:19]) );
-        assign _21 = _19[7:0];
-        assign qa = _21;
-        assign qb = _20;
+              .douta(signal_inst[7:0]),
+              .sbiterra(signal_inst[8:8]),
+              .dbiterra(signal_inst[9:9]),
+              .doutb(signal_inst[17:10]),
+              .sbiterrb(signal_inst[18:18]),
+              .dbiterrb(signal_inst[19:19]) );
+        assign signal_select_1 = signal_inst[7:0];
+        assign qa = signal_select_1;
+        assign qb = signal_select;
 
     endmodule
     |}];
@@ -779,17 +779,17 @@ let%expect_test "True_dual_port_ram" =
         output [3:0] qa;
         output [11:0] qb;
 
-        wire [11:0] _20;
-        wire _18;
+        wire [11:0] signal_select;
+        wire signal_or;
         wire vdd;
-        wire _16;
+        wire signal_or_1;
         wire gnd;
-        wire [19:0] _19;
-        wire [3:0] _21;
-        assign _20 = _19[17:6];
-        assign _18 = write_b | read_b;
+        wire [19:0] signal_inst;
+        wire [3:0] signal_select_1;
+        assign signal_select = signal_inst[17:6];
+        assign signal_or = write_b | read_b;
         assign vdd = 1'b1;
-        assign _16 = write_a | read_a;
+        assign signal_or_1 = write_a | read_a;
         assign gnd = 1'b0;
         xpm_memory_tdpram
             #( .MEMORY_SIZE(60),
@@ -826,7 +826,7 @@ let%expect_test "True_dual_port_ram" =
             ( .sleep(gnd),
               .clka(clock_a),
               .rsta(clear_a),
-              .ena(_16),
+              .ena(signal_or_1),
               .regcea(vdd),
               .wea(write_a),
               .addra(address_a),
@@ -835,22 +835,22 @@ let%expect_test "True_dual_port_ram" =
               .injectdbiterra(gnd),
               .clkb(clock_b),
               .rstb(clear_b),
-              .enb(_18),
+              .enb(signal_or),
               .regceb(vdd),
               .web(write_b),
               .addrb(address_b),
               .dinb(data_b),
               .injectsbiterrb(gnd),
               .injectdbiterrb(gnd),
-              .douta(_19[3:0]),
-              .sbiterra(_19[4:4]),
-              .dbiterra(_19[5:5]),
-              .doutb(_19[17:6]),
-              .sbiterrb(_19[18:18]),
-              .dbiterrb(_19[19:19]) );
-        assign _21 = _19[3:0];
-        assign qa = _21;
-        assign qb = _20;
+              .douta(signal_inst[3:0]),
+              .sbiterra(signal_inst[4:4]),
+              .dbiterra(signal_inst[5:5]),
+              .doutb(signal_inst[17:6]),
+              .sbiterrb(signal_inst[18:18]),
+              .dbiterrb(signal_inst[19:19]) );
+        assign signal_select_1 = signal_inst[3:0];
+        assign qa = signal_select_1;
+        assign qb = signal_select;
 
     endmodule
     |}];
@@ -975,103 +975,103 @@ let%expect_test "byte enables" =
         output [15:0] qa;
         output [15:0] qb;
 
-        wire [1:0] _37;
-        wire _38;
-        wire _39;
-        wire _33;
-        wire [4:0] _34;
-        wire [7:0] _35;
-        wire _13;
-        wire [4:0] _14;
-        wire [7:0] _32;
-        wire [15:0] _36;
-        reg [15:0] _40;
-        wire _49;
-        wire _50;
-        wire [4:0] _45;
-        wire [7:0] _46;
-        wire _30;
-        wire [7:0] _29;
-        wire [4:0] _28;
-        wire _26;
-        wire [7:0] _25;
-        wire [4:0] _24;
-        wire _22;
-        wire [7:0] _21;
-        wire [4:0] _20;
-        wire _18;
-        wire [7:0] _17;
-        wire [4:0] _16;
-        reg [7:0] _31[0:31];
-        wire [4:0] _42;
-        wire [7:0] _43;
-        wire [15:0] _47;
-        reg [15:0] _51;
-        assign _37 = 2'b00;
-        assign _38 = write_b == _37;
-        assign _39 = read_b & _38;
-        assign _33 = 1'b0;
-        assign _34 = { address_b,
-                       _33 };
-        assign _35 = _31[_34];
-        assign _13 = 1'b1;
-        assign _14 = { address_b,
-                       _13 };
-        assign _32 = _31[_14];
-        assign _36 = { _32,
-                       _35 };
+        wire [1:0] signal_const;
+        wire signal_eq;
+        wire signal_and;
+        wire signal_const_1;
+        wire [4:0] signal_cat;
+        wire [7:0] signal_mem_read_port;
+        wire signal_const_2;
+        wire [4:0] signal_cat_1;
+        wire [7:0] signal_mem_read_port_1;
+        wire [15:0] signal_cat_2;
+        reg [15:0] signal_reg;
+        wire signal_eq_1;
+        wire signal_and_1;
+        wire [4:0] signal_cat_3;
+        wire [7:0] signal_mem_read_port_2;
+        wire signal_select;
+        wire [7:0] signal_select_1;
+        wire [4:0] signal_cat_4;
+        wire signal_select_2;
+        wire [7:0] signal_select_3;
+        wire [4:0] signal_cat_5;
+        wire signal_select_4;
+        wire [7:0] signal_select_5;
+        wire [4:0] signal_cat_6;
+        wire signal_select_6;
+        wire [7:0] signal_select_7;
+        wire [4:0] signal_cat_7;
+        reg [7:0] signal_multiport_mem[0:31];
+        wire [4:0] signal_cat_8;
+        wire [7:0] signal_mem_read_port_3;
+        wire [15:0] signal_cat_9;
+        reg [15:0] signal_reg_1;
+        assign signal_const = 2'b00;
+        assign signal_eq = write_b == signal_const;
+        assign signal_and = read_b & signal_eq;
+        assign signal_const_1 = 1'b0;
+        assign signal_cat = { address_b,
+                              signal_const_1 };
+        assign signal_mem_read_port = signal_multiport_mem[signal_cat];
+        assign signal_const_2 = 1'b1;
+        assign signal_cat_1 = { address_b,
+                                signal_const_2 };
+        assign signal_mem_read_port_1 = signal_multiport_mem[signal_cat_1];
+        assign signal_cat_2 = { signal_mem_read_port_1,
+                                signal_mem_read_port };
         always @(posedge clock_b) begin
-            if (_39)
-                _40 <= _36;
+            if (signal_and)
+                signal_reg <= signal_cat_2;
         end
-        assign _49 = write_a == _37;
-        assign _50 = read_a & _49;
-        assign _45 = { address_a,
-                       _33 };
-        assign _46 = _31[_45];
-        assign _30 = write_b[1:1];
-        assign _29 = data_b[15:8];
-        assign _28 = { address_b,
-                       _13 };
-        assign _26 = write_b[0:0];
-        assign _25 = data_b[7:0];
-        assign _24 = { address_b,
-                       _33 };
-        assign _22 = write_a[1:1];
-        assign _21 = data_a[15:8];
-        assign _20 = { address_a,
-                       _13 };
-        assign _18 = write_a[0:0];
-        assign _17 = data_a[7:0];
-        assign _16 = { address_a,
-                       _33 };
+        assign signal_eq_1 = write_a == signal_const;
+        assign signal_and_1 = read_a & signal_eq_1;
+        assign signal_cat_3 = { address_a,
+                                signal_const_1 };
+        assign signal_mem_read_port_2 = signal_multiport_mem[signal_cat_3];
+        assign signal_select = write_b[1:1];
+        assign signal_select_1 = data_b[15:8];
+        assign signal_cat_4 = { address_b,
+                                signal_const_2 };
+        assign signal_select_2 = write_b[0:0];
+        assign signal_select_3 = data_b[7:0];
+        assign signal_cat_5 = { address_b,
+                                signal_const_1 };
+        assign signal_select_4 = write_a[1:1];
+        assign signal_select_5 = data_a[15:8];
+        assign signal_cat_6 = { address_a,
+                                signal_const_2 };
+        assign signal_select_6 = write_a[0:0];
+        assign signal_select_7 = data_a[7:0];
+        assign signal_cat_7 = { address_a,
+                                signal_const_1 };
         always @(posedge clock_a) begin
-            if (_18)
-                _31[_16] <= _17;
+            if (signal_select_6)
+                signal_multiport_mem[signal_cat_7] <= signal_select_7;
         end
         always @(posedge clock_a) begin
-            if (_22)
-                _31[_20] <= _21;
-        end
-        always @(posedge clock_b) begin
-            if (_26)
-                _31[_24] <= _25;
+            if (signal_select_4)
+                signal_multiport_mem[signal_cat_6] <= signal_select_5;
         end
         always @(posedge clock_b) begin
-            if (_30)
-                _31[_28] <= _29;
+            if (signal_select_2)
+                signal_multiport_mem[signal_cat_5] <= signal_select_3;
         end
-        assign _42 = { address_a,
-                       _13 };
-        assign _43 = _31[_42];
-        assign _47 = { _43,
-                       _46 };
+        always @(posedge clock_b) begin
+            if (signal_select)
+                signal_multiport_mem[signal_cat_4] <= signal_select_1;
+        end
+        assign signal_cat_8 = { address_a,
+                                signal_const_2 };
+        assign signal_mem_read_port_3 = signal_multiport_mem[signal_cat_8];
+        assign signal_cat_9 = { signal_mem_read_port_3,
+                                signal_mem_read_port_2 };
         always @(posedge clock_a) begin
-            if (_50)
-                _51 <= _47;
+            if (signal_and_1)
+                signal_reg_1 <= signal_cat_9;
         end
-        assign qa = _51;
-        assign qb = _40;
+        assign qa = signal_reg_1;
+        assign qb = signal_reg;
 
     endmodule
     |}];
@@ -1114,103 +1114,103 @@ let%expect_test "byte enables" =
         output [17:0] qa;
         output [17:0] qb;
 
-        wire [1:0] _37;
-        wire _38;
-        wire _39;
-        wire _33;
-        wire [4:0] _34;
-        wire [8:0] _35;
-        wire _13;
-        wire [4:0] _14;
-        wire [8:0] _32;
-        wire [17:0] _36;
-        reg [17:0] _40;
-        wire _49;
-        wire _50;
-        wire [4:0] _45;
-        wire [8:0] _46;
-        wire _30;
-        wire [8:0] _29;
-        wire [4:0] _28;
-        wire _26;
-        wire [8:0] _25;
-        wire [4:0] _24;
-        wire _22;
-        wire [8:0] _21;
-        wire [4:0] _20;
-        wire _18;
-        wire [8:0] _17;
-        wire [4:0] _16;
-        reg [8:0] _31[0:31];
-        wire [4:0] _42;
-        wire [8:0] _43;
-        wire [17:0] _47;
-        reg [17:0] _51;
-        assign _37 = 2'b00;
-        assign _38 = write_b == _37;
-        assign _39 = read_b & _38;
-        assign _33 = 1'b0;
-        assign _34 = { address_b,
-                       _33 };
-        assign _35 = _31[_34];
-        assign _13 = 1'b1;
-        assign _14 = { address_b,
-                       _13 };
-        assign _32 = _31[_14];
-        assign _36 = { _32,
-                       _35 };
+        wire [1:0] signal_const;
+        wire signal_eq;
+        wire signal_and;
+        wire signal_const_1;
+        wire [4:0] signal_cat;
+        wire [8:0] signal_mem_read_port;
+        wire signal_const_2;
+        wire [4:0] signal_cat_1;
+        wire [8:0] signal_mem_read_port_1;
+        wire [17:0] signal_cat_2;
+        reg [17:0] signal_reg;
+        wire signal_eq_1;
+        wire signal_and_1;
+        wire [4:0] signal_cat_3;
+        wire [8:0] signal_mem_read_port_2;
+        wire signal_select;
+        wire [8:0] signal_select_1;
+        wire [4:0] signal_cat_4;
+        wire signal_select_2;
+        wire [8:0] signal_select_3;
+        wire [4:0] signal_cat_5;
+        wire signal_select_4;
+        wire [8:0] signal_select_5;
+        wire [4:0] signal_cat_6;
+        wire signal_select_6;
+        wire [8:0] signal_select_7;
+        wire [4:0] signal_cat_7;
+        reg [8:0] signal_multiport_mem[0:31];
+        wire [4:0] signal_cat_8;
+        wire [8:0] signal_mem_read_port_3;
+        wire [17:0] signal_cat_9;
+        reg [17:0] signal_reg_1;
+        assign signal_const = 2'b00;
+        assign signal_eq = write_b == signal_const;
+        assign signal_and = read_b & signal_eq;
+        assign signal_const_1 = 1'b0;
+        assign signal_cat = { address_b,
+                              signal_const_1 };
+        assign signal_mem_read_port = signal_multiport_mem[signal_cat];
+        assign signal_const_2 = 1'b1;
+        assign signal_cat_1 = { address_b,
+                                signal_const_2 };
+        assign signal_mem_read_port_1 = signal_multiport_mem[signal_cat_1];
+        assign signal_cat_2 = { signal_mem_read_port_1,
+                                signal_mem_read_port };
         always @(posedge clock_b) begin
-            if (_39)
-                _40 <= _36;
+            if (signal_and)
+                signal_reg <= signal_cat_2;
         end
-        assign _49 = write_a == _37;
-        assign _50 = read_a & _49;
-        assign _45 = { address_a,
-                       _33 };
-        assign _46 = _31[_45];
-        assign _30 = write_b[1:1];
-        assign _29 = data_b[17:9];
-        assign _28 = { address_b,
-                       _13 };
-        assign _26 = write_b[0:0];
-        assign _25 = data_b[8:0];
-        assign _24 = { address_b,
-                       _33 };
-        assign _22 = write_a[1:1];
-        assign _21 = data_a[17:9];
-        assign _20 = { address_a,
-                       _13 };
-        assign _18 = write_a[0:0];
-        assign _17 = data_a[8:0];
-        assign _16 = { address_a,
-                       _33 };
+        assign signal_eq_1 = write_a == signal_const;
+        assign signal_and_1 = read_a & signal_eq_1;
+        assign signal_cat_3 = { address_a,
+                                signal_const_1 };
+        assign signal_mem_read_port_2 = signal_multiport_mem[signal_cat_3];
+        assign signal_select = write_b[1:1];
+        assign signal_select_1 = data_b[17:9];
+        assign signal_cat_4 = { address_b,
+                                signal_const_2 };
+        assign signal_select_2 = write_b[0:0];
+        assign signal_select_3 = data_b[8:0];
+        assign signal_cat_5 = { address_b,
+                                signal_const_1 };
+        assign signal_select_4 = write_a[1:1];
+        assign signal_select_5 = data_a[17:9];
+        assign signal_cat_6 = { address_a,
+                                signal_const_2 };
+        assign signal_select_6 = write_a[0:0];
+        assign signal_select_7 = data_a[8:0];
+        assign signal_cat_7 = { address_a,
+                                signal_const_1 };
         always @(posedge clock_a) begin
-            if (_18)
-                _31[_16] <= _17;
+            if (signal_select_6)
+                signal_multiport_mem[signal_cat_7] <= signal_select_7;
         end
         always @(posedge clock_a) begin
-            if (_22)
-                _31[_20] <= _21;
-        end
-        always @(posedge clock_b) begin
-            if (_26)
-                _31[_24] <= _25;
+            if (signal_select_4)
+                signal_multiport_mem[signal_cat_6] <= signal_select_5;
         end
         always @(posedge clock_b) begin
-            if (_30)
-                _31[_28] <= _29;
+            if (signal_select_2)
+                signal_multiport_mem[signal_cat_5] <= signal_select_3;
         end
-        assign _42 = { address_a,
-                       _13 };
-        assign _43 = _31[_42];
-        assign _47 = { _43,
-                       _46 };
+        always @(posedge clock_b) begin
+            if (signal_select)
+                signal_multiport_mem[signal_cat_4] <= signal_select_1;
+        end
+        assign signal_cat_8 = { address_a,
+                                signal_const_2 };
+        assign signal_mem_read_port_3 = signal_multiport_mem[signal_cat_8];
+        assign signal_cat_9 = { signal_mem_read_port_3,
+                                signal_mem_read_port_2 };
         always @(posedge clock_a) begin
-            if (_50)
-                _51 <= _47;
+            if (signal_and_1)
+                signal_reg_1 <= signal_cat_9;
         end
-        assign qa = _51;
-        assign qb = _40;
+        assign qa = signal_reg_1;
+        assign qb = signal_reg;
 
     endmodule
     |}]
@@ -1256,131 +1256,131 @@ let%expect_test "byte enables with resizing" =
         output [15:0] qa;
         output [7:0] qb;
 
-        wire _54;
-        wire _55;
-        wire _56;
-        wire [7:0] _52;
-        wire [4:0] _48;
-        wire [7:0] _49;
-        wire _15;
-        wire [3:0] _14;
-        wire [4:0] _16;
-        wire [7:0] _46;
-        wire [15:0] _50;
-        wire [7:0] _51;
-        wire _13;
-        wire [7:0] _53;
-        reg [7:0] _57;
-        wire [1:0] _65;
-        wire _66;
-        wire _67;
-        wire [4:0] _62;
-        wire [7:0] _63;
-        wire _44;
-        wire [7:0] _43;
-        wire [4:0] _42;
-        wire _36;
-        wire _38;
-        wire _30;
-        wire _32;
-        wire _34;
-        wire [1:0] _39;
-        wire _40;
-        wire [15:0] _28;
-        wire [7:0] _29;
-        wire [3:0] _25;
-        wire [4:0] _27;
-        wire _24;
-        wire [7:0] _23;
-        wire [4:0] _22;
-        wire _20;
-        wire [7:0] _19;
-        wire [4:0] _18;
-        reg [7:0] _45[0:31];
-        wire [4:0] _59;
-        wire [7:0] _60;
-        wire [15:0] _64;
-        reg [15:0] _68;
-        assign _54 = 1'b0;
-        assign _55 = write_b == _54;
-        assign _56 = read_b & _55;
-        assign _52 = _50[15:8];
-        assign _48 = { _14,
-                       _54 };
-        assign _49 = _45[_48];
-        assign _15 = 1'b1;
-        assign _14 = address_b[4:1];
-        assign _16 = { _14,
-                       _15 };
-        assign _46 = _45[_16];
-        assign _50 = { _46,
-                       _49 };
-        assign _51 = _50[7:0];
-        assign _13 = address_b[0:0];
-        assign _53 = _13 ? _52 : _51;
+        wire signal_const;
+        wire signal_eq;
+        wire signal_and;
+        wire [7:0] signal_select;
+        wire [4:0] signal_cat;
+        wire [7:0] signal_mem_read_port;
+        wire signal_const_2;
+        wire [3:0] signal_select_1;
+        wire [4:0] signal_cat_1;
+        wire [7:0] signal_mem_read_port_1;
+        wire [15:0] signal_cat_2;
+        wire [7:0] signal_select_2;
+        wire signal_select_3;
+        wire [7:0] signal_mux;
+        reg [7:0] signal_reg;
+        wire [1:0] signal_const_3;
+        wire signal_eq_1;
+        wire signal_and_1;
+        wire [4:0] signal_cat_3;
+        wire [7:0] signal_mem_read_port_2;
+        wire signal_select_4;
+        wire [7:0] signal_select_5;
+        wire [4:0] signal_cat_4;
+        wire signal_eq_2;
+        wire signal_mux_1;
+        wire signal_select_6;
+        wire signal_eq_3;
+        wire signal_mux_2;
+        wire [1:0] signal_cat_5;
+        wire signal_select_7;
+        wire [15:0] signal_cat_6;
+        wire [7:0] signal_select_8;
+        wire [3:0] signal_select_9;
+        wire [4:0] signal_cat_7;
+        wire signal_select_10;
+        wire [7:0] signal_select_11;
+        wire [4:0] signal_cat_8;
+        wire signal_select_12;
+        wire [7:0] signal_select_13;
+        wire [4:0] signal_cat_9;
+        reg [7:0] signal_multiport_mem[0:31];
+        wire [4:0] signal_cat_10;
+        wire [7:0] signal_mem_read_port_3;
+        wire [15:0] signal_cat_11;
+        reg [15:0] signal_reg_1;
+        assign signal_const = 1'b0;
+        assign signal_eq = write_b == signal_const;
+        assign signal_and = read_b & signal_eq;
+        assign signal_select = signal_cat_2[15:8];
+        assign signal_cat = { signal_select_1,
+                              signal_const };
+        assign signal_mem_read_port = signal_multiport_mem[signal_cat];
+        assign signal_const_2 = 1'b1;
+        assign signal_select_1 = address_b[4:1];
+        assign signal_cat_1 = { signal_select_1,
+                                signal_const_2 };
+        assign signal_mem_read_port_1 = signal_multiport_mem[signal_cat_1];
+        assign signal_cat_2 = { signal_mem_read_port_1,
+                                signal_mem_read_port };
+        assign signal_select_2 = signal_cat_2[7:0];
+        assign signal_select_3 = address_b[0:0];
+        assign signal_mux = signal_select_3 ? signal_select : signal_select_2;
         always @(posedge clock_b) begin
-            if (_56)
-                _57 <= _53;
+            if (signal_and)
+                signal_reg <= signal_mux;
         end
-        assign _65 = 2'b00;
-        assign _66 = write_a == _65;
-        assign _67 = read_a & _66;
-        assign _62 = { address_a,
-                       _54 };
-        assign _63 = _45[_62];
-        assign _44 = _39[1:1];
-        assign _43 = _28[15:8];
-        assign _42 = { _25,
-                       _15 };
-        assign _36 = _30 == _54;
-        assign _38 = _36 ? write_b : _54;
-        assign _30 = address_b[0:0];
-        assign _32 = _30 == _15;
-        assign _34 = _32 ? write_b : _54;
-        assign _39 = { _34,
-                       _38 };
-        assign _40 = _39[0:0];
-        assign _28 = { data_b,
-                       data_b };
-        assign _29 = _28[7:0];
-        assign _25 = address_b[4:1];
-        assign _27 = { _25,
-                       _54 };
-        assign _24 = write_a[1:1];
-        assign _23 = data_a[15:8];
-        assign _22 = { address_a,
-                       _15 };
-        assign _20 = write_a[0:0];
-        assign _19 = data_a[7:0];
-        assign _18 = { address_a,
-                       _54 };
+        assign signal_const_3 = 2'b00;
+        assign signal_eq_1 = write_a == signal_const_3;
+        assign signal_and_1 = read_a & signal_eq_1;
+        assign signal_cat_3 = { address_a,
+                                signal_const };
+        assign signal_mem_read_port_2 = signal_multiport_mem[signal_cat_3];
+        assign signal_select_4 = signal_cat_5[1:1];
+        assign signal_select_5 = signal_cat_6[15:8];
+        assign signal_cat_4 = { signal_select_9,
+                                signal_const_2 };
+        assign signal_eq_2 = signal_select_6 == signal_const;
+        assign signal_mux_1 = signal_eq_2 ? write_b : signal_const;
+        assign signal_select_6 = address_b[0:0];
+        assign signal_eq_3 = signal_select_6 == signal_const_2;
+        assign signal_mux_2 = signal_eq_3 ? write_b : signal_const;
+        assign signal_cat_5 = { signal_mux_2,
+                                signal_mux_1 };
+        assign signal_select_7 = signal_cat_5[0:0];
+        assign signal_cat_6 = { data_b,
+                                data_b };
+        assign signal_select_8 = signal_cat_6[7:0];
+        assign signal_select_9 = address_b[4:1];
+        assign signal_cat_7 = { signal_select_9,
+                                signal_const };
+        assign signal_select_10 = write_a[1:1];
+        assign signal_select_11 = data_a[15:8];
+        assign signal_cat_8 = { address_a,
+                                signal_const_2 };
+        assign signal_select_12 = write_a[0:0];
+        assign signal_select_13 = data_a[7:0];
+        assign signal_cat_9 = { address_a,
+                                signal_const };
         always @(posedge clock_a) begin
-            if (_20)
-                _45[_18] <= _19;
+            if (signal_select_12)
+                signal_multiport_mem[signal_cat_9] <= signal_select_13;
         end
         always @(posedge clock_a) begin
-            if (_24)
-                _45[_22] <= _23;
-        end
-        always @(posedge clock_b) begin
-            if (_40)
-                _45[_27] <= _29;
+            if (signal_select_10)
+                signal_multiport_mem[signal_cat_8] <= signal_select_11;
         end
         always @(posedge clock_b) begin
-            if (_44)
-                _45[_42] <= _43;
+            if (signal_select_7)
+                signal_multiport_mem[signal_cat_7] <= signal_select_8;
         end
-        assign _59 = { address_a,
-                       _15 };
-        assign _60 = _45[_59];
-        assign _64 = { _60,
-                       _63 };
+        always @(posedge clock_b) begin
+            if (signal_select_4)
+                signal_multiport_mem[signal_cat_4] <= signal_select_5;
+        end
+        assign signal_cat_10 = { address_a,
+                                 signal_const_2 };
+        assign signal_mem_read_port_3 = signal_multiport_mem[signal_cat_10];
+        assign signal_cat_11 = { signal_mem_read_port_3,
+                                 signal_mem_read_port_2 };
         always @(posedge clock_a) begin
-            if (_67)
-                _68 <= _64;
+            if (signal_and_1)
+                signal_reg_1 <= signal_cat_11;
         end
-        assign qa = _68;
-        assign qb = _57;
+        assign qa = signal_reg_1;
+        assign qb = signal_reg;
 
     endmodule
     |}];
@@ -1423,131 +1423,131 @@ let%expect_test "byte enables with resizing" =
         output [17:0] qa;
         output [8:0] qb;
 
-        wire _54;
-        wire _55;
-        wire _56;
-        wire [8:0] _52;
-        wire [4:0] _48;
-        wire [8:0] _49;
-        wire _15;
-        wire [3:0] _14;
-        wire [4:0] _16;
-        wire [8:0] _46;
-        wire [17:0] _50;
-        wire [8:0] _51;
-        wire _13;
-        wire [8:0] _53;
-        reg [8:0] _57;
-        wire [1:0] _65;
-        wire _66;
-        wire _67;
-        wire [4:0] _62;
-        wire [8:0] _63;
-        wire _44;
-        wire [8:0] _43;
-        wire [4:0] _42;
-        wire _36;
-        wire _38;
-        wire _30;
-        wire _32;
-        wire _34;
-        wire [1:0] _39;
-        wire _40;
-        wire [17:0] _28;
-        wire [8:0] _29;
-        wire [3:0] _25;
-        wire [4:0] _27;
-        wire _24;
-        wire [8:0] _23;
-        wire [4:0] _22;
-        wire _20;
-        wire [8:0] _19;
-        wire [4:0] _18;
-        reg [8:0] _45[0:31];
-        wire [4:0] _59;
-        wire [8:0] _60;
-        wire [17:0] _64;
-        reg [17:0] _68;
-        assign _54 = 1'b0;
-        assign _55 = write_b == _54;
-        assign _56 = read_b & _55;
-        assign _52 = _50[17:9];
-        assign _48 = { _14,
-                       _54 };
-        assign _49 = _45[_48];
-        assign _15 = 1'b1;
-        assign _14 = address_b[4:1];
-        assign _16 = { _14,
-                       _15 };
-        assign _46 = _45[_16];
-        assign _50 = { _46,
-                       _49 };
-        assign _51 = _50[8:0];
-        assign _13 = address_b[0:0];
-        assign _53 = _13 ? _52 : _51;
+        wire signal_const;
+        wire signal_eq;
+        wire signal_and;
+        wire [8:0] signal_select;
+        wire [4:0] signal_cat;
+        wire [8:0] signal_mem_read_port;
+        wire signal_const_2;
+        wire [3:0] signal_select_1;
+        wire [4:0] signal_cat_1;
+        wire [8:0] signal_mem_read_port_1;
+        wire [17:0] signal_cat_2;
+        wire [8:0] signal_select_2;
+        wire signal_select_3;
+        wire [8:0] signal_mux;
+        reg [8:0] signal_reg;
+        wire [1:0] signal_const_3;
+        wire signal_eq_1;
+        wire signal_and_1;
+        wire [4:0] signal_cat_3;
+        wire [8:0] signal_mem_read_port_2;
+        wire signal_select_4;
+        wire [8:0] signal_select_5;
+        wire [4:0] signal_cat_4;
+        wire signal_eq_2;
+        wire signal_mux_1;
+        wire signal_select_6;
+        wire signal_eq_3;
+        wire signal_mux_2;
+        wire [1:0] signal_cat_5;
+        wire signal_select_7;
+        wire [17:0] signal_cat_6;
+        wire [8:0] signal_select_8;
+        wire [3:0] signal_select_9;
+        wire [4:0] signal_cat_7;
+        wire signal_select_10;
+        wire [8:0] signal_select_11;
+        wire [4:0] signal_cat_8;
+        wire signal_select_12;
+        wire [8:0] signal_select_13;
+        wire [4:0] signal_cat_9;
+        reg [8:0] signal_multiport_mem[0:31];
+        wire [4:0] signal_cat_10;
+        wire [8:0] signal_mem_read_port_3;
+        wire [17:0] signal_cat_11;
+        reg [17:0] signal_reg_1;
+        assign signal_const = 1'b0;
+        assign signal_eq = write_b == signal_const;
+        assign signal_and = read_b & signal_eq;
+        assign signal_select = signal_cat_2[17:9];
+        assign signal_cat = { signal_select_1,
+                              signal_const };
+        assign signal_mem_read_port = signal_multiport_mem[signal_cat];
+        assign signal_const_2 = 1'b1;
+        assign signal_select_1 = address_b[4:1];
+        assign signal_cat_1 = { signal_select_1,
+                                signal_const_2 };
+        assign signal_mem_read_port_1 = signal_multiport_mem[signal_cat_1];
+        assign signal_cat_2 = { signal_mem_read_port_1,
+                                signal_mem_read_port };
+        assign signal_select_2 = signal_cat_2[8:0];
+        assign signal_select_3 = address_b[0:0];
+        assign signal_mux = signal_select_3 ? signal_select : signal_select_2;
         always @(posedge clock_b) begin
-            if (_56)
-                _57 <= _53;
+            if (signal_and)
+                signal_reg <= signal_mux;
         end
-        assign _65 = 2'b00;
-        assign _66 = write_a == _65;
-        assign _67 = read_a & _66;
-        assign _62 = { address_a,
-                       _54 };
-        assign _63 = _45[_62];
-        assign _44 = _39[1:1];
-        assign _43 = _28[17:9];
-        assign _42 = { _25,
-                       _15 };
-        assign _36 = _30 == _54;
-        assign _38 = _36 ? write_b : _54;
-        assign _30 = address_b[0:0];
-        assign _32 = _30 == _15;
-        assign _34 = _32 ? write_b : _54;
-        assign _39 = { _34,
-                       _38 };
-        assign _40 = _39[0:0];
-        assign _28 = { data_b,
-                       data_b };
-        assign _29 = _28[8:0];
-        assign _25 = address_b[4:1];
-        assign _27 = { _25,
-                       _54 };
-        assign _24 = write_a[1:1];
-        assign _23 = data_a[17:9];
-        assign _22 = { address_a,
-                       _15 };
-        assign _20 = write_a[0:0];
-        assign _19 = data_a[8:0];
-        assign _18 = { address_a,
-                       _54 };
+        assign signal_const_3 = 2'b00;
+        assign signal_eq_1 = write_a == signal_const_3;
+        assign signal_and_1 = read_a & signal_eq_1;
+        assign signal_cat_3 = { address_a,
+                                signal_const };
+        assign signal_mem_read_port_2 = signal_multiport_mem[signal_cat_3];
+        assign signal_select_4 = signal_cat_5[1:1];
+        assign signal_select_5 = signal_cat_6[17:9];
+        assign signal_cat_4 = { signal_select_9,
+                                signal_const_2 };
+        assign signal_eq_2 = signal_select_6 == signal_const;
+        assign signal_mux_1 = signal_eq_2 ? write_b : signal_const;
+        assign signal_select_6 = address_b[0:0];
+        assign signal_eq_3 = signal_select_6 == signal_const_2;
+        assign signal_mux_2 = signal_eq_3 ? write_b : signal_const;
+        assign signal_cat_5 = { signal_mux_2,
+                                signal_mux_1 };
+        assign signal_select_7 = signal_cat_5[0:0];
+        assign signal_cat_6 = { data_b,
+                                data_b };
+        assign signal_select_8 = signal_cat_6[8:0];
+        assign signal_select_9 = address_b[4:1];
+        assign signal_cat_7 = { signal_select_9,
+                                signal_const };
+        assign signal_select_10 = write_a[1:1];
+        assign signal_select_11 = data_a[17:9];
+        assign signal_cat_8 = { address_a,
+                                signal_const_2 };
+        assign signal_select_12 = write_a[0:0];
+        assign signal_select_13 = data_a[8:0];
+        assign signal_cat_9 = { address_a,
+                                signal_const };
         always @(posedge clock_a) begin
-            if (_20)
-                _45[_18] <= _19;
+            if (signal_select_12)
+                signal_multiport_mem[signal_cat_9] <= signal_select_13;
         end
         always @(posedge clock_a) begin
-            if (_24)
-                _45[_22] <= _23;
-        end
-        always @(posedge clock_b) begin
-            if (_40)
-                _45[_27] <= _29;
+            if (signal_select_10)
+                signal_multiport_mem[signal_cat_8] <= signal_select_11;
         end
         always @(posedge clock_b) begin
-            if (_44)
-                _45[_42] <= _43;
+            if (signal_select_7)
+                signal_multiport_mem[signal_cat_7] <= signal_select_8;
         end
-        assign _59 = { address_a,
-                       _15 };
-        assign _60 = _45[_59];
-        assign _64 = { _60,
-                       _63 };
+        always @(posedge clock_b) begin
+            if (signal_select_4)
+                signal_multiport_mem[signal_cat_4] <= signal_select_5;
+        end
+        assign signal_cat_10 = { address_a,
+                                 signal_const_2 };
+        assign signal_mem_read_port_3 = signal_multiport_mem[signal_cat_10];
+        assign signal_cat_11 = { signal_mem_read_port_3,
+                                 signal_mem_read_port_2 };
         always @(posedge clock_a) begin
-            if (_67)
-                _68 <= _64;
+            if (signal_and_1)
+                signal_reg_1 <= signal_cat_11;
         end
-        assign qa = _68;
-        assign qb = _57;
+        assign qa = signal_reg_1;
+        assign qb = signal_reg;
 
     endmodule
     |}]
@@ -1575,7 +1575,7 @@ let sim ~address_width_a ~address_width_b ~data_width_a ~data_width_b =
       Simulation
   in
   let sim = Cyclesim.create circ in
-  let waves, sim = Waveform.create sim in
+  let waves, sim = Cyclesim.Waveform.create sim in
   let a, _qa = get_port sim "a" in
   let b, _qb = get_port sim "b" in
   let open Bits in

@@ -117,7 +117,7 @@ let print_q waves =
 (* Show the full test - write and read a few elements, then force an address collision. *)
 let%expect_test "collision mode modelling" =
   let sim = Sim.create create in
-  let waves, sim = Waveform.create sim in
+  let waves, sim = Cyclesim.Waveform.create sim in
   test sim;
   print waves;
   [%expect
@@ -152,7 +152,7 @@ let%expect_test "collision mode modelling" =
 
 let test_q ?arch ?protection () =
   let sim = Sim.create (create ?arch ?protection) in
-  let waves, sim = Waveform.create sim in
+  let waves, sim = Cyclesim.Waveform.create sim in
   test sim;
   print_q waves
 ;;

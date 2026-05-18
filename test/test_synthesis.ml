@@ -118,54 +118,54 @@ let%expect_test "verilog" =
         input [1:0] i2;
         output [1:0] o;
 
-        wire _11;
-        wire _10;
-        wire [1:0] _12;
-        reg _13;
+        wire signal_select;
+        wire signal_select_1;
+        wire [1:0] signal_cat;
+        reg signal_mux;
         wire vdd;
         wire gnd;
-        wire _5;
-        wire _4;
-        wire [1:0] _6;
-        reg _9;
-        wire [1:0] _14;
-        assign _11 = i1[0:0];
-        assign _10 = i2[0:0];
-        assign _12 = { _10,
-                       _11 };
+        wire signal_select_2;
+        wire signal_select_3;
+        wire [1:0] signal_cat_1;
+        reg signal_mux_1;
+        wire [1:0] signal_cat_2;
+        assign signal_select = i1[0:0];
+        assign signal_select_1 = i2[0:0];
+        assign signal_cat = { signal_select_1,
+                              signal_select };
         always @* begin
-            case (_12)
+            case (signal_cat)
             0:
-                _13 <= gnd;
+                signal_mux <= gnd;
             1:
-                _13 <= vdd;
+                signal_mux <= vdd;
             2:
-                _13 <= vdd;
+                signal_mux <= vdd;
             default:
-                _13 <= gnd;
+                signal_mux <= gnd;
             endcase
         end
         assign vdd = 1'b1;
         assign gnd = 1'b0;
-        assign _5 = i1[1:1];
-        assign _4 = i2[1:1];
-        assign _6 = { _4,
-                      _5 };
+        assign signal_select_2 = i1[1:1];
+        assign signal_select_3 = i2[1:1];
+        assign signal_cat_1 = { signal_select_3,
+                                signal_select_2 };
         always @* begin
-            case (_6)
+            case (signal_cat_1)
             0:
-                _9 <= gnd;
+                signal_mux_1 <= gnd;
             1:
-                _9 <= vdd;
+                signal_mux_1 <= vdd;
             2:
-                _9 <= vdd;
+                signal_mux_1 <= vdd;
             default:
-                _9 <= gnd;
+                signal_mux_1 <= gnd;
             endcase
         end
-        assign _14 = { _9,
-                       _13 };
-        assign o = _14;
+        assign signal_cat_2 = { signal_mux_1,
+                                signal_mux };
+        assign o = signal_cat_2;
 
     endmodule
     |}];
@@ -185,50 +185,50 @@ let%expect_test "verilog" =
         input [1:0] i2;
         output [1:0] o;
 
-        wire _10;
-        wire _7;
-        wire _6;
-        wire [1:0] _8;
-        wire _9;
-        wire _11;
-        wire _1;
-        wire _16;
-        wire _13;
-        wire _12;
-        wire [1:0] _14;
-        wire _15;
-        wire _17;
-        wire _4;
-        wire [1:0] _18;
-        assign _10 = _8[1:1];
-        assign _7 = i1[0:0];
-        assign _6 = i2[0:0];
-        assign _8 = { _6,
-                      _7 };
-        assign _9 = _8[0:0];
+        wire signal_select;
+        wire signal_select_1;
+        wire signal_select_2;
+        wire [1:0] signal_cat;
+        wire signal_select_3;
+        wire signal_inst;
+        wire signal_wire;
+        wire signal_select_4;
+        wire signal_select_5;
+        wire signal_select_6;
+        wire [1:0] signal_cat_1;
+        wire signal_select_7;
+        wire signal_inst_1;
+        wire signal_wire_1;
+        wire [1:0] signal_cat_2;
+        assign signal_select = signal_cat[1:1];
+        assign signal_select_1 = i1[0:0];
+        assign signal_select_2 = i2[0:0];
+        assign signal_cat = { signal_select_2,
+                              signal_select_1 };
+        assign signal_select_3 = signal_cat[0:0];
         LUT2
             #( .INIT("0110") )
             the_LUT2
-            ( .I0(_9),
-              .I1(_10),
-              .O(_11) );
-        assign _1 = _11;
-        assign _16 = _14[1:1];
-        assign _13 = i1[1:1];
-        assign _12 = i2[1:1];
-        assign _14 = { _12,
-                       _13 };
-        assign _15 = _14[0:0];
+            ( .I0(signal_select_3),
+              .I1(signal_select),
+              .O(signal_inst) );
+        assign signal_wire = signal_inst;
+        assign signal_select_4 = signal_cat_1[1:1];
+        assign signal_select_5 = i1[1:1];
+        assign signal_select_6 = i2[1:1];
+        assign signal_cat_1 = { signal_select_6,
+                                signal_select_5 };
+        assign signal_select_7 = signal_cat_1[0:0];
         LUT2
             #( .INIT("0110") )
             the_LUT2_1
-            ( .I0(_15),
-              .I1(_16),
-              .O(_17) );
-        assign _4 = _17;
-        assign _18 = { _4,
-                       _1 };
-        assign o = _18;
+            ( .I0(signal_select_7),
+              .I1(signal_select_4),
+              .O(signal_inst_1) );
+        assign signal_wire_1 = signal_inst_1;
+        assign signal_cat_2 = { signal_wire_1,
+                                signal_wire };
+        assign o = signal_cat_2;
 
     endmodule
     |}]

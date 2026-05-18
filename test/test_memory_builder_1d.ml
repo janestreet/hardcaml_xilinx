@@ -65,7 +65,7 @@ module Make (The_config : Xilinx_memory_builder.Config.S) = struct
   let create_sim () =
     let scope = Scope.create ~flatten_design:true () in
     let sim = Sim.create (create scope) in
-    Hardcaml_waveterm.Waveform.create sim
+    Cyclesim.Waveform.create sim
   ;;
 
   let test () =

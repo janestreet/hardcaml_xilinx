@@ -114,7 +114,7 @@ end
 let create_sim () =
   let circuit = create_circuit () in
   let sim = Cyclesim.create circuit in
-  let wave, sim = Waveform.create sim in
+  let wave, sim = Cyclesim.Waveform.create sim in
   let _clear =
     try Cyclesim.in_port sim "clear" with
     | _ -> ref Bits.empty
